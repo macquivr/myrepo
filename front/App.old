@@ -1,0 +1,47 @@
+import React, { Component } from 'react';
+import logo from './myfiSplash.jpg';
+import './App.css';
+
+import Tabs from './Tabs';
+import Data from './Data';
+import Graphs from './Graphs';
+import Admin from './Admin';
+import Session from './Session';
+
+class App extends Component {
+  render() {
+
+    function App() {
+      return (
+        <div>
+         <Tabs>
+          <div label="Data">
+            <Data />
+          </div>
+          <div label="Graphs">
+            <Graphs />
+          </div>
+          <div label="Admin">
+            <Admin />
+          </div>
+        </Tabs>
+        </div>
+      );
+    }
+
+    return (
+      <div className="App">
+        <div className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h2>Welcome to my tool</h2>
+          <Session />
+        </div>
+        <p className="App-intro">
+          <App />
+        </p>
+      </div>
+    );
+  }
+}
+
+export default App;

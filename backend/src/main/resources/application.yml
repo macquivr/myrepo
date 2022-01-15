@@ -1,0 +1,10 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /SpringBootRepository
+
+logging:
+  level:
+    org:
+      springframework: INFO
+  file: server.log

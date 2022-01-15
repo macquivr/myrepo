@@ -1,0 +1,538 @@
+package com.example.demo.importer.data;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import com.example.demo.utils.mydate.DUtil;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import java.util.UUID;
+import com.example.demo.importer.IBase;
+import com.example.demo.importer.Repos;
+import com.example.demo.repository.MltypeRepository;
+import com.example.demo.utils.Utils;
+import com.example.demo.domain.Mltype;
+import com.example.demo.importer.BadDataException;
+import com.example.demo.utils.FileUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.example.demo.importer.data.pdf.*;
+
+public class PdfDataM extends PLines {
+private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
+	private double start = 0;
+	private double stop = 0;
+	private double target = 0;
+	private int transl = 0;
+	private int year = 0;
+	private IData idata = null;
+	private List<String> mlines = null;
+	private String dir = null;
+	private UUID uuid = null;
+
+	private Repos repos = null;
+
+	public PdfDataM(UUID u,IBase obj,IData data, String d) throws BadDataException {
+		super(obj);
+
+		repos = obj.getRepos();
+		uuid = u;
+		dir = d;
+		idata = data;
+	}
+
+	public String getLabel() { return "ML"; }
+
+	public void go() throws BadDataException
+	{
+		readLines();
+		doStartStop();
+		if (transl == -1) {
+			throw new BadDataException("Parse issue 1");
+		}
+		doIn();
+		doTrans();
+		doVisa();
+		doChecks();
+		target = Utils.dvSub(stop,start);
+		
+		checkTarget();
+				
+		idata.getStmt().setSbalance(start);
+		idata.getStmt().setFbalance(stop);
+	}
+	
+	private double getNet(List<NData> nl)
+	{
+		double net = 0;
+		double tin = 0;
+		double tout = 0;
+		
+		for (NData n : nl) {
+			tin = Utils.dvAdd(tin, n.getCredit());
+			tout = Utils.dvAdd(tout, n.getDebit());
+			
+			net = Utils.dvAdd(net, n.getCredit());
+			net = Utils.dvSub(net, n.getDebit());
+			log.info("MLAMT: " + n.getCredit() + " " + n.getDebit() + " " + tin + " " + tout + " " + net);
+		}
+		idata.getStmt().setIna(tin);
+		idata.getStmt().setOuta(tout);
+		return net;
+	}
+	
+	private void checkTarget() throws BadDataException
+	{
+		List<NData> nl = idata.getData();		
+		double net = getNet(nl);
+		if (net == target) 
+			return;
+		
+		throw new BadDataException("Target mismatch " + target + " " + net);
+	}
+	
+	private void doIn() throws BadDataException
+	{
+		int lidx = 0;
+		String lstr = null;
+		for (String s : lines) {
+			if (lidx < transl) {
+				lidx++;
+				continue;
+			}
+
+			if (s.startsWith("CASH/OTHER TRANSACTION")) 
+				return;
+			String dstr = isDate(s);
+			if (dstr != null)
+				lstr = dstr;
+			if (s.contains("ML BANK DEPOSIT PROGRAM")) {
+				s = lstr.concat(trim(s));
+			}
+			addNData(s,true,false,false);
+		}
+	}
+	
+	private String isDate(String lstr) 
+	{
+		String s = trim(lstr);
+		if (s == null)
+			return null;
+		int idx = s.indexOf(' ');
+		if (idx == -1)
+			return null;
+		String str = s.substring(0,idx);
+		if (!DUtil.isValidMMDD(str))
+			return null;
+
+		return str;
+	}
+
+	private String mendCheckNum(String cstr)
+	{
+		int cnt = 0;
+		if (cstr.endsWith("*")) {
+			cstr = cstr.substring(0,cstr.length()-1);
+		}
+		byte[] b = cstr.getBytes();
+		for (int i = 0;i<b.length;i++)
+			if (b[i] < 0)
+				cnt++;
+
+		return (cnt == 0) ? cstr : cstr.substring(0,cstr.length()-1);
+	}
+
+	private NData makeNData(String str, String rest) {
+		int idx = rest.indexOf(' ');
+        if (idx == -1)
+        	return null;
+		NData ret = new NData();
+
+        String dstr = rest.substring(0,idx);
+		String ndstr = null;
+
+		if (DUtil.isValidMMDD(dstr)) {
+			ndstr = dstr + "/" + year;
+		} else {
+			if (!DUtil.isValidMMDD(str))
+				return null;
+			ndstr = str + "/" + year;
+		}
+		ret.setDate(ndstr);
+		ret.setNDstr(ndstr);
+
+		return ret;
+	}
+	private void addNData(String lstr, boolean credit, boolean sd, boolean check) throws BadDataException
+	{
+		String ndstr = null;
+		String s = trim(lstr);
+		if (s == null)
+			return;
+		int idx = s.indexOf(' ');
+		if (idx == -1)
+			return;
+		String str = s.substring(0,idx);
+		String rest = s.substring(idx+1);
+
+		NData n = makeNData(str,rest);
+		if (n == null)
+			return;
+
+		idx = findValue(rest);
+		if (idx == -1) {
+			throw new BadDataException("Couldn't find value for " + lstr + " *** " + str + " ***" + rest);
+		}
+		String v = rest.substring(idx+1);
+		v = v.replaceAll(" ", "");
+		v = v.replaceAll(",", "");
+		if (v.startsWith("(")) {
+			v = v.substring(1,v.length()-2);
+		}
+
+		String lbl = rest.substring(0,idx);
+
+		if (lbl.startsWith("MONTH END SUMMARY"))
+			return;
+		if (lbl.equals("OPENING BALANCE") || (lbl.equals("CLOSING BALANCE")))
+			return;
+		
+		if (check) {
+			idx = lbl.indexOf(' ');
+			if (idx == -1) {
+
+				throw new BadDataException("Couldn't parse check line " + lstr);
+			}
+			String cstr = mendCheckNum(lbl.substring(0,idx));
+
+			int cnum = 0;
+
+			try {
+				cnum = Integer.valueOf(cstr);
+			} catch (Exception ex) {
+
+				throw new BadDataException("Bad Check num " + cstr);
+			}
+			n.setCheck(cnum);
+			lbl = "Check";
+		} else {
+			if (sd) {
+				 idx = lbl.indexOf(' ');
+                 ndstr = lbl.substring(0,idx) + "/" + year;
+                 lbl = lbl.substring(idx+1);
+                 n.setNDstr(ndstr);
+			}
+		}
+
+		boolean ok = true;
+		n.setLabel(mendLabel(lbl.trim()));
+        if (lbl.contains("Deposit")) 
+        	n.setCredit(Utils.dval(v));
+        else {
+        	if (lbl.contains("Withdrawal")) 
+        		n.setDebit(Utils.dval(v));
+			else
+				ok = determineType(n,v);
+        }
+
+		if (ok)
+			idata.getData().add(n);
+	}
+	
+	public void readLines() throws BadDataException
+	{
+		String fileStr = null;
+		File f = new File(dir,"ml.csv");
+		
+		try {
+			fileStr = FileUtils.readFile(f);
+		} catch (IOException e) {
+			throw new BadDataException("Problem with ML csv");
+		}
+		
+		mlines = new Vector<String>();
+		StringTokenizer st = new StringTokenizer(fileStr,"\n");
+
+		while (st.hasMoreTokens()) {
+			String line = st.nextToken();
+			mlines.add(line.replaceAll(",", ""));
+		}
+	}
+	
+	private boolean determineType(NData n, String v) throws BadDataException
+	{
+		if (n.getLabel().contains("BANK DEPOSIT INTEREST")) {
+			n.setCredit(Double.valueOf(v));
+			return true;
+		}
+		
+		String l = null;
+		for (String s : mlines) {
+			int idx = 0;
+			String dstr2 = null;
+			if (s.length() > 0) {
+				StringTokenizer st = new StringTokenizer(s,"\"");
+				while (st.hasMoreTokens()) {
+					String str = st.nextToken().trim();
+					if (idx == 2) {
+						dstr2 = str;
+					}
+					
+					idx++;
+				}
+			}
+			
+			if (s.contains(v) && ((n.getNDstr() == null) || (dstr2.equals(n.getNDstr())))) 
+				l = s;
+		}
+
+		if (l == null)  {
+			log.info(n.getLabel() + " not found, skipping....");
+			return false;
+		}
+
+		StringTokenizer st = new StringTokenizer(l,"\"");
+		int idx = 0;
+		String vstr = null;
+		boolean f = false;
+		if ((n.getLabel().contains(" Sale ")) || (n.getLabel().contains(" Purchase "))) {
+			f = true;
+		}
+		while (st.hasMoreTokens()) {
+			String str = st.nextToken().trim();
+			
+			if (!f && (idx == 12) && (str.length() > 0))   
+				vstr = str;
+			
+			if (!f && (idx == 13) && (vstr == null)) 
+				vstr = str;
+
+			if (f && (idx == 15))
+				vstr = str;
+			
+			idx++;
+		}
+
+		if (vstr == null) {
+			log.info("Couldn't find value " + n.getLabel() + " " + v + " Skipping...");
+			return false;
+		}
+
+		if (vstr.startsWith("$")) 
+			n.setCredit(Utils.dval(vstr.substring(1)));
+		else 
+			n.setDebit(Utils.dval(vstr.substring(2)));
+
+		return true;
+	}
+	
+	private String mendLabel(String lbl) 
+	{
+		List<Mltype> types = repos.getMlTypeRepository().findAll();
+		
+		String match = null;
+		
+		for (Mltype t : types) {
+			if (lbl.endsWith(t.getName())) {
+				if (match == null)
+					match = t.getName();
+				else {
+					if (t.getName().length() > match.length())
+						match = t.getName();
+				}
+			}
+		}
+		
+		if (match != null) {
+			String ret = lbl.replaceAll(match,"");
+			lbl =  ret.substring(0,ret.length()-1);
+		}
+		
+		return lbl;
+	}
+	
+	private int findValue(String rest) {
+		String str = rest.trim();
+		int idx = str.length()-1;
+		while (str.charAt(idx) != ' ')
+			idx--;
+		return idx;
+	}
+	
+	private void doTrans() throws BadDataException
+	{
+		int lidx = 0;
+		boolean on = false;
+		for (String s : lines) {
+			if (lidx < transl) {
+				lidx++;
+				continue;
+			}
+			if (!on && !s.startsWith("CASH/OTHER TRANSACTION")) { 
+				lidx++;
+				continue;
+			}
+			if (s.length() == 0)
+				continue;
+			if (s.isEmpty())
+				continue;
+			on = true;
+			if (s.startsWith("VISA ACCESS CARD ACTIVITY")) 
+				return;
+			if (s.startsWith("CHECKS WRITTEN")) 
+				return;
+			if (s.startsWith("YOUR CMA MONEY ACCOUNT TRANSACTIONS")) 
+				return;
+			String str = trim(s);
+			if (str != null) {
+				addNData(str,false,false,false);
+			}
+		}
+	}
+	
+	private String trim(String data) 
+	{
+		String ret = data;
+		if ((ret == null) || (ret.length() == 0))
+			return null;
+		
+		while (ret.charAt(0) == ' ')
+		{
+			ret = ret.substring(1);	
+			if (ret.length() == 0)	
+				return null;
+		}
+		
+		if (ret.charAt(0) == '.')
+			ret = ret.substring(1);
+		
+		if (ret.length() == 0)
+			return null;
+		
+		return ret;
+	}
+	
+	private void doVisa() throws BadDataException
+	{
+		int lidx = 0;
+		boolean on = false;
+		for (String s : lines) {
+			if (lidx < transl) {
+				lidx++;
+				continue;
+			}
+			if (!on && !s.startsWith("VISA ACCESS CARD ACTIVITY")) { 
+				lidx++;
+				continue;
+			}
+			on = true;
+			if (s.startsWith("CHECKS WRITTEN")) 
+				return;
+			if (s.startsWith("YOUR CMA MONEY ACCOUNT TRANSACTIONS")) 
+				return;
+			String str = trim(s);
+			addNData(str,false,true,false);
+		}		
+	}
+	
+	private void doChecks() throws BadDataException
+	{
+		int lidx = 0;
+		boolean on = false;
+		for (String s : lines) {
+			if (lidx < transl) {
+				lidx++;
+				continue;
+			}
+			if (!on && !s.startsWith("CHECKS WRITTEN")) { 
+				lidx++;
+				continue;
+			}
+			on = true;
+			if (s.startsWith("NET TOTAL")) 
+				return;
+			String str = trim(s);
+			if (str != null)
+				addNData(str,false,true,true);
+		}		
+	}
+	
+	private void doStartStop() throws BadDataException
+	{
+		int cnt = 0;
+		int lidx = 0;
+		transl = -1;
+		start = -1;
+		stop = -1;
+		year = 0;
+		boolean on = false;
+		for (String s : lines) {
+			if (s.startsWith("YOUR CMA TRANSACTIONS") && (transl == -1)) 
+				transl = lidx;
+			if ((s.startsWith("YOUR MERRILL LYNCH REPORT") || 
+			    (s.startsWith("WEALTH MANAGEMENT REPORT")))) {
+				int didx = s.indexOf(',');
+				String str = s.substring(didx+2);
+                didx = str.indexOf(' ');
+                str = str.substring(0,didx);
+                year = Integer.valueOf(str);
+			}
+			if (on) {
+				try {
+					log.info("START: " + s);
+					int idx = s.indexOf('$');
+					if (idx == -1) {
+						start = 123594.08 + 14254.92;
+						log.info("STARTV: " + start);
+					} else {
+						String str = s.substring(idx + 1);
+						str = str.replaceAll(",", "");
+						if (str.endsWith(")")) {
+							str = "-" + str.substring(0, str.length() - 1);
+						}
+						log.info("STARTV: " + str);
+						start = Utils.dval(str);
+					}
+				} catch (Exception ex) {
+					throw new BadDataException("Bad Start " + s);
+				}
+				on = false;
+			}
+			if (s.startsWith("CASH FLOW")) {
+				if (cnt == 1) 
+					on = true;
+				cnt++;
+			}
+			if (s.startsWith("Closing Cash")) {
+				if (cnt == 2) {
+					try {
+						log.info("STOP: " + s);
+						int idx = s.indexOf('$');
+						String str = s.substring(idx+1);
+						str = str.replaceAll(",","");
+						if (str.endsWith(")")) {
+							str = "-" + str.substring(0,str.length()-1);
+						}
+						log.info("STOPV:" + str);
+						stop = Utils.dval(str);
+					} catch (Exception ex) {
+						throw new BadDataException("Bad Stop " + s);
+					}
+				}
+			}
+			lidx++;
+		}
+		if (start == -1) {
+			throw new BadDataException("Could not find start.");
+		}
+		if (stop == -1) {
+			throw new BadDataException("Could not find stop.");
+		}
+		if (year == 0) {
+			throw new BadDataException("Could not find year.");
+		}
+	}
+	
+}

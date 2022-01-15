@@ -1,0 +1,14 @@
+spring:
+  main:
+    banner-mode: "off"
+  dataSource:
+    driverClassName:  'com.mysql.jdbc.Driver'
+    url: jdbc:mysql://localhost:3306/h3?serverTimezone=EST
+    username: root
+    password: 3toolong
+  jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
+    show-sql: false
+
