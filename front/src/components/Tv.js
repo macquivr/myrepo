@@ -132,23 +132,25 @@ function Tv(props) {
         </TreeItem>
       </TreeItem>
       <TreeItem nodeId="5" label="Graphs">
-        <TreeItem nodeId="25" label="stypeAtm">
-           <Graphbase usession={props} urlt="stype/atm"/>
-        </TreeItem>
-        <TreeItem nodeId="26" label="stypeBills">
-           <Graphbase usession={props} urlt="stype/bills"/>
-        </TreeItem>
-        <TreeItem nodeId="27" label="stypeMisc">
-           <Graphbase usession={props} urlt="stype/misc"/>
-        </TreeItem>
-        <TreeItem nodeId="28" label="stypePos">
-           <Graphbase usession={props} urlt="stype/pos"/>
-        </TreeItem>
-        <TreeItem nodeId="29" label="stypeAnnual">
-           <Graphbase usession={props} urlt="stype/annual"/>
-        </TreeItem>
-        <TreeItem nodeId="30" label="stypeCredit">
-           <Graphbase usession={props} urlt="stype/credit"/>
+        <TreeItem nodeId="41" label="SType">
+          <TreeItem nodeId="25" label="stypeAtm">
+            <Graphbase usession={props} urlt="stype/atm"/>
+          </TreeItem>
+          <TreeItem nodeId="26" label="stypeBills">
+            <Graphbase usession={props} urlt="stype/bills"/>
+          </TreeItem>
+          <TreeItem nodeId="27" label="stypeMisc">
+            <Graphbase usession={props} urlt="stype/misc"/>
+          </TreeItem>
+          <TreeItem nodeId="28" label="stypePos">
+            <Graphbase usession={props} urlt="stype/pos"/>
+          </TreeItem>
+          <TreeItem nodeId="29" label="stypeAnnual">
+            <Graphbase usession={props} urlt="stype/annual"/>
+          </TreeItem>
+          <TreeItem nodeId="30" label="stypeCredit">
+            <Graphbase usession={props} urlt="stype/credit"/>
+          </TreeItem>
         </TreeItem>
         <TreeItem nodeId="32" label="Category Credit">
            <Graphbase usession={props} urlt="category/credit"/>
@@ -156,6 +158,58 @@ function Tv(props) {
         <TreeItem nodeId="33" label="Category Debit">
            <Graphbase usession={props} urlt="category/debit"/>
         </TreeItem>
+        <TreeItem nodeId="34" label="electric">
+           <Graphbase usession={props} urlt="electric"/>
+        </TreeItem>
+        <TreeItem nodeId="35" label="out">
+           <Graphbase usession={props} urlt="out"/>
+         </TreeItem>
+         <TreeItem nodeId="49" label="in">
+           <Graphbase usession={props} urlt="in"/>
+         </TreeItem>
+         <TreeItem nodeId="36" label="utilities">
+            <Graphbase usession={props} urlt="utilities"/>
+         </TreeItem>
+         <TreeItem nodeId="37" label="POS">
+            <Graphbase usession={props} urlt="pos"/>
+         </TreeItem>
+         <TreeItem nodeId="38" label="ATM">
+            <Graphbase usession={props} urlt="atm"/>
+         </TreeItem>
+         <TreeItem nodeId="39" label="Dog">
+           <Graphbase usession={props} urlt="dog"/>
+         </TreeItem>
+         <TreeItem nodeId="40" label="ML">
+            <Graphbase usession={props} urlt="ml"/>
+         </TreeItem>
+         <TreeItem nodeId="42" label="Credit">
+           <TreeItem nodeId="43" label="Capital One">
+             <Graphbase usession={props} urlt="capone"/>
+           </TreeItem>
+           <TreeItem nodeId="44" label="Amazon">
+             <Graphbase usession={props} urlt="amazon"/>
+           </TreeItem>
+           <TreeItem nodeId="45" label="Usaa">
+             <Graphbase usession={props} urlt="usaa"/>
+           </TreeItem>
+           <TreeItem nodeId="46" label="AAA">
+             <Graphbase usession={props} urlt="aaa"/>
+           </TreeItem>
+           <TreeItem nodeId="47" label="All">
+             <Graphbase usession={props} urlt="credit"/>
+           </TreeItem>
+         </TreeItem>
+         <TreeItem nodeId="48" label="Budget">
+           <Graphbase usession={props} urlt="budget"/>
+         </TreeItem>
+         <TreeItem nodeId="50" label="Net">
+           <TreeItem nodeId="51" label="inoutnet">
+             <Graphbase usession={props} urlt="inoutnet"/>
+           </TreeItem>
+           <TreeItem nodeId="52" label="Net Budget">
+             <Graphbase usession={props} urlt="netbudget"/>
+           </TreeItem>
+         </TreeItem>
       </TreeItem>
     </TreeView>
   );
