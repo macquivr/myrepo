@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.importer.Repos;
+import com.example.demo.reports.*;
 import com.example.demo.repository.*;
 import com.example.demo.state.Sessions;
 import com.example.demo.domain.*;
@@ -12,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.dto.*;
 import com.example.demo.utils.*;
-import com.example.demo.reports.ReportI;
-import com.example.demo.reports.DefaultReport;
-import com.example.demo.reports.MainReport;
+
 import java.util.List;
 import java.util.HashMap;
 import java.util.Set;
@@ -105,6 +104,8 @@ public class ReportService {
     {
         map.put("DEFAULT",new DefaultReport(repos));
         map.put("MAIN",new MainReport(repos));
+        map.put("RETIRE",new RetireReport(repos));
+        map.put("CREDITCAT",new CreditReport(repos));
     }
 
     public StatusDTO genReport(String sessionId) {

@@ -19,6 +19,106 @@ public class ChartController {
     @Autowired
     private ChartService service;
 
+    @GetMapping(value = "/chart/electric/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getElectric(@PathVariable String sessionId) {
+        return service.getElectric(sessionId);
+    }
+
+    @GetMapping(value = "/chart/out/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getOut(@PathVariable String sessionId) {
+        return service.getOut(sessionId);
+    }
+
+    @GetMapping(value = "/chart/in/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getIn(@PathVariable String sessionId) {
+        return service.getIn(sessionId);
+    }
+
+    @GetMapping(value = "/chart/inoutnet/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getInOutNet(@PathVariable String sessionId) {
+        return service.getInOutNet(sessionId);
+    }
+
+    @GetMapping(value = "/chart/netbudget/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getNetBudget(@PathVariable String sessionId) {
+        return service.getNetBudget(sessionId);
+    }
+
+
+    @GetMapping(value = "/chart/ml/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getMl(@PathVariable String sessionId) {
+        return service.getMl(sessionId);
+    }
+
+    @GetMapping(value = "/chart/usaa/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getUsaa(@PathVariable String sessionId) {
+        return service.getUsaa(sessionId);
+    }
+
+    @GetMapping(value = "/chart/credit/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getCredit(@PathVariable String sessionId) {
+        return service.getCredit(sessionId);
+    }
+
+    @GetMapping(value = "/chart/budget/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getBudget(@PathVariable String sessionId) {
+        return service.getBudget(sessionId);
+    }
+
+    @GetMapping(value = "/chart/capone/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getCapone(@PathVariable String sessionId) {
+        return service.getCapone(sessionId);
+    }
+
+    @GetMapping(value = "/chart/amazon/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getAmazon(@PathVariable String sessionId) {
+        return service.getAmazon(sessionId);
+    }
+
+    @GetMapping(value = "/chart/aaa/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getAaa(@PathVariable String sessionId) {
+        return service.getAaa(sessionId);
+    }
+
+
+
+    @GetMapping(value = "/chart/pos/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getPos(@PathVariable String sessionId) {
+        return service.getPOS(sessionId);
+    }
+
+    @GetMapping(value = "/chart/atm/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getAtm(@PathVariable String sessionId) {
+        return service.getATM(sessionId);
+    }
+
+    @GetMapping(value = "/chart/dog/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getDog(@PathVariable String sessionId) {
+        return service.getDog(sessionId);
+    }
+
+
+    @GetMapping(value = "/chart/utilities/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getUtilities(@PathVariable String sessionId) {
+        return service.getUtilities(sessionId);
+    }
+
     @GetMapping(value = "/chart/stype/atm/{sessionId}", produces = "application/json")
     public @ResponseBody
     DatasourceDTO getChartStypeAtm(@PathVariable String sessionId) {

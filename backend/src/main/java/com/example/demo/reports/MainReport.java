@@ -29,6 +29,9 @@ public class MainReport implements ReportI {
 
     public void go(FileWriter w, SessionDTO session) throws Exception
     {
+        bdata = new MRBeanl();
+        cdata = new MRBeanl();
+
         LData ld = new LData(repos.getLedgerRepository());
         List<Ledger> data  = ld.filterByDate(session,null,null);
         ld.filterBundle(data);
