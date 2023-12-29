@@ -3,6 +3,7 @@ package com.example.demo.utils.uidata;
 import com.example.demo.domain.Ledger;
 import com.example.demo.dto.ui.CreditRowDTO;
 import com.example.demo.utils.Utils;
+import com.example.demo.utils.idate.Idate;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class CreditUI extends Base {
     }
     public void apply(Idate l, Object obj)
     {
-        Ledger ldata = (Ledger) l.getData();
+        Ledger ldata = (Ledger) l.getData().getObj();
         CreditRowDTO data = (CreditRowDTO) obj;
 
         int lbl = ldata.getLabel().getId();
@@ -38,6 +39,7 @@ public class CreditUI extends Base {
                     break;
                 case 10178:
                 case 11448:
+                case 12933:
                     data.setAaa(Utils.convertDouble(data.getAaa() + ldata.getAmount()));
                     break;
                 case 10019:

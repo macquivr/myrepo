@@ -1,15 +1,17 @@
 package com.example.demo.chart;
 
 import com.example.demo.domain.Ledger;
-
+import com.example.demo.repository.LedgerRepository;
+import com.example.demo.utils.idata.LedgerIData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class inChart extends baseChart implements chartData {
+public class inChart extends baseChart implements chartData<Ledger> {
 
-    public inChart()
+    public inChart(String sessionId, LedgerRepository l)
     {
         setDontFlip();
+        this.bidata = new LedgerIData(l,null,true,sessionId,false);
     }
 
     @Override

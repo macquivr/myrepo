@@ -1,6 +1,7 @@
 package com.example.demo.bean;
 
 public class Chart {
+    private String exportEnabled = null;
     private String caption = null;
     private String xAxisName = null;
     private String yAxisName = null;
@@ -9,6 +10,8 @@ public class Chart {
     private String yAxisMinValue = null;
 
     private String yAxisMaxValue = null;
+
+    public void setExportEnabled(String e) { exportEnabled = e; }
 
     public void setCaption(String c) { caption = c; }
     public void setXAxisName(String x) { xAxisName = x; }
@@ -20,6 +23,7 @@ public class Chart {
 
     public void setTheme(String t) { theme = t; }
 
+    public String getExportEnabled()  { return "1"; }
     public String getCaption() { return caption; }
     public String getXAxisName() { return xAxisName; }
     public String getYAxisName() { return yAxisName; }

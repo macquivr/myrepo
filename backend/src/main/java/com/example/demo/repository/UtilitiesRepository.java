@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface UtilitiesRepository extends JpaRepository<Utilities, Integer> {
     List<Utilities> findAllByDateBetween(LocalDate start, LocalDate stop);
+    List<Utilities> findAllByDateBetweenOrderByDateAsc(LocalDate start, LocalDate stop);
 }

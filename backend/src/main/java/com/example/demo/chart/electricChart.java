@@ -3,14 +3,23 @@ package com.example.demo.chart;
 import com.example.demo.domain.Checks;
 import com.example.demo.domain.Label;
 import com.example.demo.domain.Ledger;
+import com.example.demo.domain.Utilities;
+import com.example.demo.repository.UtilitiesRepository;
+import com.example.demo.utils.idata.ElecIData;
+import com.example.demo.utils.idata.UtilitiesIData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class electricChart extends baseChart implements chartData {
+public class electricChart extends baseChart implements chartData<Utilities> {
 
+    public electricChart(String sessionId, UtilitiesRepository u) {
+        this.bidata = new ElecIData(sessionId, u);
+    }
     @Override
-    public List<Ledger> getChartData(List<Ledger> base) {
+    public List<Utilities> getChartData(List<Utilities> base) {
+        return base;
+        /*
         List<Ledger> ret = new ArrayList<Ledger>();
 
         for (Ledger l : base) {
@@ -25,5 +34,6 @@ public class electricChart extends baseChart implements chartData {
                 ret.add(l);
         }
         return ret;
+         */
     }
 }

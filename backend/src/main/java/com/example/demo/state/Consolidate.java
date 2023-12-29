@@ -5,5 +5,22 @@ public enum Consolidate {
     MONTHLY,
     QUARTERLY,
     HALF,
-    YEARLY
+    YEARLY,
+    JANUARY,
+    FEBRUARY,
+    MARCH,
+    APRIL,
+    MAY,
+    JUNE,
+    JULY,
+    AUGUST,
+    SEPTEMBER,
+    OCTOBER,
+    NOVEMBER,
+    DECEMBER,
+    Q1,
+    Q2,
+    Q3,
+    Q4
+
 }

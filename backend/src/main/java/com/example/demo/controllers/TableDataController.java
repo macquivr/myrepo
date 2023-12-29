@@ -30,6 +30,54 @@ public class TableDataController {
         return service.doInOutNet(sessionId);
     }
 
+    @GetMapping(value = "/bvs/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    BVNTableDTO getBvs(@PathVariable String sessionId)
+    {
+        if ((sessionId != null) && sessionId.equals("null")) {
+            logger.error("Bad session....");
+            return null; // new InOutNetTableDTO(new Vector<InOutNetRowDTO>());
+        }
+
+        return service.doBvs(sessionId);
+    }
+
+    @GetMapping(value = "/bvalues/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    BVNTableDTO getBvalues(@PathVariable String sessionId)
+    {
+        if ((sessionId != null) && sessionId.equals("null")) {
+            logger.error("Bad session....");
+            return null; // new InOutNetTableDTO(new Vector<InOutNetRowDTO>());
+        }
+
+        return service.doBvalues(sessionId);
+    }
+
+    @GetMapping(value = "/bnet/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    BVNTableDTO getBnet(@PathVariable String sessionId)
+    {
+        if ((sessionId != null) && sessionId.equals("null")) {
+            logger.error("Bad session....");
+            return null;
+        }
+
+        return service.doBnet(sessionId);
+    }
+
+    @GetMapping(value = "/bsnet/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    BVNTableDTO getBsnet(@PathVariable String sessionId)
+    {
+        if ((sessionId != null) && sessionId.equals("null")) {
+            logger.error("Bad session....");
+            return null;
+        }
+
+        return service.doBsnet(sessionId);
+    }
+
     @GetMapping(value = "/balance/{sessionId}", produces = "application/json")
     public @ResponseBody
     BalanceTableDTO getBalances(@PathVariable String sessionId)
@@ -40,6 +88,18 @@ public class TableDataController {
         }
 
         return service.doBalance(sessionId);
+    }
+
+    @GetMapping(value = "/cstatus/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    CStatusTableDTO getCstatus(@PathVariable String sessionId)
+    {
+        if ((sessionId != null) && sessionId.equals("null")) {
+            logger.error("Bad session....");
+            return new CStatusTableDTO();
+        }
+
+        return service.doCStatus(sessionId);
     }
 
     @GetMapping(value = "/stype/{sessionId}", produces = "application/json")

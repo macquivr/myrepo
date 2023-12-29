@@ -42,9 +42,8 @@ public class PdfData extends PLines {
 		map.put("9792","Mortg");
 		map.put("2859","Slush");
 		map.put("8528","Annual");
-		map.put("0756","MainSave");
-		map.put("8117","EmmaSave");
-		map.put("3031","EmmaOther");
+		map.put("0756","Mainsave");
+		map.put("8117","Emmasave");
 	}
 	public String getLabel() { return "CSB"; }
 	private void populate()
@@ -206,18 +205,22 @@ public class PdfData extends PLines {
 			label = label.substring(1);
 		}
 
-		if (label.contains("Internet Transfer") && !label.contains("800743031"))
+		if (label.contains("Internet Transfer") && !label.contains("3031"))
 			label = changeLabelToTransfer(label);
 
 		nd.setLabel(label);
 		String amts = rest.substring(idx+1);
+
 		idx = amts.indexOf(' ');
 		if (idx == -1) {
 			throw new BadDataException("Could not parse amount for line " + line);
 		}
 		String amt = amts.substring(0,idx).replaceAll(",", "");
-		String bals = amts.substring(idx+1).replaceAll(",", "").substring(1);
-		
+		String bals = amts.substring(idx+1).replaceAll(",", ""); // .substring(1);
+
+		if (!bals.startsWith("-"))
+			bals = bals.substring(1);
+
 		double newb = 0;
 		try {
 			newb = Utils.dval(bals);
@@ -234,11 +237,12 @@ public class PdfData extends PLines {
 		}
 		
 		double oldb = prev.getBalance();
-		if (newb > oldb) 
+		if (newb > oldb) {
 			nd.setCredit(amta);
-		else
+		} else {
 			nd.setDebit(amta);
-		
+		}
+
 		idata.getData().add(nd);
 		return nd;
 	}

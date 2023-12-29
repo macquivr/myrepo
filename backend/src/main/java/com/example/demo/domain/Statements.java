@@ -25,7 +25,12 @@ public class Statements {
 
     public int getId() { return id; }
 
-    public String getName() { return name; }
+    public String getName() {
+        //if (this.name == null) {
+        //    this.name = "TEMP";
+        //}
+        return name;
+    }
     public void setName(String n) { name = n; }
 
     public LocalDate getCreated() { return created; }

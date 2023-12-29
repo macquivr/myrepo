@@ -1,11 +1,11 @@
 package com.example.demo.utils.uidata;
 
-import com.example.demo.controllers.TableDataController;
 import com.example.demo.domain.Checks;
 import com.example.demo.domain.Label;
 import com.example.demo.domain.Ledger;
 import com.example.demo.dto.ui.AnnualRowDTO;
 import com.example.demo.utils.Utils;
+import com.example.demo.utils.idate.Idate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +22,13 @@ public class AnnualUI extends Base {
     }
 
     public void apply(Idate ld, Object obj) {
-        Ledger l = (Ledger) ld.getData();
+        Ledger l = (Ledger) ld.getData().getObj();
         AnnualRowDTO data = (AnnualRowDTO) obj;
         Label lbl = l.getLabel();
         Checks c = l.getChecks();
+        if (lbl == null) {
+            return;
+        }
         if (c != null) {
              int id = c.getPayee().getId();
              switch(id) {
@@ -73,6 +76,7 @@ public class AnnualUI extends Base {
             int id = lbl.getId();
             switch (id) {
                 case 12551:
+                case 12788:
                     data.setMatax(Utils.convertDouble(data.getMatax() + l.getAmount()));
                     break;
                 case 12696:
@@ -96,6 +100,7 @@ public class AnnualUI extends Base {
                 case 12276:
                     data.setTaxprep(Utils.convertDouble(data.getTaxprep() + l.getAmount()));
                     break;
+                case 12058:
                 case 12508:
                     data.setCarins(Utils.convertDouble(data.getCarins() + l.getAmount()));
                     break;
@@ -110,6 +115,9 @@ public class AnnualUI extends Base {
                     break;
                 case 10027:
                     data.setAmazonprime(Utils.convertDouble(data.getAmazonprime() + l.getAmount()));
+                    break;
+                case 11297:
+                    data.setNorton(Utils.convertDouble(data.getNorton() + l.getAmount()));
                     break;
             }
         }

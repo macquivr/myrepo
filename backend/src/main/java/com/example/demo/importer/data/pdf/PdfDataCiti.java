@@ -89,6 +89,15 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 	
 	protected void doTransactions() throws BadDataException
 	{
+		boolean autopay = false;
+		String mdstr = null;
+
+		Iterator<String> piter = lines.iterator();
+		while (piter.hasNext()) {
+			String s = piter.next();
+			log.info("CITIL: " + s);
+		}
+
 		Iterator<String> iter = lines.iterator();
 		while (iter.hasNext()) {
 			String s = iter.next();
@@ -100,6 +109,19 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 		}
 		while (iter.hasNext()) {
 			String s = iter.next();
+
+			if (autopay) {
+				if (s.equals("AUTO-PMT"))
+					continue;
+
+				String dstr = makeDstr(mdstr);
+				String rest = "AUTO-PMT " + s;
+
+				log.info("PSTR: " + dstr + " REST: " + rest);
+				addNData(dstr, rest);
+				autopay = false;
+				continue;
+			}
 			if (s.startsWith("Days in billing cycle"))
 				break;
 		
@@ -112,26 +134,39 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 			if (!DUtil.isValidMMDD(str))
 				continue;
 	
+			if (rest.contains("AUTOPAY")) {
+				mdstr = str;
+				autopay = true;
+				continue;
+			}
 			idx = rest.indexOf(' ');
 			rest = rest.substring(idx+1);
 			
-			int didx = str.indexOf('/');
-			String mstr = str.substring(0,didx);
-			String value = map.get(mstr);
-			String dstr = str + "/" + value;
+			String dstr = makeDstr(str);
 
 			setUtils(rest);
+			log.info("DSTR: " + dstr + " REST: " + rest);
 			addNData(dstr, rest);
 		}
 		
 	}
 
+	private String makeDstr(String str) {
+		int didx = str.indexOf('/');
+		String mstr = str.substring(0,didx);
+		String value = map.get(mstr);
+
+		return  str + "/" + value;
+	}
 	private void setUtils(String rest)
 	{
 		int idx = rest.indexOf('$');
 		String amount = rest.substring(idx+1);
 		if (rest.contains("NATIONAL GRID")) {
-			electric = Double.valueOf(amount);
+			electric += Double.valueOf(amount);
+		}
+		if (rest.contains("SOLAR")) {
+			electric += Double.valueOf(amount);
 		}
 		if (rest.contains("COMCAST")) {
 			cable = Double.valueOf(amount);

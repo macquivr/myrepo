@@ -46,9 +46,11 @@ public abstract class CSBase extends IBase {
 		}
 		
 		//data.Print();
-		updateLabels();
-		
-		boolean b = doChecks(ret);
+		boolean b = updateLabels(ret);
+		if (!b)
+			return b;
+
+		b = doChecks(ret);
 		if (!b)
 			return b;
 
@@ -60,32 +62,34 @@ public abstract class CSBase extends IBase {
 	
 	
 	
-	private void updateLabels()
-	{
+	private boolean updateLabels(List<String> ret) {
 		List<NData> l = data.getData();
 		for (NData n : l) {
 			String label = n.getLabel();
 			Csbtype ty = n.getType();
-			
-			String nstr = label.substring(ty.getName().length()+1).trim();
+
+			String nstr = label.substring(ty.getName().length() + 1).trim();
 			if (nstr.isEmpty()) {
-				if (TypeHelper.getObj(getUuid(),repos).getEids().contains(ty.getId()))
+				if (TypeHelper.getObj(getUuid(), repos).getEids().contains(ty.getId()))
 					n.setLabel(ty.getName());
-				else 
+				else
 					log.error("Bad Type? " + label);
 			} else {
 				if (TypeHelper.getObj(getUuid(), repos).getCids().contains(ty.getId())) {
 					try {
 						n.setCheck(Integer.valueOf(nstr));
 						n.setLabel(ty.getName());
+						log.info("YYY Setting label " + n.getLabel());
 					} catch (Exception ex) {
+						ret.add("Bad Check " + n.getLabel());
 						log.error("Bad check " + n.getLabel());
-						break;
+						return false;
 					}
 				} else
 					n.setLabel(nstr);
-			} 
+			}
 		}
+		return true;
 	}
 	
 	private List<String> validateTypes()

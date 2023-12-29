@@ -1,5 +1,8 @@
 package com.example.demo.utils.mydate;
 
+import com.example.demo.state.Consolidate;
+import com.example.demo.utils.ConsolidateUtils;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -29,14 +32,21 @@ public class DUtil {
         return LocalDate.parse(dstr,getDFmt(fmt));
     }
 
-    public static String getDate(LocalDate date, String fmt) {
-        DateTimeFormatter dfmt = getDFmt(fmt);
-
-        return dfmt.format(date);
+    public static String getDate(Consolidate type, LocalDate date, String fmt) {
+        String str = ConsolidateUtils.DStr(type, date);
+        if (str == null) {
+            DateTimeFormatter dfmt = getDFmt(fmt);
+            return dfmt.format(date);
+        }
+        return str;
     }
 
     public static boolean isValidMMDD(String dstr) {
         return isValidDate(dstr, DUtil.MMDD);
+    }
+
+    public static boolean isValidMMDDYYYY(String dstr) {
+        return isValidDate(dstr, DUtil.MMDDYYYY);
     }
 
     public static String getDefaultYear()

@@ -1,9 +1,12 @@
 package com.example.demo.importer.data.pdf;
 
 
+import com.example.demo.utils.Utils;
 import com.example.demo.utils.mydate.DUtil;
-import java.util.Iterator;
 
+import java.io.BufferedReader;
+import java.util.Iterator;
+import java.io.FileReader;
 import com.example.demo.importer.IBase;
 import com.example.demo.domain.Statement;
 import com.example.demo.importer.BadDataException;
@@ -25,42 +28,66 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 	{
 		Statement stmt = idata.getStmt();
 		for (String s : lines) {
-			if (s.startsWith("JOHN A TODD")) {
-				getYear(s);
-			}
-			if (s.startsWith("Previous Balance")) {
+			if (s.startsWith("Previous balance ")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1);
 				stmt.setSbalance(Double.valueOf(str).doubleValue());
 			}
-			if (s.startsWith("New Balance Total")) {
+			if (s.startsWith("New balance ")) {
 				int idx = s.indexOf('$');
-				String str = s.substring(idx+1);
+				String str = null;
+				if (idx == -1) {
+					str = s.substring(14);
+				} else {
+					str = s.substring(idx+1);
+				}
 				stmt.setFbalance(Double.valueOf(str).doubleValue());
 			}
-			if (s.startsWith("Payments and Other Credits")) {
-				int idx = s.indexOf('$');
+			if ((s.startsWith("Payments ")) || (s.startsWith("Other credit"))) {
+				int idx = s.indexOf('-');
 				if (idx != -1) {
-					String str = s.substring(idx+1);
-					stmt.setIna(Double.valueOf(str).doubleValue());
+					String str = s.substring(idx + 1);
+					if (stmt.getIna() != null) {
+						double d = stmt.getIna();
+						double ds = Double.valueOf(str).doubleValue();
+						stmt.setIna(Utils.convertDouble(d + ds));
+					} else {
+						stmt.setIna(Double.valueOf(str).doubleValue());
+					}
 				}
 			}
-			if (s.startsWith("Purchases and Adjustments")) {
-				int idx = s.indexOf('$');
+			if (s.startsWith("Purchases ")) {
+				int idx = s.indexOf('+');
 				if (idx != -1) {
 					String str = s.substring(idx+1);
 					stmt.setOuta(Double.valueOf(str).doubleValue());
 				}
 			}
-			if (s.startsWith("Fees Charged")) {
-				int idx = s.indexOf('$');
+			if (s.startsWith("Fees charged")) {
+				int idx = s.indexOf('+');
 				String str = s.substring(idx+1);
 				stmt.setFee(Double.valueOf(str).doubleValue());
 			}
 		}
-		
+		if (stmt.getSbalance() == null) {
+			throw new BadDataException("Could not find aaa start...");
+			/*
+			double sbal = 0;
+			try {
+				String dir = System.getenv("MYFI_DATA_DIR");
+				String sbalpath = "/aaaS.txt";
+				FileReader f = new FileReader(dir + sbalpath);
+				BufferedReader bf = new BufferedReader(f);
+				String r = bf.readLine();
+				sbal = Double.valueOf(r);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+			stmt.setSbalance(sbal);
+			*/
+		}
 	}
-	
+
 	protected void doTransactions() throws BadDataException
 	{
 		boolean credit = true;
@@ -68,7 +95,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 		Iterator<String> iter = lines.iterator();
 		while (iter.hasNext()) {
 			String s = iter.next();
-			if (s.equals("Payments and Other Credits"))
+			if (s.equals("TRANS DATE TRANSACTION DESCRIPTION/LOCATION AMOUNT"))
 				break;
 		}
 		if (!iter.hasNext()) {
@@ -80,23 +107,38 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 				credit = false;
 			}
 
-			if (s.startsWith("TOTAL PURCHASES")) 
+			if (s.startsWith("Interest charged"))
 				break;
+
 			int idx = s.indexOf(' ');
 			if (idx == -1)
 				continue;
+
 			String str = s.substring(0,idx).trim();
 			String rest = s.substring(idx+1).trim();
-			if (!DUtil.isValidMMDD(str))
+			if (!DUtil.isValidMMDDYYYY(str)) {
+				System.out.println("Bad Date...");
 				continue;
-
+			}
+			boolean err = false;
+			try {
+				double d = Double.valueOf(rest);
+			} catch (NumberFormatException ex) {
+				err = true;
+			}
+			if (!err) {
+				rest = "BJS FUEL #9209 HUDSON MA " + rest;
+			}
+			/*
 			int didx = str.indexOf('/');
 			String mstr = str.substring(0,didx);
 			String value = map.get(mstr);
 			String dstr = str + "/" + value;
 
-			rest = transLabel(rest,credit);
-			addNData(dstr, rest);
+			//rest = transLabel(rest,credit);
+            */
+
+			addNData(str, rest);
 		}
 	}
 	
@@ -115,7 +157,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 
 
 		String tmp = next.substring(0,idx);
-		
+
 		String lbl = getLabel(tmp);
 	
 		return lbl + " " + amt;

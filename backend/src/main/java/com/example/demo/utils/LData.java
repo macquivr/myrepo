@@ -76,6 +76,16 @@ public class LData {
         return new Vector<Ledger>();
     }
 
+    public void filterLow(List<Ledger> df) {
+        List<Ledger> death = new Vector<Ledger>();
+        for (Ledger l : df) {
+            int lid = l.getLtype().getId();
+            if ((lid > 14) || (lid == 4))
+                death.add(l);
+        }
+        df.removeAll(death);
+    }
+
     public void filterBundle(List<Ledger> df) {
         List<Ledger> death = new Vector<Ledger>();
         for (Ledger l : df) {
@@ -98,10 +108,12 @@ public class LData {
         if ((stype == null) && (ltype == null)) {
            return repository.findAllByTransdateBetweenOrderByTransdateAsc(start, stop);
         }
-        if ((stype != null) && (ltype != null))
-            return repository.findAllByTransdateBetweenAndLtypeAndStypeOrderByTransdateAsc(start,stop,ltype,stype);
-        if (ltype != null)
-            return repository.findAllByTransdateBetweenAndLtypeOrderByTransdateAsc(start,stop, ltype);
+        if ((stype != null) && (ltype != null)) {
+            return repository.findAllByTransdateBetweenAndLtypeAndStypeOrderByTransdateAsc(start, stop, ltype, stype);
+        }
+        if (ltype != null) {
+            return repository.findAllByTransdateBetweenAndLtypeOrderByTransdateAsc(start, stop, ltype);
+        }
 
         return repository.findAllByTransdateBetweenAndStypeOrderByTransdateAsc(start, stop, stype);
     }

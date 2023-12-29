@@ -3,16 +3,20 @@ package com.example.demo.services;
 import com.example.demo.bean.*;
 import com.example.demo.chart.*;
 import com.example.demo.chart.net.*;
+import com.example.demo.chart.bcredit.*;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.repository.LedgerRepository;
 import com.example.demo.repository.StypeRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.dto.ui.DatasourceDTO;
+import com.example.demo.repository.UtilitiesRepository;
 import com.example.demo.state.Consolidate;
+import com.example.demo.utils.ConsolidateUtils;
 import com.example.demo.utils.LData;
+import com.example.demo.utils.idata.LedgerIData;
 import com.example.demo.utils.uidata.ChartUI;
-
+import com.example.demo.utils.idata.baseIData;
 import com.example.demo.state.Sessions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +32,9 @@ public class ChartService {
     private static final Logger logger=LoggerFactory.getLogger(ChartService.class);
 
     @Autowired
+    private UtilitiesRepository urepository;
+
+    @Autowired
     private LedgerRepository repository;
 
     @Autowired
@@ -36,28 +43,77 @@ public class ChartService {
     @Autowired
     private CategoryRepository crepository;
 
-    public DatasourceDTO getChartStypeAtm(String sessionId) { return getChartStype(sessionId, "ATM"); }
+
+    public DatasourceDTO getChartStypeAtm(String sessionId) {
+        return getSpecificStype(sessionId, "ATM");
+    }
 
     public DatasourceDTO getChartStypeBills(String sessionId) {
-        return getChartStype(sessionId, "Bills");
+        return getSpecificStype(sessionId, "Bills");
     }
 
     public DatasourceDTO getChartStypeMisc(String sessionId) {
-        return getChartStype(sessionId, "Misc");
+        return getSpecificStype(sessionId, "Misc");
     }
 
     public DatasourceDTO getChartStypePos(String sessionId) {
-        return getChartStype(sessionId, "POS");
+        return getSpecificStype(sessionId, "POS");
     }
 
     public DatasourceDTO getChartStypeAnnual(String sessionId) {
-        return getChartStype(sessionId, "Annual");
+        return getSpecificStype(sessionId, "Annual");
     }
 
     public DatasourceDTO getChartStypeCredit(String sessionId) {
-        return getChartStype(sessionId, "Credit");
+        return getSpecificStype(sessionId, "Credit");
     }
 
+     private DatasourceDTO getSpecificStype(String sessionId, String stypeName) {
+         Stype stype = srepository.findByName(stypeName);
+         if (stype == null) {
+             logger.error("NO stype Utils");
+             return new DatasourceDTO();
+         }
+         chartData pos = new stypeChart(stype.getId(), sessionId, repository);
+
+         return doChart(sessionId, "POS", pos,true,null);
+     }
+
+    private String adjustTrendLine(String sessionId, int v) {
+        int value = Integer.valueOf(v);
+        if (sessionId == null) {
+            logger.error("No Session.");
+            return null;
+        }
+        if (sessionId.isEmpty()) {
+            logger.error("Empty Session.");
+            return null;
+        }
+
+        SessionDTO filter = Sessions.getObj().getSession(sessionId);
+        if (filter == null) {
+            logger.error("COULDN'T find session.");
+            return null;
+        }
+
+        if (filter.getConsolidate() == Consolidate.NONE) {
+            logger.error("No consolidate.");
+            return null;
+        }
+        if ((filter.getConsolidate() == Consolidate.MONTHLY) || (ConsolidateUtils.isSpecificMonth(filter.getConsolidate()))){
+            String.valueOf(v);
+        }
+        if ((filter.getConsolidate() == Consolidate.QUARTERLY) || (ConsolidateUtils.isSpecificQuarter(filter.getConsolidate()))) {
+            value = value * 3;
+        }
+        if (filter.getConsolidate() == Consolidate.HALF) {
+            value = value * 6;
+        }
+        if (filter.getConsolidate() == Consolidate.YEARLY) {
+            value = value * 12;
+        }
+        return String.valueOf(value);
+    }
     private List<TrendLine> getTrendLine(String value) {
         List<TrendLine> rl = new ArrayList<TrendLine>();
         TrendLine r = new TrendLine();
@@ -76,114 +132,209 @@ public class ChartService {
     }
 
     public DatasourceDTO getDog(String sessionId) {
-        chartData dog = new dogChart();
-
-        List<TrendLine> rl = getTrendLine("240");
+        chartData dog = new dogChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,240);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Dog", dog,true,rl);
     }
     public DatasourceDTO getBudget(String sessionId) {
-        chartData budget = new regBudgetChart();
-
-        List<TrendLine> rl = getTrendLine("4840");
+        chartData budget = new regBudgetChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,4840);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Budget", budget,true,rl);
     }
 
     public DatasourceDTO getNetBudget(String sessionId) {
-        chartData budget = new netBudgetChart();
-
-        List<TrendLine> rl = getTrendLine("0");
+        chartData budget = new netBudgetChart(sessionId,repository);
+        String trend = adjustTrendLine(sessionId,0);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "NetBudget", budget,true,rl);
     }
 
     public DatasourceDTO getATM(String sessionId) {
-        chartData atm = new stypeChart(4);
-
-        List<TrendLine> rl = getTrendLine("300");
+        chartData atm = new stypeChart(4,sessionId, repository);
+        String trend = adjustTrendLine(sessionId,300);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "ATM", atm,true,rl);
     }
 
     public DatasourceDTO getPOS(String sessionId) {
-        chartData pos = new stypeChart(3);
-
-        List<TrendLine> rl = getTrendLine("1000");
+        chartData pos = new stypeChart(3, sessionId, repository);
+        String trend = adjustTrendLine(sessionId,1000);
+        
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "POS", pos,true,rl);
     }
 
+    public DatasourceDTO getCell(String sessionId) {
+        chartData cell = new cellChart(sessionId, urepository);
+        String trend = adjustTrendLine(sessionId,100);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Cell", cell,false,rl);
+    }
+    public DatasourceDTO getCable(String sessionId) {
+        chartData cable = new cableChart(sessionId, urepository);
+        String trend = adjustTrendLine(sessionId,200);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Cable", cable,false,rl);
+    }
     public DatasourceDTO getElectric(String sessionId) {
-        chartData electric = new electricChart();
-
-        List<TrendLine> rl = getTrendLine("200");
+        chartData electric = new electricChart(sessionId, urepository);
+        String trend = adjustTrendLine(sessionId,200);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Electric", electric,false,rl);
     }
 
     public DatasourceDTO getOut(String sessionId) {
-        chartData out = new outChart();
-
-        List<TrendLine> rl = getTrendLine("7965");
+        chartData out = new outChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,7965);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Out", out,true,rl );
     }
 
     public DatasourceDTO getIn(String sessionId) {
-        chartData inc = new inChart();
-
-        List<TrendLine> rl = getTrendLine("8100");
+        chartData inc = new inChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,8100);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "In", inc,true,rl );
     }
 
     public DatasourceDTO getInOutNet(String sessionId) {
-        chartData inc = new inOutNetChart();
-
-        List<TrendLine> rl = getTrendLine("0");
+        chartData inc = new inOutNetChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,0);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "InOutNet", inc,true,rl );
     }
 
     public DatasourceDTO getUtilities(String sessionId) {
-        chartData u = new utilitiesChart();
-
-        List<TrendLine> rl = getTrendLine("500");
-        return doChart(sessionId, "Utilities", u,false,rl );
+        chartData u = new utilitiesChart(sessionId, urepository);
+        String trend = adjustTrendLine(sessionId,500);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Utilities", u,false,rl);
     }
 
     public DatasourceDTO getMl(String sessionId) {
-        chartData u = new mlChart();
-
-        List<TrendLine> rl = getTrendLine("1000");
+        chartData u = new mlChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,1000);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "ML", u,false,rl );
     }
 
-    public DatasourceDTO getUsaa(String sessionId) {
-        chartData u = new usaaChart();
+    public DatasourceDTO getBmedical(String sessionId) {
+        chartData u = new bmedicalChart(sessionId, repository);
+        //String trend = adjustTrendLine(sessionId,500);
+        //List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Medical", u,false,null );
+    }
+    public DatasourceDTO getBmortgage(String sessionId) {
+        chartData u = new bmortgageChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,3200);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Mortgage", u,false,rl );
+    }
+    public DatasourceDTO getButilities(String sessionId) {
+        chartData u = new butilitiesChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,500);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Utilities", u,false,rl);
+    }
+    public DatasourceDTO getBusaa(String sessionId) {
+        chartData u = new busaaChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,1000);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Usaa", u,false,rl );
+    }
 
-        List<TrendLine> rl = getTrendLine("1000");
+    public DatasourceDTO getBaaa(String sessionId) {
+        chartData u = new baaaChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,350);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Aaa", u,false,rl );
+    }
+
+    public DatasourceDTO getBsears(String sessionId) {
+        chartData u = new bsearsChart(sessionId, repository);
+        //String trend = adjustTrendLine(sessionId,350);
+        //List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Sears", u,false,null );
+    }
+
+    public DatasourceDTO getBcapone(String sessionId) {
+        chartData u = new bcaponeChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,1000);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "CapOne", u,false,rl );
+    }
+
+    public DatasourceDTO getBamazon(String sessionId) {
+        chartData u = new bamazonChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,400);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Amazon", u,false,rl );
+    }
+
+    public DatasourceDTO getBall(String sessionId) {
+        chartData u = new ballChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,2800);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "All", u,false,rl );
+    }
+
+
+    public DatasourceDTO getUsaa(String sessionId) {
+        chartData u = new usaaChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,1000);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Usaa", u,false,rl );
     }
 
     public DatasourceDTO getCredit(String sessionId) {
-        chartData u = new creditChart();
-
-        List<TrendLine> rl = getTrendLine("2800");
+        chartData u = new creditChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,2800);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Credit", u,false,rl );
     }
 
-    public DatasourceDTO getCapone(String sessionId) {
-        chartData u = new caponeChart();
+    public DatasourceDTO getMisc(String sessionId) {
+        chartData u = new miscChart(sessionId, repository);
+        return doChart(sessionId, "Misc", u,false,null );
+    }
 
-        List<TrendLine> rl = getTrendLine("1000");
+    public DatasourceDTO getCapone(String sessionId) {
+        chartData u = new caponeChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,1000);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "CapOne", u,false,rl );
     }
 
-    public DatasourceDTO getAmazon(String sessionId) {
-        chartData u = new amazonChart();
+    public DatasourceDTO getCaponeFiltered(String sessionId) {
+        chartData u = new caponeFilteredChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,1000);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "CapOneFiltered", u,false,rl );
+    }
+    public DatasourceDTO getCaponeOff(String sessionId) {
+        chartData u = new caponeOffChart(sessionId, repository);
+        return doChart(sessionId, "CapOneFiltered", u,false,null );
+    }
 
-        List<TrendLine> rl = getTrendLine("400");
+    public DatasourceDTO getAmazon(String sessionId) {
+        chartData u = new amazonChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,400);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Amazon", u,false,rl );
     }
 
     public DatasourceDTO getAaa(String sessionId) {
-        chartData u = new aaaChart();
-
-        List<TrendLine> rl = getTrendLine("350");
+        chartData u = new aaaChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,350);
+        List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Aaa", u,false,rl );
+    }
+
+    public DatasourceDTO getAaaOff(String sessionId) {
+        chartData u = new aaaOffChart(sessionId, repository);
+        return doChart(sessionId, "Aaa", u,false,null );
     }
 
     public DatasourceDTO doChart(String sessionId, String label, chartData chartI, boolean bundle, List<TrendLine> r) {
@@ -212,17 +363,15 @@ public class ChartService {
         double min = 0;
         double max = 0;
 
-        LData ld = new LData(repository);
-        List<Ledger> d = ld.filterByDate(filter, null, null);
-        if (bundle) {
-            ld.filterBundle(d);
-        }
-        List<Ledger> data = chartI.getChartData(d);
-        StartStop dates = ld.getDates();
+        baseIData bd = chartI.getIData();
+        bd.initialize(chartI);
+
+        List data = bd.getData();
+        StartStop dates = bd.getDates();
 
         List<Lvd> ldata = new Vector<Lvd>();
         ChartUI bobj = new ChartUI(chartI);
-        bobj.go(filter, dates, data, ldata);
+        bobj.go(filter, dates, bd, ldata);
 
         boolean init = false;
         for (Lvd l : ldata) {
@@ -281,63 +430,12 @@ public class ChartService {
         c.setYAxisMaxValue(maxValueStr);
 
         ret.setChart(c);
-        if (ldata.size() > 0)
+        if (!ldata.isEmpty())
             ldata.remove(ldata.size()-1);
         ret.setData(ldata);
 
         if (r != null)
             ret.setTrendlines(r);
-
-        return ret;
-    }
-
-    private DatasourceDTO getChartStype(String sessionId, String stypeName)
-    {
-        if (sessionId == null) {
-            logger.error("No Session.");
-            return new DatasourceDTO();
-        }
-        if (sessionId.isEmpty()) {
-            logger.error("Empty Session.");
-            return new DatasourceDTO();
-        }
-
-        SessionDTO filter = Sessions.getObj().getSession(sessionId);
-        if (filter == null) {
-            logger.error("COULDN'T find session.");
-            return new DatasourceDTO();
-        }
-
-        if (filter.getConsolidate() == Consolidate.NONE) {
-            logger.info("No consolidate set.");
-            return new DatasourceDTO();
-        }
-
-        Stype stype = srepository.findByName(stypeName);
-        if (stype == null) {
-            logger.error("NO stype " + stypeName);
-            return new DatasourceDTO();
-        }
-
-        LData ld = new LData(repository);
-        List<Ledger> data = ld.filterByDate(filter, stype, null);
-        StartStop dates = ld.getDates();
-
-        List<Lvd> ldata = new Vector<Lvd>();
-        ChartUI bobj = new ChartUI(null);
-        bobj.go(filter, dates, data, ldata);
-
-        DatasourceDTO ret = new DatasourceDTO();
-        Chart c = new Chart();
-
-        c.setTheme("fusion");
-        c.setCaption(stypeName);
-        c.setXAxisName("Date");
-        c.setYAxisName("Amount");
-
-        ret.setChart(c);
-        ldata.remove(ldata.size()-1);
-        ret.setData(ldata);
 
         return ret;
     }
@@ -389,8 +487,10 @@ public class ChartService {
         }
 
         List<Lvd> ldata = new Vector<Lvd>();
+
+        LedgerIData lidata = new LedgerIData(data);
         ChartUI bobj = new ChartUI(null);
-        bobj.go(filter, dates, data, ldata);
+        bobj.go(filter, dates, lidata, ldata);
 
         DatasourceDTO ret = new DatasourceDTO();
         Chart c = new Chart();

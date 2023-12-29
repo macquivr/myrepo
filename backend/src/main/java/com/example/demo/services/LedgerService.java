@@ -60,23 +60,20 @@ public class LedgerService {
         List<Ledger> df = null;
         int ltype = filter.getLtype();
         int stype = filter.getStype();
+
         Ltype ltypeo = null;
         if (ltype > 0) {
             Optional<Ltype> o = ltrepository.findById(ltype);
-            if (o.isPresent())
+            if (o.isPresent()) {
                 ltypeo = o.get();
+            }
         }
 
         Stype stypeo = null;
         if (stype > 0) {
-            if (ltypeo != null) {
-                ltypeo = null;
-                stypeo = null;
-            } else {
-                Optional<Stype> o = srepository.findById(stype);
-                if (o.isPresent())
-                    stypeo = o.get();
-            }
+             Optional<Stype> o = srepository.findById(stype);
+             if (o.isPresent())
+                 stypeo = o.get();
         }
 
         LData ld = new LData(repository);

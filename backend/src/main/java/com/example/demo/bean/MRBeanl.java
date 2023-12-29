@@ -7,10 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MRBeanl {
-    private List<MRBean> data = new ArrayList<MRBean>();
-    private MRBeant tabs = new MRBeant();
-    private MRBean total = new MRBean("Total",0,0,0);
+    private final List<MRBean> data;
+    private final MRBeant tabs;
+    private final MRBean total;
 
+    public MRBeanl() {
+        this.data = new ArrayList<>();
+        this.tabs = new MRBeant();
+        this.total = new MRBean("Total",0,0,0);
+
+    }
     public List<MRBean> getData() { return data; }
     public MRBeant getTabs() { return tabs; }
 

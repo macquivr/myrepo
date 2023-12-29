@@ -5,6 +5,8 @@ import com.example.demo.domain.Label;
 import com.example.demo.domain.Ledger;
 import com.example.demo.domain.Checks;
 import com.example.demo.bean.Ion;
+import com.example.demo.utils.idate.Idate;
+
 import java.util.List;
 
 public class InOutNetUI extends Base {
@@ -24,7 +26,7 @@ public class InOutNetUI extends Base {
     }
 
     public void apply(Idate ld, Object obj) {
-        Ledger l = (Ledger) ld.getData();
+        Ledger l = (Ledger) ld.getData().getObj();
         Ion data = (Ion) obj;
         Label lbl = l.getLabel();
         Category c = lbl.getCategory();

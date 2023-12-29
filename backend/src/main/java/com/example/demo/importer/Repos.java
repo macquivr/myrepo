@@ -3,6 +3,11 @@ package com.example.demo.importer;
 import com.example.demo.repository.*;
 
 public class Repos {
+    private BudgetRepository budgetRepository;
+
+    private BudgetsRepository budgetsRepository;
+    private BudgetValuesRepository budgetValuesRepository;
+
     private NamesRepository namesRepository;
     private PayeeRepository payeeRepository;
     private LabelRepository labelRepository;
@@ -20,6 +25,8 @@ public class Repos {
     private ChecksRepository checkRepository;
     private UtilitiesRepository utilRepository;
 
+    private OcRepository ocRepository;
+
     public Repos(PayeeRepository p,
                  LabelRepository l,
                  DupsRepository d,
@@ -35,7 +42,11 @@ public class Repos {
                  LocationRepository loc,
                  LedgerRepository led,
                  ChecksRepository cs,
-                 UtilitiesRepository u
+                 UtilitiesRepository u,
+                 BudgetRepository b,
+                 BudgetsRepository bs,
+                 BudgetValuesRepository bv,
+                 OcRepository oc
                  ) {
         payeeRepository = p;
         labelRepository = l;
@@ -53,8 +64,16 @@ public class Repos {
         ledgerRepository = led;
         checkRepository = cs;
         utilRepository = u;
+        budgetRepository = b;
+        budgetsRepository = bs;
+        budgetValuesRepository = bv;
+        ocRepository = oc;
     }
 
+    public BudgetRepository getBudgetRepository() { return this.budgetRepository; }
+
+    public BudgetsRepository getBudgetsRepository() { return this.budgetsRepository; }
+    public BudgetValuesRepository getBudgetValuesRepository() { return this.budgetValuesRepository; }
     public PayeeRepository getPayeeRepository() { return payeeRepository; }
     public LabelRepository getLabelRepository() { return labelRepository; }
     public DupsRepository getDupsRepository() { return dupsRepository; }
@@ -71,4 +90,6 @@ public class Repos {
     public LedgerRepository getLedgerRepository() { return ledgerRepository; }
     public ChecksRepository getChecksRepository() { return checkRepository; }
     public UtilitiesRepository getUtilitiesRepository() { return utilRepository; }
+
+    public OcRepository getOcRepository() { return ocRepository; }
 }

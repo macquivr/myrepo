@@ -17,16 +17,20 @@ public class LedgerRowDTO {
 
     public LedgerRowDTO() { /* npo */ }
     public LedgerRowDTO(Ledger data) {
-        transdate = data.getTransdate();
-        account = data.getLtype().getName();
-        label = data.getLabel().getNames().getName();
-        location = data.getLabel().getLocation().getName();
-        category = data.getLabel().getCategory().getName();
-        amount = data.getAmount();
-        checkNumber = (data.getChecks() != null) ? data.getChecks().getCheckNum() : 0;
-        checkPayee = (data.getChecks() != null) ? data.getChecks().getPayee().getName() : "None";
-        statement = (data.getStatement() != null) ? data.getStatement().getStatements().getName() : "None";
-        stype = data.getStype().getName();
+        try {
+            transdate = data.getTransdate();
+            account = data.getLtype().getName();
+            label = data.getLabel().getNames().getName();
+            location = data.getLabel().getLocation().getName();
+            category = data.getLabel().getCategory().getName();
+            amount = data.getAmount();
+            checkNumber = (data.getChecks() != null) ? data.getChecks().getCheckNum() : 0;
+            checkPayee = (data.getChecks() != null) ? data.getChecks().getPayee().getName() : "None";
+            statement = (data.getStatement() != null) ? data.getStatement().getStatements().getName() : "None";
+            stype = data.getStype().getName();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void setTransdate(LocalDate d) { transdate = d; }

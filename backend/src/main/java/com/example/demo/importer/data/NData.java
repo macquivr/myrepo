@@ -51,14 +51,6 @@ public class NData {
 	public Label getLbl() { return lbl; }
 	public Stype getStype() { return stype; }
 	public String getNDstr() { return ndstr; }
-	
-	public void p2() { System.out.println("LABEL: " + label + "IN:" + credit + " OUT: " + debit); }
-	public void Print() { 
-		if (stype == null)
-			System.out.println("F STYPE");
-		else
-			System.out.println(date + " " + label + " " + credit + " " + debit + " " + check + " " + stype.getName());
-	}
 
 	public void P() {
 		System.out.println("DATE: " + date);

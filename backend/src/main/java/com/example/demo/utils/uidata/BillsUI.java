@@ -5,6 +5,8 @@ import com.example.demo.domain.Label;
 import com.example.demo.domain.Ledger;
 import com.example.demo.dto.ui.BillsRowDTO;
 import com.example.demo.utils.Utils;
+import com.example.demo.utils.idate.Idate;
+
 import java.util.List;
 
 public class BillsUI extends Base {
@@ -17,7 +19,7 @@ public class BillsUI extends Base {
     }
 
     public void apply(Idate ld, Object obj) {
-        Ledger l = (Ledger) ld.getData();
+        Ledger l = (Ledger) ld.getData().getObj();
         BillsRowDTO data = (BillsRowDTO) obj;
         Label lbl = l.getLabel();
         Checks c = l.getChecks();
@@ -45,6 +47,7 @@ public class BillsUI extends Base {
         } else {
             int id = lbl.getId();
             switch (id) {
+                case 12660:
                 case 10064:
                 case 11281:
                 case 10344:

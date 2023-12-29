@@ -3,10 +3,13 @@ package com.example.demo.utils;
 import com.example.demo.bean.Data;
 import com.example.demo.bean.Lenum;
 import com.example.demo.bean.StartStop;
+import com.example.demo.domain.Statements;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.repository.LtypeRepository;
 import com.example.demo.repository.StatementRepository;
 import com.example.demo.importer.Repos;
+import com.example.demo.repository.StatementsRepository;
+
 import java.util.HashMap;
 
 public class DataUtils {
@@ -66,6 +69,9 @@ public class DataUtils {
         dannual.setLdata(ld.filterByDate(filter,null,dannual.getLtype()));
         dml.setLdata(ld.filterByDate(filter,null,dml.getLtype()));
 
+        StatementsRepository repo = repos.getStatementsRepository();
+        Statements stmts = repo.findByStmtdate(dates.getStart());
+
         StatementRepository stmtRepo = repos.getStatementRepository();
         if (dmain.getLdata().size() > 0)
             dmain.setStatement(stmtRepo.findAllByIdAndLtype(dmain.getLdata().get(dmain.getLdata().size()-1).getStatement().getId(),dmain.getLtype()));
@@ -78,6 +84,11 @@ public class DataUtils {
 
         if (dslush.getLdata().size() > 0)
             dslush.setStatement(stmtRepo.findAllByIdAndLtype(dslush.getLdata().get(dslush.getLdata().size()-1).getStatement().getId(),dslush.getLtype()));
+        else {
+            if (stmts != null) {
+                dslush.setStatement(stmtRepo.findAllByStatementsAndLtype(stmts, dslush.getLtype()));
+            }
+        }
 
         if (dannual.getLdata().size() > 0)
             dannual.setStatement(stmtRepo.findAllByIdAndLtype(dannual.getLdata().get(dannual.getLdata().size()-1).getStatement().getId(),dannual.getLtype()));

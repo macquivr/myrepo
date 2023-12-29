@@ -76,7 +76,7 @@ public class SaveO extends importBase {
 	
 		Double start = istmt.getSbalance();
 		if (start == null) {
-			errs.add("Sbalance not set");
+			errs.add("Sbalance not set " + istmt.getLtype().getName());
 			return false;
 		}
 

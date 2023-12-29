@@ -3,17 +3,25 @@ package com.example.demo.chart;
 import com.example.demo.domain.Checks;
 import com.example.demo.domain.Label;
 import com.example.demo.domain.Ledger;
+import com.example.demo.repository.LedgerRepository;
+import com.example.demo.utils.idata.LedgerIData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class regBudgetChart extends baseChart implements chartData {
+public class regBudgetChart extends baseChart implements chartData<Ledger> {
 
+    public regBudgetChart(String sessionId, LedgerRepository l) {
+        this.bidata = new LedgerIData(l,null,true,sessionId,false);
+    }
     @Override
     public List<Ledger> getChartData(List<Ledger> base) {
         List<Ledger> ret = new ArrayList<Ledger>();
 
         for (Ledger l : base) {
+            if (l.getLtype().getId() != 3)
+                continue;
+
             if ((l.getStype().getId() == 3) || (l.getStype().getId() == 4))
                 ret.add(l);
 
@@ -32,7 +40,8 @@ public class regBudgetChart extends baseChart implements chartData {
             if ((lbl.getId() == 10019) ||
                     (lbl.getId() == 11209) ||
                     (lbl.getId() == 10264) ||
-                    (lbl.getId() == 10178))
+                    (lbl.getId() == 10178) ||
+                    (lbl.getId() == 12933))
                 ret.add(l);
 
             if (lbl.getId() == 10344)

@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.demo.domain.Utilities;
 import com.example.demo.dto.ui.UtilsRowDTO;
 import com.example.demo.utils.Utils;
+import com.example.demo.utils.idate.Idate;
 
 public class UtilsUI extends Base {
 
@@ -17,7 +18,7 @@ public class UtilsUI extends Base {
     }
     public void apply(Idate l, Object obj)
     {
-        Utilities u = (Utilities) l.getData();
+        Utilities u = (Utilities) l.getData().getObj();
         UtilsRowDTO data = (UtilsRowDTO) obj;
 
         data.setCable(Utils.convertDouble(data.getCable() + u.getCable()));

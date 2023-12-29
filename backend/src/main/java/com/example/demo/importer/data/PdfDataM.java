@@ -208,11 +208,25 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			String cstr = mendCheckNum(lbl.substring(0,idx));
 
 			int cnum = 0;
-
+			boolean err = false;
 			try {
 				cnum = Integer.valueOf(cstr);
 			} catch (Exception ex) {
-
+				err = true;
+				int nidx = lbl.indexOf(' ');
+				if (nidx != -1) {
+					String nstr = lbl.substring(nidx + 1);
+					nidx = nstr.indexOf('#');
+					nstr = nstr.substring(0, nidx);
+					try {
+						cnum = Integer.valueOf(nstr);
+						err = false;
+					} catch (Exception nex) {
+						// fall thru
+					}
+				}
+			}
+			if (err) {
 				throw new BadDataException("Bad Check num " + cstr);
 			}
 			n.setCheck(cnum);
@@ -231,7 +245,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
         if (lbl.contains("Deposit")) 
         	n.setCredit(Utils.dval(v));
         else {
-        	if (lbl.contains("Withdrawal")) 
+        	if ((lbl.contains("Withdrawal") || lbl.equals("Check")))
         		n.setDebit(Utils.dval(v));
 			else
 				ok = determineType(n,v);
@@ -283,7 +297,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 					idx++;
 				}
 			}
-			
+		
 			if (s.contains(v) && ((n.getNDstr() == null) || (dstr2.equals(n.getNDstr())))) 
 				l = s;
 		}
@@ -467,8 +481,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		start = -1;
 		stop = -1;
 		year = 0;
+		log.info("MLINES: " + lines.size());
 		boolean on = false;
 		for (String s : lines) {
+			log.info("DLINE: " + s);
 			if (s.startsWith("YOUR CMA TRANSACTIONS") && (transl == -1)) 
 				transl = lidx;
 			if ((s.startsWith("YOUR MERRILL LYNCH REPORT") || 
@@ -484,7 +500,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 					log.info("START: " + s);
 					int idx = s.indexOf('$');
 					if (idx == -1) {
-						start = 123594.08 + 14254.92;
+						start = 92.78;
 						log.info("STARTV: " + start);
 					} else {
 						String str = s.substring(idx + 1);
@@ -518,7 +534,8 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 						log.info("STOPV:" + str);
 						stop = Utils.dval(str);
 					} catch (Exception ex) {
-						throw new BadDataException("Bad Stop " + s);
+						stop = 0;
+						//throw new BadDataException("Bad Stop " + s);
 					}
 				}
 			}

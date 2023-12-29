@@ -1,12 +1,16 @@
 package com.example.demo.chart;
 
-import com.example.demo.domain.Ledger;
-
+import com.example.demo.state.Consolidate;
+import com.example.demo.utils.idata.baseIData;
+import com.example.demo.utils.idata.Ldvil;
 import java.util.List;
 
-public interface chartData {
+public interface chartData<T> {
 
-    public List<Ledger> getChartData(List<Ledger> base);
+    public baseIData getIData();
+    public void filterSpecific(Consolidate type, Ldvil data);
+
+    public List<T> getChartData(List<T> base);
     public boolean dontFlip();
     public Double getNetMod();
 }

@@ -1,12 +1,17 @@
 package com.example.demo.chart;
 
 import com.example.demo.domain.Ledger;
+import com.example.demo.repository.LedgerRepository;
+import com.example.demo.utils.idata.LedgerIData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class aaaChart extends baseChart implements chartData {
+public class aaaChart extends baseChart implements chartData<Ledger> {
 
+    public aaaChart(String sessionId, LedgerRepository l) {
+        this.bidata = new LedgerIData(l,null,false,sessionId,false);
+    }
     @Override
     public List<Ledger> getChartData(List<Ledger> base) {
         List<Ledger> ret = new ArrayList<Ledger>();

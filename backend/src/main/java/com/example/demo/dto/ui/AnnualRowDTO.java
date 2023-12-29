@@ -19,6 +19,8 @@ public class AnnualRowDTO {
     private double escrow;
     private double terminix;
     private double amazonprime;
+
+    private double norton;
     private double total;
 
     public String getLabel() { return label; }
@@ -39,6 +41,8 @@ public class AnnualRowDTO {
     public double getEscrow() { return escrow; }
     public double getTerminix() { return terminix; }
     public double getAmazonprime() { return amazonprime; }
+
+    public double getNorton() { return norton; }
     public double getTotal() { return total; }
 
     public void setLabel(String l) { label = l; }
@@ -59,6 +63,8 @@ public class AnnualRowDTO {
     public void setEscrow(double d) { escrow = d; }
     public void setTerminix(double d) { terminix = d; }
     public void setAmazonprime(double d) { amazonprime = d; }
+
+    public void setNorton(double d) { norton = d; }
     public void setTotal(double d) { total = d; }
 
 }

@@ -8,6 +8,8 @@ public class MRBean {
     private double budget;
     private double net;
 
+    private double other;
+
     public MRBean(String l, double a, double b, double n) {
         this.label = l;
         this.amount = a;
@@ -17,6 +19,8 @@ public class MRBean {
     public String getLabel() { return label; }
     public void setLabel(String l) { label = l;}
 
+    public double getOther() { return other; }
+    public void setOther(double d) { this.other = d; }
     public double getAmount() { return amount; }
     public void setAmount(double a) { amount = a; }
 

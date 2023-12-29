@@ -2,11 +2,15 @@ package com.example.demo.services;
 
 import com.example.demo.importer.Repos;
 import com.example.demo.reports.*;
+import com.example.demo.reports.postimport.ocReport;
+import com.example.demo.reports.postimport.balanceReport;
+import com.example.demo.reports.postimport.outReport;
 import com.example.demo.repository.*;
 import com.example.demo.state.Sessions;
 import com.example.demo.domain.*;
 import com.example.demo.bean.*;
 import com.example.demo.utils.mydate.DUtil;
+import com.example.demo.utils.runner.OcMaintenance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,18 @@ public class ReportService {
 
     private SessionDTO session;
     private HashMap<String,ReportI> map = new HashMap<String,ReportI>();
+
+    @Autowired
+    private OcRepository ocRepository;
+
+    @Autowired
+    private BudgetRepository budgetRepository;
+
+    @Autowired
+    private BudgetsRepository budgetsRepository;
+
+    @Autowired
+    private BudgetValuesRepository budgetvaluesRepository;
 
     @Autowired
     private UtilitiesRepository utilRepository;
@@ -95,7 +111,11 @@ public class ReportService {
                 locationRepository,
                 ledgerRepository,
                 checkRepository,
-                utilRepository);
+                utilRepository,
+                budgetRepository,
+                budgetsRepository,
+                budgetvaluesRepository,
+                ocRepository);
 
         registerReports();
     }
@@ -106,6 +126,14 @@ public class ReportService {
         map.put("MAIN",new MainReport(repos));
         map.put("RETIRE",new RetireReport(repos));
         map.put("CREDITCAT",new CreditReport(repos));
+        map.put("INOUT",new InOutReport(repos));
+        map.put("IN",new InReport(repos));
+        map.put("OUT",new OutReport(repos));
+        map.put("MISC", new MiscReport(repos));
+        map.put("BREPORT",new BReport(repos));
+        map.put("CREPORT",new CReport(repos));
+        map.put("OTHER",new OtherReport(repos));
+        map.put("GREPORT",new GReport(repos));
     }
 
     public StatusDTO genReport(String sessionId) {
@@ -121,6 +149,33 @@ public class ReportService {
             return ret;
         }
         ret.setStatus(true);
+
+        boolean p = session.isPercent();
+        if (p) {
+            //ocReport obj = new ocReport(repos,183);
+            //balanceReport obj = new balanceReport(repos,183);
+            outReport obj = new outReport(repos,183);
+            try {
+                boolean b = obj.go();
+                if (b)
+                    ret.setMessage("Ran.");
+                else
+                    ret.setMessage("Fail.");
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+                ret.setMessage("Fail " + ex.getMessage());
+            }
+            /*
+            OcMaintenance obj = new OcMaintenance(repos, ocRepository);
+            boolean r = obj.go(-1);
+            if (r)
+                ret.setMessage("Ran.");
+            else
+                ret.setMessage("Fail.");
+
+             */
+            return ret;
+        }
 
         String type = session.getReportType();
         if (type == null)
@@ -180,8 +235,8 @@ public class ReportService {
     }
 
     private void printPeriod(FileWriter w,StartStop dates) throws Exception {
-        String dstart = DUtil.getDate(dates.getStart(),DUtil.MMDDYYYY);
-        String dstop = DUtil.getDate(dates.getStop(),DUtil.MMDDYYYY);
+        String dstart = DUtil.getDate(null,dates.getStart(),DUtil.MMDDYYYY);
+        String dstop = DUtil.getDate(null,dates.getStop(),DUtil.MMDDYYYY);
 
         w.write(dstart + " ==> " + dstop + "\n");
     }

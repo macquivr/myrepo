@@ -1,8 +1,13 @@
 package com.example.demo.importer;
 
 import com.example.demo.dto.ImportDTO;
+import com.example.demo.reports.postimport.balanceReport;
+import com.example.demo.reports.postimport.ocReport;
+import com.example.demo.reports.postimport.outReport;
+import com.example.demo.repository.OcRepository;
 import com.example.demo.repository.StatementsRepository;
 import com.example.demo.state.importer.ImportState;
+import com.example.demo.utils.runner.OcMaintenance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.utils.mydate.DUtil;
@@ -41,7 +46,7 @@ public class doImport extends importBase {
 		data.add(new Aaa(uuid,repos,idto));
         data.add(util);
 		data.add(new Usaa(uuid,repos,idto));
-   		data.add(new CapitalOne(uuid,repos,idto));
+		data.add(new CapitalOne(uuid,repos,idto));
 	}
 	
 	private void initStatements()
@@ -168,9 +173,44 @@ public class doImport extends importBase {
 			StatementsRepository sr = repos.getStatementsRepository();
 			sr.save(stmts);
 			ret = importData(true, err);
+			if (ret) {
+				doOc();
+				doBalance();
+				doOut();
+			}
 		}
 		
 		return ret;
+	}
+
+	private void doOc() {
+
+		OcMaintenance ocSave = new OcMaintenance(repos,repos.getOcRepository());
+		ocSave.go(stmts.getId());
+		ocReport obj = new ocReport(repos, stmts.getId());
+		try {
+			obj.go();
+		} catch (Exception ex) {
+			// ignore
+		}
+	}
+
+	private void doBalance() {
+		balanceReport obj = new balanceReport(repos, stmts.getId());
+		try {
+			obj.go();
+		} catch (Exception ex) {
+			// ignore
+		}
+	}
+
+	private void doOut() {
+		outReport obj = new outReport(repos, stmts.getId());
+		try {
+			obj.go();
+		} catch (Exception ex) {
+			// ignore
+		}
 	}
 
 	private boolean importData(boolean doSave, List<String> err)

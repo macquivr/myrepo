@@ -67,10 +67,17 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 					stmt.setOuta(Double.valueOf(str).doubleValue());
 				}
 			}
-			if (s.startsWith("Fees Charged +")) {
+			if ((s.startsWith("Fees Charged +")) || (s.startsWith("Interest Charged"))) {
 				int idx = s.indexOf('$');
 				String str = makeValue(s,idx);
-				stmt.setFee(Double.valueOf(str).doubleValue());
+				if (stmt.getFee() != null) {
+					double d = stmt.getFee();
+					double ds = Double.valueOf(str).doubleValue();
+					stmt.setFee(Utils.convertDouble(d + ds));
+				} else {
+					stmt.setFee(Double.valueOf(str).doubleValue());
+				}
+
 			}
 			
 		}

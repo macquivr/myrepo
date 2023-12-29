@@ -45,6 +45,8 @@ public class TypeHelper extends importBase {
 				cids.add(c.getId());
 			if (c.getName().equals("Over Counter Check")) 
 				cids.add(c.getId());
+			if (c.getName().equals("Check - Item Processing"))
+				cids.add(c.getId());
 		}
 		
 	}

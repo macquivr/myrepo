@@ -1,7 +1,7 @@
 package com.example.demo.utils.mydate;
 
 import java.time.LocalDate;
-import com.example.demo.utils.uidata.Idate;
+import com.example.demo.utils.idate.Idate;
 import java.util.Comparator;
 
 public class DateSorter implements Comparator<Idate> {

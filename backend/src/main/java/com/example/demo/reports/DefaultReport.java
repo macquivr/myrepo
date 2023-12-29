@@ -1,6 +1,7 @@
 package com.example.demo.reports;
 
 import com.example.demo.bean.*;
+import com.example.demo.bean.tables.InOutTable;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.repository.*;
@@ -24,6 +25,11 @@ public class DefaultReport implements ReportI {
         CategoryRepository cr = repos.getCategoryRepository();
         Category transferc = cr.findByName("Transfer");
         LData ld = new LData(repos.getLedgerRepository());
+
+        StypeRepository srepo = repos.getStypeRepository();
+        Stype annual = srepo.findByName("Annual");
+        List<Ledger> adata = ld.filterByDate(session,annual,null);
+
         List<Ledger> data  = ld.filterByDate(session,null,null);
         ld.filterBundle(data);
         StartStop dates = ld.getDates();
@@ -37,10 +43,13 @@ public class DefaultReport implements ReportI {
         printStat(w, dmap, transferc);
         printStypes(w, data);
 
+        double t = printStype("Annual",w,adata);
+        w.write("Total: " + t + "\n\n");
+
         printStype("Bills",w,data);
         printUtils(w,dates);
         printStype("Credit",w,data);
-        printStype("Annual",w,data);
+        printStype("Annual",w,adata);
         printStype("Misc",w,data);
         printSpent(w,dates, session);
         printCategories(w,session);
@@ -65,36 +74,55 @@ public class DefaultReport implements ReportI {
         line(w,data.getLabel() + " IN: " + idl.getInLabel(idata) + " OUT: " + idl.getOutLabel(idata) + " NET: " + idata.getNet(), null);
     }
 
+    private void setFb(HashMap<Lenum, Data> data, Ion obj, Lenum e)
+    {
+        double fb = 0;
+        Data d = data.get(e);
+        if (d != null) {
+            obj.setLabel(d.getLabel());
+            Statement st = d.getStmt();
+            if (st != null) {
+                fb = st.getFbalance();
+            }
+        }
+        obj.setBalance(fb);
+    }
+
     private void printStat(FileWriter w, HashMap<Lenum, Data> data, Category transferc) throws Exception
     {
         IonL idata = new IonL();
 
         Ion ionm = InOutNet(data.get(Lenum.MAIN).getLdata(),transferc);
         idata.add(ionm);
+        setFb(data, ionm,Lenum.MAIN);
 
         Ion ionms = InOutNet(data.get(Lenum.MAINSAVE).getLdata(),transferc);
         idata.add(ionms);
+        setFb(data, ionms,Lenum.MAINSAVE);
 
         Ion ionmortg = InOutNet(data.get(Lenum.MORTG).getLdata(),transferc);
         idata.add(ionmortg);
+        setFb(data, ionmortg,Lenum.MORTG);
 
         Ion ionslush = InOutNet(data.get(Lenum.SLUSH).getLdata(),transferc);
         idata.add(ionslush);
+        setFb(data, ionslush,Lenum.SLUSH);
 
         Ion ionannual = InOutNet(data.get(Lenum.ANNUAL).getLdata(),transferc);
         idata.add(ionannual);
+        setFb(data, ionannual,Lenum.ANNUAL);
 
         Ion ionml = InOutNet(data.get(Lenum.ML).getLdata(),transferc);
         idata.add(ionml);
+        setFb(data, ionml,Lenum.ML);
 
-        stat(idata,ionm,data.get(Lenum.MAIN),transferc,w);
-        stat(idata,ionms,data.get(Lenum.MAINSAVE),transferc,w);
-        stat(idata,ionmortg,data.get(Lenum.MORTG),transferc,w);
-        stat(idata,ionslush,data.get(Lenum.SLUSH),transferc,w);
-        stat(idata,ionannual,data.get(Lenum.ANNUAL),transferc,w);
-        stat(idata,ionml,data.get(Lenum.ML),transferc,w);
+        InOutTable t = new InOutTable();
+        t.populateTable(idata.getData());
+        t.Print(w);
 
         w.write("\n");
+
+
     }
 
     private void line(FileWriter w, String label, Double value) throws Exception {
@@ -141,13 +169,16 @@ public class DefaultReport implements ReportI {
                 map.put(s,ndv);
             }
         }
+        double total = 0;
         Set<Stype> keys = map.keySet();
         for (Stype key : keys) {
             if (!key.getName().equals("Transfer")) {
                 double value = Utils.convertDouble(map.get(key));
                 line(w,key.getName() + "\t",value);
+                total += value;
             }
         }
+        line(w,"TOTAL",Utils.convertDouble(total));
     }
 
     private void printSpent(FileWriter w, StartStop dates, SessionDTO session) throws Exception
@@ -199,6 +230,7 @@ public class DefaultReport implements ReportI {
     {
         LData ld = new LData(repos.getLedgerRepository());
         List<Ledger> data  = ld.filterByDate(session,null,null);
+        ld.filterLow(data);
 
         w.write("\n");
         w.write("By Category\n");
@@ -247,8 +279,9 @@ public class DefaultReport implements ReportI {
             w.write(c.getLabel() + " " + c.getAmount() + "\n");
     }
 
-    private void printStype(String stype, FileWriter w, List<Ledger> bundle) throws Exception
+    private double printStype(String stype, FileWriter w, List<Ledger> bundle) throws Exception
     {
+        double ret = 0;
         w.write("\n");
         w.write("Stype " + stype + "\n");
         HashMap<String, Double> map = new HashMap<String, Double>();
@@ -273,8 +306,10 @@ public class DefaultReport implements ReportI {
         Set<String> keys = map.keySet();
         for (String key : keys) {
             Double d = map.get(key);
+            ret += d.doubleValue();
             w.write(key + " " + d + "\n");
         }
+        return Utils.convertDouble(ret);
     }
 
     private Ion InOutNet(List<Ledger> data, Category transferc) {
@@ -283,11 +318,13 @@ public class DefaultReport implements ReportI {
         for (Ledger l : data) {
             Label lbl = l.getLabel();
             Category c = lbl.getCategory();
-            if (c.getId() != transferc.getId()) {
-                if (l.getAmount() > 0)
+            if ((c.getId() != transferc.getId()) && (l.getStype().getId() != 8)){
+                if (l.getAmount() > 0) {
                     ret.setIn(ret.getIn() + l.getAmount());
-                if (l.getAmount() < 0)
+                }
+                if (l.getAmount() < 0) {
                     ret.setOut(ret.getOut() + l.getAmount());
+                }
             }
         }
         ret.setNet(ret.getIn() + ret.getOut());

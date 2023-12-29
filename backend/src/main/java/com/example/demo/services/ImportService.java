@@ -33,6 +33,16 @@ public class ImportService {
     private Repos repos = null;
 
     @Autowired
+    private OcRepository ocRepository;
+    @Autowired
+    private BudgetRepository budgetRepository;
+
+    @Autowired
+    private BudgetsRepository budgetsRepository;
+
+    @Autowired
+    private BudgetValuesRepository budgetvaluesRepository;
+    @Autowired
     private PayeeRepository payeeRepository;
 
     @Autowired
@@ -98,7 +108,11 @@ public class ImportService {
                 locationRepository,
                 ledgerRepository,
                 checkRepository,
-                utilRepository);
+                utilRepository,
+                budgetRepository,
+                budgetsRepository,
+                budgetvaluesRepository,
+                ocRepository);
 
         CsbTypeRepository test = repos.getCsbTypeRepository();
         if (test == null) {

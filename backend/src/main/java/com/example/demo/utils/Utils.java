@@ -66,9 +66,11 @@ public class Utils {
 		return ret;
 	}
 	
-	public static Double dval(String dstr)
-	{
-		return Double.valueOf(dstr.replaceAll("\\$","").replaceAll(",",""));
+	public static Double dval(String dstr) {
+		try {
+			return Double.valueOf(dstr.replaceAll("\\$", "").replaceAll(",", ""));
+		} catch (NumberFormatException ex) {
+			return null;
+		}
 	}
-
 }

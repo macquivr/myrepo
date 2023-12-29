@@ -1,6 +1,7 @@
 package com.example.demo.importer.data.pdf;
 
 
+import com.example.demo.utils.Utils;
 import com.example.demo.utils.mydate.DUtil;
 import java.util.Iterator;
 
@@ -58,10 +59,16 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAmz.class);
 				String str = s.substring(idx+1).replaceAll(",", "");
 				stmt.setOuta(Double.valueOf(str).doubleValue());
 			}
-			if (s.startsWith("Fees Charged")) {
+			if ((s.startsWith("Fees Charged")) || (s.startsWith("Interest Charged"))) {
 				int idx = s.indexOf('$');
-				String str = s.substring(idx+1).replaceAll(",", "");
-				stmt.setFee(Double.valueOf(str).doubleValue());
+				String str = s.substring(idx + 1).replaceAll(",", "");
+				if (stmt.getFee() != null) {
+					double d = stmt.getFee();
+					double ds = Double.valueOf(str).doubleValue();
+					stmt.setFee(Utils.convertDouble(d + ds));
+				} else {
+					stmt.setFee(Double.valueOf(str).doubleValue());
+				}
 			}
 		}
 		

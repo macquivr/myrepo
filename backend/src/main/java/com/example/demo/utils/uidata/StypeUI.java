@@ -4,6 +4,7 @@ import com.example.demo.domain.Ledger;
 import com.example.demo.domain.Stype;
 import com.example.demo.dto.ui.StypeRowDTO;
 import com.example.demo.utils.Utils;
+import com.example.demo.utils.idate.Idate;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,7 @@ public class StypeUI extends Base {
 
     public Object factory() { return new HashMap<Stype, Double>(); }
     public void apply(Idate ld, Object obj) {
-        Ledger l = (Ledger) ld.getData();
+        Ledger l = (Ledger) ld.getData().getObj();
         HashMap<Stype, Double> map = (HashMap<Stype,Double>) obj;
 
         Stype s = l.getStype();
