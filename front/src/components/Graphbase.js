@@ -34,8 +34,8 @@ function Graphbase(props) {
 
    const chartConfigs = {
     type: 'line',
-    width: 600,
-    height: 400,
+    width: 1200,
+    height: 700,
     dataFormat: 'json',
     dataSource: appState.mydata
   };

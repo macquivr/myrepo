@@ -24,6 +24,9 @@ import { statementsColumns } from './tables/StatementsTable';
 import { stypemapColumns } from './tables/StypemapTable';
 import { stypeColumns } from './tables/StypeTable';
 import { utilitiesColumns } from './tables/UtilitiesTable';
+import { budgetColumns } from './tables/BudgetTable';
+import { budgetvaluesColumns } from './tables/BudgetValueTable';
+import { budgetdatavaluesColumns } from './tables/BudgetDataValueTable';
 import { transferColumns } from './tables/TransferTable';
 import { inoutnetColumns } from './tables/InOutNetTable';
 import { balanceColumns } from './tables/BalanceTable';
@@ -33,6 +36,7 @@ import { annualColumns } from './tables/AnnualTable';
 import { utilsColumns } from './tables/UtilsTable';
 import { creditpaidColumns } from './tables/CreditPaidTable';
 import { categoriesColumns } from './tables/CategoriesTable';
+import { cstatusColumns } from './tables/CStatusTable';
 
 function Tv(props) {
   return (
@@ -95,6 +99,15 @@ function Tv(props) {
         <TreeItem nodeId="24" label="Utilities">
           <FData session={props} columns={utilitiesColumns} title="Utilities" urlt="Utilities" jsonp="utilities"/>
         </TreeItem>
+        <TreeItem nodeId="25" label="Budget">
+          <FData session={props} columns={budgetColumns} title="Budget" urlt="budgettable" jsonp="budget"/>
+        </TreeItem>
+        <TreeItem nodeId="26" label="BudgetValues">
+          <FData session={props} columns={budgetvaluesColumns} title="Budgetvalues" urlt="budgetvaluetable" jsonp="budgetvalues"/>
+        </TreeItem>
+        <TreeItem nodeId="84" label="Budgets">
+          <FData session={props} columns={budgetColumns} title="Budgets" urlt="budgetstable" jsonp="budgets"/>
+        </TreeItem>
       </TreeItem>
       <TreeItem nodeId="3" label="Data">
         <TreeItem nodeId="4" label="Main">
@@ -106,37 +119,57 @@ function Tv(props) {
         <TreeItem nodeId="6" label="Balances">
           <FData usession={props} columns={balanceColumns} title="Balances" urlt="balance" jsonp="balance"/>
         </TreeItem>
-        <TreeItem nodeId="7" label="Stypes">
+        <TreeItem nodeId="75" label="Stypes">
           <FData usession={props} columns={stypeDataColumns} title="Stypes" urlt="stype" jsonp="stype"/>
         </TreeItem>
-        <TreeItem nodeId="8" label="Bills">
+        <TreeItem nodeId="76" label="Bills">
           <FData usession={props} columns={billsColumns} title="Bills" urlt="bills" jsonp="bills"/>
         </TreeItem>
-        <TreeItem nodeId="9" label="Statements">
+        <TreeItem nodeId="77" label="Statements">
           <FData usession={props} columns={statementColumns} title="Statements" urlt="statements" jsonp="statement"/>
         </TreeItem>
-        <TreeItem nodeId="10" label="Annual">
+        <TreeItem nodeId="78" label="Annual">
           <FData usession={props} columns={annualColumns} title="Annual" urlt="annual" jsonp="annual"/>
         </TreeItem>
-        <TreeItem nodeId="11" label="Utils">
+        <TreeItem nodeId="79" label="Utils">
           <FData usession={props} columns={utilsColumns} title="Utils" urlt="utils" jsonp="utils"/>
         </TreeItem>
-        <TreeItem nodeId="12" label="CreditPaid">
+        <TreeItem nodeId="80" label="CreditPaid">
           <FData usession={props} columns={creditpaidColumns} title="CreditPaid" urlt="creditp" jsonp="credit"/>
         </TreeItem>
-        <TreeItem nodeId="13" label="CreditSpent">
+        <TreeItem nodeId="81" label="CreditSpent">
           <FData usession={props} columns={creditpaidColumns} title="CreditSpent" urlt="credits" jsonp="credit"/>
         </TreeItem>
         <TreeItem nodeId="31" label="Categories">
           <FData usession={props} columns={categoriesColumns} title="Categories" urlt="categories" jsonp="categories"/>
         </TreeItem>
+        <TreeItem nodeId="74" label="CStatus">
+          <FData usession={props} columns={cstatusColumns} title="CStatus" urlt="cstatus" jsonp="cstatus"/>
+        </TreeItem>
+
+        <TreeItem nodeId="71" label="Budget">
+          <TreeItem nodeId="72" label="Budget Values">
+            <FData usession={props} columns={budgetdatavaluesColumns} title="Values" urlt="bvalues" jsonp="bvn"/>
+          </TreeItem>
+          <TreeItem nodeId="84" label="Budgets Values">
+            <FData usession={props} columns={budgetdatavaluesColumns} title="SValues" urlt="bvs" jsonp="bvn"/>
+          </TreeItem>
+          <TreeItem nodeId="73" label="Budget Net">
+            <FData usession={props} columns={budgetdatavaluesColumns} title="Net" urlt="bnet" jsonp="bvn"/>
+          </TreeItem>
+          <TreeItem nodeId="85" label="Budgets Net">
+            <FData usession={props} columns={budgetdatavaluesColumns} title="SNet" urlt="bsnet" jsonp="bvn"/>
+          </TreeItem>
+       </TreeItem>
+
+
       </TreeItem>
-      <TreeItem nodeId="5" label="Graphs">
+      <TreeItem nodeId="74" label="Graphs">
         <TreeItem nodeId="41" label="SType">
-          <TreeItem nodeId="25" label="stypeAtm">
+          <TreeItem nodeId="82" label="stypeAtm">
             <Graphbase usession={props} urlt="stype/atm"/>
           </TreeItem>
-          <TreeItem nodeId="26" label="stypeBills">
+          <TreeItem nodeId="83" label="stypeBills">
             <Graphbase usession={props} urlt="stype/bills"/>
           </TreeItem>
           <TreeItem nodeId="27" label="stypeMisc">
@@ -161,6 +194,12 @@ function Tv(props) {
         <TreeItem nodeId="34" label="electric">
            <Graphbase usession={props} urlt="electric"/>
         </TreeItem>
+        <TreeItem nodeId="64" label="cell">
+           <Graphbase usession={props} urlt="cell"/>
+        </TreeItem>
+        <TreeItem nodeId="65" label="cable">
+           <Graphbase usession={props} urlt="cable"/>
+        </TreeItem>
         <TreeItem nodeId="35" label="out">
            <Graphbase usession={props} urlt="out"/>
          </TreeItem>
@@ -176,15 +215,29 @@ function Tv(props) {
          <TreeItem nodeId="38" label="ATM">
             <Graphbase usession={props} urlt="atm"/>
          </TreeItem>
+         <TreeItem nodeId="70" label="Misc">
+           <Graphbase usession={props} urlt="misc"/>
+          </TreeItem>
          <TreeItem nodeId="39" label="Dog">
            <Graphbase usession={props} urlt="dog"/>
          </TreeItem>
          <TreeItem nodeId="40" label="ML">
             <Graphbase usession={props} urlt="ml"/>
          </TreeItem>
+          <TreeItem nodeId="67" label="Credit Off">
+            <TreeItem nodeId="68" label="Capital One Off">
+              <Graphbase usession={props} urlt="caponeoff"/>
+            </TreeItem>
+            <TreeItem nodeId="69" label="Aaa Off">
+              <Graphbase usession={props} urlt="aaaoff"/>
+            </TreeItem>
+          </TreeItem>
          <TreeItem nodeId="42" label="Credit">
            <TreeItem nodeId="43" label="Capital One">
              <Graphbase usession={props} urlt="capone"/>
+           </TreeItem>
+           <TreeItem nodeId="66" label="Capital One Filtered">
+             <Graphbase usession={props} urlt="caponefilter"/>
            </TreeItem>
            <TreeItem nodeId="44" label="Amazon">
              <Graphbase usession={props} urlt="amazon"/>
@@ -200,7 +253,38 @@ function Tv(props) {
            </TreeItem>
          </TreeItem>
          <TreeItem nodeId="48" label="Budget">
-           <Graphbase usession={props} urlt="budget"/>
+            <TreeItem nodeId="53" label="Credit">
+                <TreeItem nodeId="54" label="Capital One">
+                    <Graphbase usession={props} urlt="bcapone"/>
+                </TreeItem>
+                <TreeItem nodeId="55" label="Amazon">
+                    <Graphbase usession={props} urlt="bamazon"/>
+                </TreeItem>
+                <TreeItem nodeId="56" label="Usaa">
+                    <Graphbase usession={props} urlt="busaa"/>
+                </TreeItem>
+                <TreeItem nodeId="57" label="AAA">
+                     <Graphbase usession={props} urlt="baaa"/>
+                </TreeItem>
+                <TreeItem nodeId="58" label="Sears">
+                      <Graphbase usession={props} urlt="bsears"/>
+                </TreeItem>
+                <TreeItem nodeId="59" label="All">
+                     <Graphbase usession={props} urlt="bcredit"/>
+                </TreeItem>
+            </TreeItem>
+            <TreeItem nodeId="60" label="Utilities">
+                <Graphbase usession={props} urlt="butilities"/>
+            </TreeItem>
+            <TreeItem nodeId="61" label="Medical">
+                <Graphbase usession={props} urlt="bmedical"/>
+            </TreeItem>
+            <TreeItem nodeId="62" label="Mortgage">
+                <Graphbase usession={props} urlt="bmortgage"/>
+            </TreeItem>
+            <TreeItem nodeId="63" label="consolidated budget">
+                <Graphbase usession={props} urlt="budget"/>
+            </TreeItem>
          </TreeItem>
          <TreeItem nodeId="50" label="Net">
            <TreeItem nodeId="51" label="inoutnet">

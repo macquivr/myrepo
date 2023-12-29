@@ -126,6 +126,13 @@ export const annualColumns = [
   wrap: true
 },
 {
+  name: 'Norton',
+  selector: 'norton',
+  sortable: true,
+  maxWidth: '100px',
+  wrap: true
+},
+{
   name: 'Total',
   selector: 'total',
   sortable: true,
