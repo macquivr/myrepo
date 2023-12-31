@@ -4,33 +4,20 @@ package com.example.demo.reports;
 import com.example.demo.bean.*;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
-import com.example.demo.dto.ui.BVNRowDTO;
-import com.example.demo.dto.ui.BVNTableDTO;
 import com.example.demo.importer.Repos;
 import com.example.demo.repository.*;
-import com.example.demo.utils.BData;
-import com.example.demo.utils.BSData;
 import com.example.demo.utils.LData;
 import com.example.demo.utils.Utils;
-import com.example.demo.utils.idata.BNIData;
-import com.example.demo.utils.idata.BNSIData;
-import com.example.demo.utils.idata.BVIData;
-import com.example.demo.utils.idata.BVSIData;
-import com.example.demo.utils.uidata.BNSUI;
-import com.example.demo.utils.uidata.BNUI;
-import com.example.demo.utils.uidata.BVSUI;
-import com.example.demo.utils.uidata.BVUI;
-
 import java.io.FileWriter;
 import java.time.LocalDate;
 import java.util.*;
 
 public class OtherReport implements ReportI {
 
-    private Repos repos = null;
+    private final Repos repos;
 
     public OtherReport(Repos r) {
-        repos = r;
+        this.repos = r;
     }
 
     public void go(FileWriter w, SessionDTO session) throws Exception {
@@ -73,11 +60,12 @@ public class OtherReport implements ReportI {
         w.write("\n" + label + "\n");
         double ina = 0;
         double outa = 0;
-        double net = 0.0;
-        HashMap<Label, Double> inmap = new HashMap<Label, Double>();
-        HashMap<Label, Double> outmap = new HashMap<Label, Double>();
-        HashMap<Label, Double> tmp = null;
-        HashMap<Payee, Double> checkmap = new HashMap<Payee, Double>();
+        double net;
+
+        HashMap<Label, Double> inmap = new HashMap<>();
+        HashMap<Label, Double> outmap = new HashMap<>();
+        HashMap<Label, Double> tmp;
+        HashMap<Payee, Double> checkmap = new HashMap<>();
 
         for (Ledger l : data) {
             if (l.getAmount() > 0) {
@@ -93,7 +81,7 @@ public class OtherReport implements ReportI {
                     if (d == null) {
                         checkmap.put(p, l.getAmount());
                     } else {
-                        double nd = Utils.convertDouble(d.doubleValue() + l.getAmount());
+                        double nd = Utils.convertDouble(d + l.getAmount());
                         checkmap.put(p, nd);
                     }
                 }
@@ -102,12 +90,12 @@ public class OtherReport implements ReportI {
             if (d == null) {
                 tmp.put(l.getLabel(), l.getAmount());
             } else {
-                double nd = Utils.convertDouble(d.doubleValue() + l.getAmount());
+                double nd = Utils.convertDouble(d + l.getAmount());
                 tmp.put(l.getLabel(), nd);
             }
         }
         Set<Label> keysi = inmap.keySet();
-        if (keysi.size() > 0) {
+        if (!keysi.isEmpty()) {
             w.write("\n  In: " + ina + " \n");
             for (Label lbl : keysi) {
                 Double dv = inmap.get(lbl);
@@ -116,7 +104,7 @@ public class OtherReport implements ReportI {
         }
 
         Set<Label> keyso = outmap.keySet();
-        if (keyso.size() > 0) {
+        if (!keyso.isEmpty()) {
             w.write("\n  Out: " + outa + "\n");
             for (Label lbl : keyso) {
                 Double dv = outmap.get(lbl);

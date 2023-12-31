@@ -15,7 +15,7 @@ public class StatementService {
 
     public List<Statement> findAll() {
 
-        return (List<Statement>) repository.findAll();
+        return repository.findAll();
     }
 
 }

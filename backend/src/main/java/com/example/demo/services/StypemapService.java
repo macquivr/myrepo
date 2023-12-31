@@ -15,7 +15,7 @@ public class StypemapService {
 
     public List<Stypemap> findAll() {
 
-        return (List<Stypemap>) repository.findAll();
+        return  repository.findAll();
     }
 
 }

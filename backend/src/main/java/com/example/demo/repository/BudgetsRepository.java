@@ -1,6 +1,5 @@
 package com.example.demo.repository;
 
-import com.example.demo.domain.Budget;
 import com.example.demo.domain.Budgets;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,5 @@
 package com.example.demo.utils;
 
-import com.example.demo.dto.SessionDTO;
 import com.example.demo.state.Consolidate;
 
 import java.time.LocalDate;
@@ -16,7 +15,7 @@ public class ConsolidateUtils {
             return null;
         }
         int year = dt.getYear();
-        String ystr = " " + String.valueOf(year);
+        String ystr = " " + year;
         if (isSpecificMonth(type)) {
             switch (type) {
                 case JANUARY:

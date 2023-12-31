@@ -6,15 +6,15 @@ import java.util.Vector;
 
 public class IData {
 	private String sdate = null;
-	private Statement stmt;
-	private List<NData> data;
-	private List<CData> checks;
+	private final Statement stmt;
+	private final List<NData> data;
+	private final List<CData> checks;
 	
 	public IData()
 	{
 		stmt = new Statement();
-		data = new Vector<NData>();
-		checks = new Vector<CData>();
+		data = new Vector<>();
+		checks = new Vector<>();
 	}
 	
 	public String getSDate() { return sdate; }

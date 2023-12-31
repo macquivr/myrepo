@@ -3,29 +3,29 @@ package com.example.demo.importer;
 import com.example.demo.repository.*;
 
 public class Repos {
-    private BudgetRepository budgetRepository;
+    private final BudgetRepository budgetRepository;
 
-    private BudgetsRepository budgetsRepository;
-    private BudgetValuesRepository budgetValuesRepository;
+    private final BudgetsRepository budgetsRepository;
+    private final BudgetValuesRepository budgetValuesRepository;
 
-    private NamesRepository namesRepository;
-    private PayeeRepository payeeRepository;
-    private LabelRepository labelRepository;
-    private CategoryRepository categoryRepository;
-    private LocationRepository locationRepository;
-    private DupsRepository dupsRepository;
-    private StatementsRepository statementsRepository;
-    private StatementRepository statementRepository;
-    private LtypeRepository ltypeRepository;
-    private StypemapRepository stypemapRepository;
-    private StypeRepository stypeRepository;
-    private CsbTypeRepository csbTypeRepository;
-    private MltypeRepository mltypeRepository;
-    private LedgerRepository ledgerRepository;
-    private ChecksRepository checkRepository;
-    private UtilitiesRepository utilRepository;
+    private final NamesRepository namesRepository;
+    private final PayeeRepository payeeRepository;
+    private final LabelRepository labelRepository;
+    private final CategoryRepository categoryRepository;
+    private final LocationRepository locationRepository;
+    private final DupsRepository dupsRepository;
+    private final StatementsRepository statementsRepository;
+    private final StatementRepository statementRepository;
+    private final LtypeRepository ltypeRepository;
+    private final StypemapRepository stypemapRepository;
+    private final StypeRepository stypeRepository;
+    private final CsbTypeRepository csbTypeRepository;
+    private final MltypeRepository mltypeRepository;
+    private final LedgerRepository ledgerRepository;
+    private final ChecksRepository checkRepository;
+    private final UtilitiesRepository utilRepository;
 
-    private OcRepository ocRepository;
+    private final OcRepository ocRepository;
 
     public Repos(PayeeRepository p,
                  LabelRepository l,

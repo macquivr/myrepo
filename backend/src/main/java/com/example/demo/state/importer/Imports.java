@@ -9,15 +9,15 @@ import com.example.demo.importer.update.*;
 
 public class Imports {
     private static final Logger logger=LoggerFactory.getLogger(Imports.class);
-    private HashMap<String,ImportDR> data = null;
-    private HashMap<ImportUpdate, IUpdateAction> updateActions = null;
+    private final HashMap<String,ImportDR> data;
+    private final HashMap<ImportUpdate, IUpdateAction> updateActions;
 
-    private static Imports obj = null;
+    private static Imports obj;
 
     private Imports()
     {
-        data = new HashMap<String,ImportDR>();
-        updateActions = new HashMap<ImportUpdate, IUpdateAction>();
+        this.data = new HashMap<>();
+        this.updateActions = new HashMap<>();
         initActions();
     }
 

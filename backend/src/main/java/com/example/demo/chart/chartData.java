@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface chartData<T> {
 
-    public baseIData getIData();
-    public void filterSpecific(Consolidate type, Ldvil data);
+    baseIData<T> getIData();
+    void filterSpecific(Consolidate type, Ldvil<T> data);
 
-    public List<T> getChartData(List<T> base);
-    public boolean dontFlip();
-    public Double getNetMod();
+    List<T> getChartData(List<T> base);
+    boolean dontFlip();
+    Double getNetMod();
 }

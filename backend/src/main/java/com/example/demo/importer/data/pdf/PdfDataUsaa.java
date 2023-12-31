@@ -36,19 +36,19 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 			if (s.startsWith("Previous Balance")) {
 				int idx = s.indexOf('$');
 				String str = makeValue(s,idx);
-				stmt.setSbalance(Double.valueOf(str).doubleValue());
+				stmt.setSbalance(Double.parseDouble(str));
 			}
 			if (s.startsWith("New Balance $")) {
 				int idx = s.indexOf('$');
-				String str = makeValue(s,idx);;
-				stmt.setFbalance(Double.valueOf(str).doubleValue());
+				String str = makeValue(s,idx);
+				stmt.setFbalance(Double.parseDouble(str));
 			}
 			
 			if (s.startsWith("Payments - ") && (payments == -1)) {
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = makeValue(s,idx);
-					payments = Double.valueOf(str).doubleValue();
+					payments = Double.parseDouble(str);
 				}
 			}
 			
@@ -56,7 +56,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = makeValue(s,idx);
-					credits = Double.valueOf(str).doubleValue();
+					credits = Double.parseDouble(str);
 				}
 			}
 			
@@ -64,7 +64,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = makeValue(s,idx);
-					stmt.setOuta(Double.valueOf(str).doubleValue());
+					stmt.setOuta(Double.parseDouble(str));
 				}
 			}
 			if ((s.startsWith("Fees Charged +")) || (s.startsWith("Interest Charged"))) {
@@ -72,10 +72,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 				String str = makeValue(s,idx);
 				if (stmt.getFee() != null) {
 					double d = stmt.getFee();
-					double ds = Double.valueOf(str).doubleValue();
+					double ds = Double.parseDouble(str);
 					stmt.setFee(Utils.convertDouble(d + ds));
 				} else {
-					stmt.setFee(Double.valueOf(str).doubleValue());
+					stmt.setFee(Double.parseDouble(str));
 				}
 
 			}

@@ -25,9 +25,7 @@ public class StatementController {
     public @ResponseBody
     StatementDTO getStatement() {
         List<Statement> data = service.findAll();
-        StatementDTO ret = new StatementDTO(data);
-
-        return ret;
+        return new StatementDTO(data);
     }
 
     @GetMapping(value = "/statementable", produces = "application/json")

@@ -1,7 +1,6 @@
 package com.example.demo.dto;
 
 import com.example.demo.domain.Category;
-import com.example.demo.domain.Label;
 import com.example.demo.domain.Location;
 import com.example.demo.domain.Names;
 import com.example.demo.misc.Nbucket;
@@ -11,15 +10,15 @@ import java.util.Vector;
 
 public class NameLocCatDTO {
     private String state = null;
-    private List<Nbucket> names;
-    private List<Nbucket> locations;
-    private List<Nbucket> categories;
+    private final List<Nbucket> names;
+    private final List<Nbucket> locations;
+    private final List<Nbucket> categories;
 
     public NameLocCatDTO(List<Names> nl,List<Location> ll, List<Category> cl)
     {
-        names = new Vector<Nbucket>();
-        locations = new Vector<Nbucket>();
-        categories = new Vector<Nbucket>();
+        names = new Vector<>();
+        locations = new Vector<>();
+        categories = new Vector<>();
 
         for (Names n : nl) {
             Nbucket nb = new Nbucket();

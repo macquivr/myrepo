@@ -14,7 +14,7 @@ public class LtypeService {
 
     public List<Ltype> findAll() {
 
-        return (List<Ltype>) repository.findAll();
+        return repository.findAll();
     }
 
 }

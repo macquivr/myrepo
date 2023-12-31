@@ -26,9 +26,7 @@ public class LedgerController {
     public @ResponseBody
     LedgerDTO getLedger() {
         List<Ledger> data = service.findAll();
-        LedgerDTO ret = new LedgerDTO(data);
-
-        return ret;
+        return new LedgerDTO(data);
     }
 
     @GetMapping(value = "/ledgertable", produces = "application/json")
@@ -46,7 +44,7 @@ public class LedgerController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new LedgerTableDTO(new Vector<LedgerRowDTO>());
+            return new LedgerTableDTO(new Vector<>());
         }
         List<Ledger> data = service.getData(sessionId);
         List<LedgerRowDTO> tdata = data.stream().map(LedgerRowDTO::new).collect(Collectors.toList());

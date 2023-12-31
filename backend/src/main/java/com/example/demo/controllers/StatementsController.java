@@ -22,8 +22,6 @@ public class StatementsController {
     public @ResponseBody
     StatementsDTO getStatements() {
         List<Statements> data = service.findAll();
-        StatementsDTO ret = new StatementsDTO(data);
-
-        return ret;
+        return new StatementsDTO(data);
     }
 }

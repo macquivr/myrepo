@@ -15,7 +15,7 @@ public class DupsService {
 
     public List<Dups> findAll() {
 
-        return (List<Dups>) repository.findAll();
+        return repository.findAll();
     }
 
 }

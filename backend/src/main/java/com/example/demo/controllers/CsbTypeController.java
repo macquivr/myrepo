@@ -22,8 +22,6 @@ public class CsbTypeController {
     public @ResponseBody
     CsbTypeDTO getCsbType() {
         List<Csbtype> data = service.findAll();
-        CsbTypeDTO ret = new CsbTypeDTO(data);
-
-        return ret;
+        return new CsbTypeDTO(data);
     }
 }

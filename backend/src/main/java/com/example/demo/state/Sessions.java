@@ -8,12 +8,13 @@ import org.slf4j.LoggerFactory;
 
 public class Sessions {
     private static final Logger logger=LoggerFactory.getLogger(Sessions.class);
-    private HashMap<String,SessionDTO> map = null;
+    private final HashMap<String,SessionDTO> map;
 
     private static Sessions obj = null;
 
     private Sessions() {
-        map = new HashMap<String,SessionDTO>();
+
+        this.map = new HashMap<>();
     }
 
     public static Sessions getObj() {
@@ -38,15 +39,9 @@ public class Sessions {
 
     public boolean findSession(String session) {
         return (map.get(session) != null);
-        //List<SessionDTO> filter = data.stream().filter(it -> (it.getSession().equals(session))).collect(Collectors.toList());
-        //return filter.size() != 0;
     }
 
     public SessionDTO getSession(String session) {
         return map.get(session);
-        /*List<SessionDTO> filter = data.stream().filter(it -> (it.getSession().equals(session))).collect(Collectors.toList());
-        if (filter.size() == 0)
-            return null;
-        return filter.get(0); */
     }
 }

@@ -34,7 +34,7 @@ public class ConsolidateImpl implements SessionI {
             return;
         }
 
-        logger.info("Consolidate updated to " + c.toString());
+        logger.info("Consolidate updated to " + c);
         session.setConsolidate(c);
     }
 }

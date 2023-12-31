@@ -5,7 +5,6 @@ import com.example.demo.domain.Statement;
 import com.example.demo.domain.Statements;
 import com.example.demo.dto.ImportDTO;
 import com.example.demo.importer.Repos;
-import com.example.demo.importer.checkUtil;
 import com.example.demo.importer.BadDataException;
 import com.example.demo.importer.data.pdf.PBase;
 import com.example.demo.importer.data.pdf.PdfDataAaa;

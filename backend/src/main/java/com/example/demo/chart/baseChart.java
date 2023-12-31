@@ -9,15 +9,19 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class baseChart
+public abstract class baseChart<T> implements chartData<T>
 {
     private boolean dflip = false;
     private Double netMod = null;
 
-    protected baseIData bidata;
+    protected baseIData<T> bidata;
 
-    public baseIData getIData() {
-        return this.bidata;
+    public abstract List<T> getChartData(List<T> base);
+
+    public baseIData<T> getIData() {
+        baseIData<T> ret = this.bidata;
+        ret.initialize(this);
+        return ret;
     }
     private int transQuarter(Consolidate c) {
         switch (c) {
@@ -64,8 +68,8 @@ public class baseChart
         }
     }
 
-    private void filterSpecificMonth(int cm, Ldvil data) {
-        List<Dvi> death = new ArrayList<Dvi>();
+    private void filterSpecificMonth(int cm, Ldvil<T> data) {
+        List<Dvi> death = new ArrayList<>();
 
         List<Dvi> olist = data.getDviData();
         for (Dvi d : olist) {
@@ -78,8 +82,8 @@ public class baseChart
         data.adjust(death);
     }
 
-    private void filterSpecificQuarter(int cq, Ldvil data) {
-        List<Dvi> death = new ArrayList<Dvi>();
+    private void filterSpecificQuarter(int cq, Ldvil<T> data) {
+        List<Dvi> death = new ArrayList<>();
 
         List<Dvi> olist = data.getDviData();
         for (Dvi d : olist) {
@@ -111,15 +115,13 @@ public class baseChart
         data.adjust(death);
     }
 
-    public void filterSpecific(Consolidate type, Ldvil data) {
+    public void filterSpecific(Consolidate type, Ldvil<T> data) {
         if (type == null)
             return;
         int cm = transMonth(type);
         if (cm == -1) {
             int cq = transQuarter(type);
-            if (cq == -1) {
-                return;
-            } else {
+            if (cq != -1) {
                 filterSpecificQuarter(cq,data);
             }
         } else {

@@ -4,9 +4,7 @@ package com.example.demo.importer.data.pdf;
 import com.example.demo.utils.Utils;
 import com.example.demo.utils.mydate.DUtil;
 
-import java.io.BufferedReader;
 import java.util.Iterator;
-import java.io.FileReader;
 import com.example.demo.importer.IBase;
 import com.example.demo.domain.Statement;
 import com.example.demo.importer.BadDataException;
@@ -31,17 +29,17 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 			if (s.startsWith("Previous balance ")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1);
-				stmt.setSbalance(Double.valueOf(str).doubleValue());
+				stmt.setSbalance(Double.parseDouble(str));
 			}
 			if (s.startsWith("New balance ")) {
 				int idx = s.indexOf('$');
-				String str = null;
+				String str;
 				if (idx == -1) {
 					str = s.substring(14);
 				} else {
 					str = s.substring(idx+1);
 				}
-				stmt.setFbalance(Double.valueOf(str).doubleValue());
+				stmt.setFbalance(Double.parseDouble(str));
 			}
 			if ((s.startsWith("Payments ")) || (s.startsWith("Other credit"))) {
 				int idx = s.indexOf('-');
@@ -49,10 +47,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 					String str = s.substring(idx + 1);
 					if (stmt.getIna() != null) {
 						double d = stmt.getIna();
-						double ds = Double.valueOf(str).doubleValue();
+						double ds = Double.parseDouble(str);
 						stmt.setIna(Utils.convertDouble(d + ds));
 					} else {
-						stmt.setIna(Double.valueOf(str).doubleValue());
+						stmt.setIna(Double.parseDouble(str));
 					}
 				}
 			}
@@ -60,38 +58,22 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 				int idx = s.indexOf('+');
 				if (idx != -1) {
 					String str = s.substring(idx+1);
-					stmt.setOuta(Double.valueOf(str).doubleValue());
+					stmt.setOuta(Double.parseDouble(str));
 				}
 			}
 			if (s.startsWith("Fees charged")) {
 				int idx = s.indexOf('+');
 				String str = s.substring(idx+1);
-				stmt.setFee(Double.valueOf(str).doubleValue());
+				stmt.setFee(Double.parseDouble(str));
 			}
 		}
 		if (stmt.getSbalance() == null) {
 			throw new BadDataException("Could not find aaa start...");
-			/*
-			double sbal = 0;
-			try {
-				String dir = System.getenv("MYFI_DATA_DIR");
-				String sbalpath = "/aaaS.txt";
-				FileReader f = new FileReader(dir + sbalpath);
-				BufferedReader bf = new BufferedReader(f);
-				String r = bf.readLine();
-				sbal = Double.valueOf(r);
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-			stmt.setSbalance(sbal);
-			*/
 		}
 	}
 
 	protected void doTransactions() throws BadDataException
 	{
-		boolean credit = true;
-
 		Iterator<String> iter = lines.iterator();
 		while (iter.hasNext()) {
 			String s = iter.next();
@@ -103,9 +85,9 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 		}
 		while (iter.hasNext()) {
 			String s = iter.next();
-			if (s.equals("Purchases and Adjustments")) {
-				credit = false;
-			}
+			//if (s.equals("Purchases and Adjustments")) {
+			//	credit = false;
+			//}
 
 			if (s.startsWith("Interest charged"))
 				break;
@@ -122,21 +104,13 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 			}
 			boolean err = false;
 			try {
-				double d = Double.valueOf(rest);
+				 Double.valueOf(rest);
 			} catch (NumberFormatException ex) {
 				err = true;
 			}
 			if (!err) {
 				rest = "BJS FUEL #9209 HUDSON MA " + rest;
 			}
-			/*
-			int didx = str.indexOf('/');
-			String mstr = str.substring(0,didx);
-			String value = map.get(mstr);
-			String dstr = str + "/" + value;
-
-			//rest = transLabel(rest,credit);
-            */
 
 			addNData(str, rest);
 		}
@@ -149,7 +123,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 		
 		int idx = findValue(next);
 
-		String amt = null;
+		String amt;
 		if (credit)
 			amt = "-" + next.substring(idx+2);
 		else
@@ -182,7 +156,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 	protected String transform(String str)
 	{
 		byte[] bytes = str.getBytes();
-		int i = 0;
+		int i;
 		int j = 0;
 		boolean on = false;
 		for (i=0;i<bytes.length;i++) {
@@ -230,7 +204,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAaa.class);
 
 		String dstr = DUtil.translate(tstr, "MMMM d, yyyy","MM/dd/yy");
 		if (dstr == null) {
-			throw new BadDataException("Bad Date " + dstr);
+			throw new BadDataException("Bad Date " + tstr);
 		}
 		addMap(dstr);
 

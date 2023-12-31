@@ -9,14 +9,14 @@ import com.example.demo.utils.idata.LedgerIData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class regBudgetChart extends baseChart implements chartData<Ledger> {
+public class regBudgetChart extends baseChart<Ledger> {
 
     public regBudgetChart(String sessionId, LedgerRepository l) {
         this.bidata = new LedgerIData(l,null,true,sessionId,false);
     }
     @Override
     public List<Ledger> getChartData(List<Ledger> base) {
-        List<Ledger> ret = new ArrayList<Ledger>();
+        List<Ledger> ret = new ArrayList<>();
 
         for (Ledger l : base) {
             if (l.getLtype().getId() != 3)

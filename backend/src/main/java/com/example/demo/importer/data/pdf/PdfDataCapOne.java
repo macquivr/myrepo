@@ -22,8 +22,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 	}
 	
 	protected String getLabel() { return "CapOne"; }
-	protected void doStartStop() throws BadDataException
-	{
+	protected void doStartStop() {
 		Statement stmt = idata.getStmt();
 		double fees = 0;
 		for (String s : lines) {
@@ -35,29 +34,29 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = makeValue(s,idx);
-					stmt.setSbalance(Double.valueOf(str).doubleValue());
+					stmt.setSbalance(Double.parseDouble(str));
 				}
 			}
 			if (s.startsWith("New Balance")) {
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = makeValue(s,idx);
-					stmt.setFbalance(Double.valueOf(str).doubleValue());
+					stmt.setFbalance(Double.parseDouble(str));
 				}
 			}
 			
 			if (s.startsWith("Transactions +")) {
 				int idx = s.indexOf('$');
 				if (idx != -1) {
-					String str = makeValue(s,idx);;
-					stmt.setOuta(Double.valueOf(str).doubleValue());
+					String str = makeValue(s,idx);
+					stmt.setOuta(Double.parseDouble(str));
 				}
 			}
 			if (s.startsWith("Fees Charged")) {
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = makeValue(s,idx);
-					fees = Double.valueOf(str).doubleValue();
+					fees = Double.parseDouble(str);
 				}
 			}
 			
@@ -65,7 +64,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = makeValue(s,idx);
-					interest = Double.valueOf(str).doubleValue();
+					interest = Double.parseDouble(str);
 				}
 			}
 		}
@@ -90,7 +89,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = s.substring(idx+1).replace(",","");
-					double dv = Double.valueOf(str).doubleValue();
+					double dv = Double.parseDouble(str);
 					amt = Utils.dvAdd(amt,dv);
 				}
 			}
@@ -161,10 +160,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 		}
 	}
 
-	private int extractDate(String nstr) throws BadDataException {
+	private int extractDate(String nstr)  {
 		int idx = nstr.indexOf(' ');
 		if (idx == -1)
-			return -1;;
+			return -1;
 		int idx2 = nstr.indexOf(' ',idx+1);
 		if (idx2 == -1)
 			return -1;
@@ -176,7 +175,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 
 		return idx2;
 	}
-	private String makeDate(String dstr, String value) throws BadDataException
+	private String makeDate(String dstr, String value)
 	{
 		String ret = dstr.concat(" " + value);
 		
@@ -187,7 +186,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 	{
 		String ret = "";
 		String s = str;
-		int idx = 0;
+		int idx;
 		do {
 			idx = s.indexOf('$');
 			if (idx != -1) {
@@ -214,7 +213,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 	protected String transform(String str)
 	{
 		byte[] bytes = str.getBytes();
-		int i = 0;
+		int i;
 		int j = 0;
 		boolean on = false;
 		for (i=0;i<bytes.length;i++) {
@@ -248,7 +247,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 		return new String(nbytes);
 	}
 	
-	private void getYear(String s) throws BadDataException
+	private void getYear(String s)
 	{
 		int idx = s.indexOf('|');
 		if (idx == -1)

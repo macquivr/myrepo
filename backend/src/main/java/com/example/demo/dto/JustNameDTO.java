@@ -14,7 +14,7 @@ public class JustNameDTO {
 
     public JustNameDTO(List dt)
     {
-        data = new Vector<Nbucket>();
+        data = new Vector<>();
         for (Object l : dt) {
             Nbucket n = new Nbucket();
             String nm = null;

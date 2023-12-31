@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Ldvil<T> {
-    private List<T> ldata = null;
-    private List<Dvi> dviData = null;
+    private final List<T> ldata;
+    private final List<Dvi> dviData;
 
-    private HashMap<Dvi, T> map = null;
+    private final HashMap<Dvi, T> map;
     public Ldvil(List<T> l, Dvi dvi) {
-        map = new HashMap<Dvi, T>();
+        map = new HashMap<>();
         this.ldata = l;
-        dviData = new ArrayList<Dvi>();
+        dviData = new ArrayList<>();
         for (T obj : l) {
             Dvi lobj = dvi.factory(obj);
             map.put(lobj, obj);

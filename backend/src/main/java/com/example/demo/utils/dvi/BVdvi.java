@@ -1,13 +1,11 @@
 package com.example.demo.utils.dvi;
 
 import com.example.demo.domain.Budget;
-import com.example.demo.domain.Utilities;
-import com.example.demo.utils.Utils;
 
 import java.time.LocalDate;
 
 public class BVdvi implements Dvi {
-    private Budget data;
+    private final Budget data;
 
     public Dvi factory(Object obj)
     {

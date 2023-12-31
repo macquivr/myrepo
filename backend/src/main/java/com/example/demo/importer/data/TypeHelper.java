@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Vector;
 import com.example.demo.domain.*;
 import com.example.demo.importer.*;
-import com.example.demo.repository.CsbTypeRepository;
 
 public class TypeHelper extends importBase {
 	private static TypeHelper obj = null;
 	
-	private List<Integer> eids;
-	private List<Integer> cids;
-	private Repos repos;
+	private final List<Integer> eids;
+	private final List<Integer> cids;
+	private final Repos repos;
 
 	public static TypeHelper getObj(UUID uuid, Repos repos)
 	{
@@ -27,8 +26,8 @@ public class TypeHelper extends importBase {
 		super(uuid);
 
 		repos = r;
-		eids = new Vector<Integer>();
-		cids = new Vector<Integer>();
+		eids = new Vector<>();
+		cids = new Vector<>();
 		init();
 	}
 	

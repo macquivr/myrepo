@@ -10,13 +10,13 @@ public class checkUtil {
 	private static final Logger log = LoggerFactory.getLogger(checkUtil.class);
 	private static checkUtil obj = null;
 	
-	private String cpath = null;
-	private String dir = null;
+	private final String cpath;
+	private final String dir;
 	
 	private checkUtil()
 	{
-		dir = System.getenv("MYFI_DATA_DIR");
-		cpath = "checks";
+		this.dir = System.getenv("MYFI_DATA_DIR");
+		this.cpath = "checks";
 	}
 	
 	public String getDir() { return dir; }

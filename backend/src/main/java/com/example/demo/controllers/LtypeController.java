@@ -22,9 +22,7 @@ public class LtypeController {
     public @ResponseBody
     LtypesDTO getLtypes() {
         List<Ltype> data = service.findAll();
-        LtypesDTO ret = new LtypesDTO(data);
-
-        return ret;
+        return new LtypesDTO(data);
     }
 
     @GetMapping(value = "/ltypetable", produces = "application/json")

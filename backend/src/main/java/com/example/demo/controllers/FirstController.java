@@ -22,8 +22,6 @@ public class FirstController {
     public @ResponseBody
     FirstDTO getFirst() {
         List<First> data = service.findAll();
-        FirstDTO ret = new FirstDTO(data);
-
-        return ret;
+        return new FirstDTO(data);
     }
 }

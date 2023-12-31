@@ -8,40 +8,41 @@ import com.example.demo.utils.idata.baseIData;
 import com.example.demo.utils.idate.Idate;
 import com.example.demo.utils.mydate.DUtil;
 import com.example.demo.utils.mydate.DateSorter;
-import java.util.Collections;
+
 import java.util.Iterator;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.Vector;
 
-public abstract class Base {
+public abstract class Base<E> {
 
-    public void go(SessionDTO session, StartStop dates, baseIData ldata, List lst)
+    public void go(SessionDTO session, baseIData ldata, List<E> lst)
     {
         if ((ldata == null) || (ldata.getData().isEmpty())) {
             System.out.println("NO DATA!");
             return;
         }
 
+        StartStop dates = ldata.getDates();
         List<Idate> d = populateIdate(session, ldata,dates);
 
         go(session,dates,d,lst);
     }
     private List<Idate> populateIdate(SessionDTO session, baseIData ldata, StartStop dates) {
-        List<Idate> ret = new Vector<Idate>();
+        List<Idate> ret = new Vector<>();
 
-        List<Idate> d = new Vector<Idate>();
+        List<Idate> d = new Vector<>();
         List lst = ldata.getData();
 
         for (Object obj : lst)
             d.add(ldata.factory(obj));
-        Collections.sort(d, new DateSorter());
+        d.sort(new DateSorter());
 
         Iterator<Idate> iter = d.iterator();
         Idate cur = iter.next();
 
-        LocalDate old = null;
-        LocalDate nxt = null;
+        LocalDate old;
+        LocalDate nxt;
         if (session.getConsolidate() != Consolidate.NONE) {
             old = dates.getStart();
             nxt = calculateNext(dates.getStart(), session.getConsolidate());
@@ -76,7 +77,7 @@ public abstract class Base {
 
         return ret;
     }
-    public void go(SessionDTO session, StartStop dates, List<Idate> ldata, List lst)
+    public void go(SessionDTO session, StartStop dates, List<Idate> ldata, List<E> lst)
     {
         if ((ldata == null) || (ldata.isEmpty()))
             return;
@@ -91,7 +92,7 @@ public abstract class Base {
         Object obj = factory();
         Object total = factory();
 
-        Collections.sort(ldata, new DateSorter());
+        ldata.sort(new DateSorter());
 
         for (Idate l : ldata) {
             if ((nxt != null) && DUtil.isEqualToOrAfter(l.getDate(),nxt)) {
@@ -109,7 +110,7 @@ public abstract class Base {
     }
 
     public abstract Object factory();
-    public abstract void addStuff(List l, Object data, String dstr);
+    public abstract void addStuff(List<E> l, Object data, String dstr);
     public abstract void apply(Idate l, Object obj);
 
     private LocalDate calculateNext(LocalDate cur, Consolidate type) {

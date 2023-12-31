@@ -11,7 +11,7 @@ import java.time.Month;
 import java.util.Optional;
 
 public class basePost {
-    protected Repos repos = null;
+    protected final Repos repos;
     protected Statements stmts;
     protected boolean ok = false;
 
@@ -76,9 +76,8 @@ public class basePost {
 
         path = fdir + "/" + ystr + "/" + mstr + "/" + label;
         try {
-            this.w = new FileWriter(new File(path));
+            this.w = new FileWriter(path);
         } catch (Exception ex) {
-            ex.printStackTrace();
             this.ok = false;
         }
     }

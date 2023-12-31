@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
 import com.example.demo.domain.Budget;
-import com.example.demo.dto.BudgetDTO;
 import com.example.demo.dto.BudgetTableDTO;
 import com.example.demo.dto.BudgetRowDTO;
 import com.example.demo.services.BudgetService;

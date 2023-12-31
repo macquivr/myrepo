@@ -15,7 +15,7 @@ public class FirstService {
 
     public List<First> findAll() {
 
-        return (List<First>) repository.findAll();
+        return  repository.findAll();
     }
 
 }

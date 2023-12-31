@@ -2,14 +2,11 @@ package com.example.demo.reports.utils;
 
 import com.example.demo.bean.Catsort;
 import com.example.demo.domain.Ledger;
-
 import java.util.*;
-
-import com.example.demo.bean.Lvd;
 import com.example.demo.utils.Utils;
 
 public class RMap {
-    private List<Ledger> data = null;
+    private final List<Ledger> data;
 
     public RMap(List<Ledger> d)
     {
@@ -20,10 +17,10 @@ public class RMap {
         return apply(obj, false);
     }
     public List<Catsort> apply(RMapI obj, boolean check) {
-        HashMap<Integer, Ledger> map = new HashMap<Integer,Ledger>();
-        List<Catsort> ret = new Vector<Catsort>();
+        HashMap<Integer, Ledger> map = new HashMap<>();
+        List<Catsort> ret = new Vector<>();
 
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
 
         for (Ledger l : data) {
             if ((obj == null) || obj.apply(l)) {

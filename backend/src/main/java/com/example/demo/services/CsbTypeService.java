@@ -15,7 +15,7 @@ public class CsbTypeService {
 
     public List<Csbtype> findAll() {
 
-        return (List<Csbtype>) repository.findAll();
+        return repository.findAll();
     }
 
 }

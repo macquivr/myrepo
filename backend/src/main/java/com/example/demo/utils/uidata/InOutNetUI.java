@@ -9,16 +9,16 @@ import com.example.demo.utils.idate.Idate;
 
 import java.util.List;
 
-public class InOutNetUI extends Base {
-    private Category transferc = null;
+public class InOutNetUI extends Base<Ion> {
+    private final Category transferc;
 
     public InOutNetUI(Category t)
     {
-        transferc = t;
+        this.transferc = t;
     }
 
     public Object factory() { return new Ion(); }
-    public void addStuff(List l, Object data, String dstr) {
+    public void addStuff(List<Ion> l, Object data, String dstr) {
         Ion d = (Ion) data;
         d.setLabel(dstr);
         d.setNet(d.getIn() + d.getOut());

@@ -13,9 +13,9 @@ public class OcMaintenance {
     private static final Integer[] AAA_FREE = { 13149, 11769 };
     private static final Integer[] AMAZON_FREE = { 0 };
 
-    private OcRepository ocr;
+    private final OcRepository ocr;
 
-    private Repos repos;
+    private final Repos repos;
 
     public OcMaintenance(Repos r, OcRepository ocr) {
         this.repos = r;
@@ -23,19 +23,19 @@ public class OcMaintenance {
     }
 
     public boolean  go(int stmt) {
-        boolean r = true;
+        boolean r;
 
         r = doUsaa(stmt);
         if (!r)
-            return r;
+            return false;
 
         r = doCapOne(stmt);
         if (!r)
-            return r;
+            return false;
 
         r = doAaa(stmt);
         if (!r)
-            return r;
+            return false;
 
         return doAmazon(stmt);
     }
@@ -70,7 +70,7 @@ public class OcMaintenance {
 
     private double getPdl(List<Ledger> data, int pdl) {
         double ret = 0;
-        List<Ledger> death = new ArrayList<Ledger>();
+        List<Ledger> death = new ArrayList<>();
 
         for (Ledger l : data) {
             if (l.getLabel().getId() == pdl) {
@@ -265,7 +265,7 @@ public class OcMaintenance {
         Statement s = stmtRepo.findAllByStatementsAndLtype(ss,l);
 
         List<Oc> ret = ocr.findAllByStmt(s);
-        Oc obj = null;
+        Oc obj;
         if (ret.isEmpty()) {
             obj = new Oc();
         } else {
@@ -287,8 +287,6 @@ public class OcMaintenance {
         Statement prev = null;
         for (Statement s : stmts) {
             if (s.getId() == sid)  {
-                if (prev == null)
-                    return null;
                 return prev;
             }
             prev = s;
@@ -296,18 +294,15 @@ public class OcMaintenance {
         return null;
     }
     private boolean all(int ltype,int pdl, Integer[] fv) {
-        List<Oc> ocl = new ArrayList<Oc>();
-        LedgerRepository lrepo = repos.getLedgerRepository();
+        List<Oc> ocl = new ArrayList<>();
         List<Statement> stmts = getStmts(ltype);
         Ltype l = getLtype(ltype);
 
         Statement prev = null;
-        double free = 0;
-        double ocv = 0;
 
         for (Statement s : stmts) {
             List<Oc> ret = ocr.findAllByStmt(s);
-            Oc obj = null;
+            Oc obj;
             if (ret.isEmpty()) {
                 obj = new Oc();
             } else {
@@ -316,7 +311,7 @@ public class OcMaintenance {
 
             boolean r = onep(obj, l, pdl, fv,s, prev);
             if (!r)
-                return r;
+                return false;
 
             prev = s;
             if (obj.getSdate() != null) {
@@ -344,7 +339,7 @@ public class OcMaintenance {
 
     private double freeValueD(List<Ledger> data, Ltype lobj, Integer[] fv,boolean d) {
         double ret = 0;
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         List<Integer> lv = Arrays.asList(fv);
         for (Ledger l : data) {
             if (l.getLtype().getId() != lobj.getId())

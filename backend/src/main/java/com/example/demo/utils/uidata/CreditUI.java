@@ -7,15 +7,17 @@ import com.example.demo.utils.idate.Idate;
 
 import java.util.List;
 
-public class CreditUI extends Base {
-    private boolean paid;
+public class CreditUI extends Base<CreditRowDTO> {
+    private final boolean paid;
 
     public CreditUI(boolean p) {
-        paid = p;
+
+        this.paid = p;
+
     }
 
     public Object factory() { return new CreditRowDTO();}
-    public void addStuff(List l, Object data, String dstr)
+    public void addStuff(List<CreditRowDTO> l, Object data, String dstr)
     {
         CreditRowDTO d = (CreditRowDTO) data;
         d.setLabel(dstr);

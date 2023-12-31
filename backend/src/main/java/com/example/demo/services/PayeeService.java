@@ -15,7 +15,7 @@ public class PayeeService {
 
     public List<Payee> findAll() {
 
-        return (List<Payee>) repository.findAll();
+        return repository.findAll();
     }
 
 }

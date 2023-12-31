@@ -5,7 +5,6 @@ import java.io.*;
 import com.example.demo.dto.ImportDTO;
 import com.example.demo.repository.ChecksRepository;
 import com.example.demo.repository.LedgerRepository;
-import com.example.demo.repository.LabelRepository;
 import com.example.demo.repository.StatementRepository;
 import com.example.demo.state.importer.ImportData;
 import com.example.demo.state.importer.ImportState;
@@ -30,20 +29,19 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
-import java.util.HashMap;
 import com.example.demo.bean.NewLabelData;
 
 public abstract class IBase extends importBase implements Iimport {
 	private static final Logger ilog = LoggerFactory.getLogger(IBase.class);
-	protected IMData imdata = null;
-	protected IData data = null;
+	protected final IMData imdata;
+	protected final IData data;
 	protected String fname = null;
 	protected int ltype = 0;
 	
 	protected boolean credit = false;
 	protected Properties p = null;
-	protected Repos repos = null;
-	protected ImportDTO idto = null;
+	protected final Repos repos;
+	protected final ImportDTO idto;
 
 	public IBase(UUID uuid,Repos r, ImportDTO dto)
 	{
@@ -102,7 +100,7 @@ public abstract class IBase extends importBase implements Iimport {
 				int payee = getPayee(d.getCheck());
 				if (payee == -1) {
 					idto.setImportState(ImportState.MISSING_CHECKS);
-					ret.add(fname.replace(".pdf","") + " " + String.valueOf(d.getCheck()));
+					ret.add(fname.replace(".pdf","") + " " + d.getCheck());
 				} else {
 					Optional<Payee> p = repos.getPayeeRepository().findById(payee);
 			    	if (!p.isPresent()) {
@@ -114,7 +112,7 @@ public abstract class IBase extends importBase implements Iimport {
 				}
 			}
 		}
-		return (ret.size() == 0);
+		return (ret.isEmpty());
 	}
 	
 	private int getPayee(int cnum)
@@ -126,7 +124,7 @@ public abstract class IBase extends importBase implements Iimport {
 			System.out.println("Bad Payee " + cstr);
 			return -1;
 		}
-		return Integer.valueOf(payee).intValue();
+		return Integer.parseInt(payee);
 	}
 	
 	public boolean verifyFile(List<String> err)
@@ -143,8 +141,8 @@ public abstract class IBase extends importBase implements Iimport {
 	
 	public List<String> validateLabels(String session)
 	{
-		List<String> nfCache = new Vector<String>();
-		List<String> ret = new Vector<String>();
+		List<String> nfCache = new Vector<>();
+		List<String> ret = new Vector<>();
 
 		List<Label> lbls = repos.getLabelRepository().findAll();
 		List<NData> nl = data.getData();
@@ -207,7 +205,7 @@ public abstract class IBase extends importBase implements Iimport {
 		}
 		boolean b = makeData(stmts,err);
 		if (!b)
-			return b;
+			return false;
 
 		if (findStatement(stmts.getName()) ) {
 			err.add("Statement already imported.");
@@ -273,14 +271,14 @@ public abstract class IBase extends importBase implements Iimport {
 		}
 		System.out.println("Reading " + fname);
 
-	    PDFParser parser = null;
+	    PDFParser parser;
 	    PDDocument pdDoc = null;
 	    COSDocument cosDoc = null;
 	    PDFTextStripper pdfStripper;
 	    
 	    String parsedText;
 	    File file = new File(checkUtil.getObj().getDir() + "/" + fname);
-	    PdfData pd = null;
+
 	    if (!file.exists()) {
 	    	ilog.error("NO FILE " + file.getPath());
 	    	throw new BadDataException("NO FILE " + file.getPath());
@@ -338,11 +336,11 @@ public abstract class IBase extends importBase implements Iimport {
 		
 			// kick if not in label lookup 
 			
-			if (stl == null) {
-				String str = d.getLbl().getName();
-				if (!ret.contains(str))
-					ret.add(str);
-			}
+
+			String str = d.getLbl().getName();
+			if (!ret.contains(str))
+				ret.add(str);
+
 		}
 	}
 

@@ -14,7 +14,7 @@ public class NData {
 	private Csbtype type;
 	private Label lbl;
 	private Stype stype;
-	private String ndstr = null;
+	private String ndstr;
 	
 	public NData() {
 		credit = 0;

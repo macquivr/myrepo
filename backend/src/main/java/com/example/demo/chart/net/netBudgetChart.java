@@ -8,6 +8,6 @@ public class netBudgetChart extends regBudgetChart {
    public netBudgetChart(String sessionId, LedgerRepository l)
    {
        super(sessionId, l);
-       this.setNetMod(Double.valueOf(4840));
+       this.setNetMod(4840.0);
    }
 }

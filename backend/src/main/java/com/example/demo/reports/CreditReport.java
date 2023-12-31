@@ -1,8 +1,6 @@
 package com.example.demo.reports;
 
 import com.example.demo.bean.Lvd;
-import com.example.demo.bean.MRBean;
-import com.example.demo.bean.MRBeanl;
 import com.example.demo.bean.StartStop;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
@@ -18,21 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 public class CreditReport implements ReportI {
-    private Repos repos = null;
-    private MRBeanl bdata = null;
-    private MRBeanl cdata = null;
+    private final Repos repos;
 
     public CreditReport(Repos r) {
-        repos = r;
-        bdata = new MRBeanl();
-        cdata = new MRBeanl();
+        this.repos = r;
     }
 
     public void go(FileWriter w, SessionDTO session) throws Exception
     {
-        bdata = new MRBeanl();
-        cdata = new MRBeanl();
-
         LData ld = new LData(repos.getLedgerRepository());
         List<Ledger> data  = ld.filterByDate(session,null,null);
         StartStop dates = ld.getDates();
@@ -46,16 +37,16 @@ public class CreditReport implements ReportI {
     }
 
     private List<Ledger> getL(List<Ledger> data,int ltype) {
-        List<Ledger> ret = new ArrayList<Ledger>();
+        List<Ledger> ret = new ArrayList<>();
         for (Ledger l : data) {
-            if ((l.getLtype().getId() == ltype) && (l.getAmount().doubleValue() < 0))
+            if ((l.getLtype().getId() == ltype) && (l.getAmount() < 0))
                 ret.add(l);
         }
         return ret;
     }
     private HashMap<Category,Lvd> getMap(List<Ledger> ldata, int ltype) {
         List<Ledger> data = getL(ldata,ltype);
-        HashMap<Category, Lvd> map = new HashMap<Category,Lvd>();
+        HashMap<Category, Lvd> map = new HashMap<>();
         for (Ledger l : data) {
             Category c = l.getLabel().getCategory();
             Lvd d = map.get(c);
@@ -64,8 +55,8 @@ public class CreditReport implements ReportI {
                 lv.setValue(l.getAmount());
                 map.put(c,lv);
             } else {
-                double amt = Utils.convertDouble(l.getAmount().doubleValue() + d.getValue().doubleValue());
-                d.setValue(Double.valueOf(amt));
+                double amt = Utils.convertDouble(l.getAmount() + d.getValue());
+                d.setValue(amt);
             }
         }
         return map;
@@ -88,7 +79,7 @@ public class CreditReport implements ReportI {
                 sp = sp.concat(" ");
                 len--;
             }
-            w.write(key.getName() + sp + "\t" + String.valueOf(l.getValue()) + "\n");
+            w.write(key.getName() + sp + "\t" + l.getValue() + "\n");
         }
     }
     private void printUsaa(FileWriter w, List<Ledger> data) throws Exception  {

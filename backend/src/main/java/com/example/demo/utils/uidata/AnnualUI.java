@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class AnnualUI extends Base {
+public class AnnualUI extends Base<AnnualRowDTO> {
     private static final Logger logger= LoggerFactory.getLogger(AnnualUI.class);
 
     public Object factory() { return new AnnualRowDTO(); }
-    public void addStuff(List l, Object data, String dstr) {
+    public void addStuff(List<AnnualRowDTO> l, Object data, String dstr) {
         AnnualRowDTO d = (AnnualRowDTO) data;
         d.setLabel(dstr);
         l.add(d);

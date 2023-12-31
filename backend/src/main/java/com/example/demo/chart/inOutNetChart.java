@@ -7,7 +7,7 @@ import com.example.demo.utils.idata.LedgerIData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class inOutNetChart extends baseChart implements chartData<Ledger> {
+public class inOutNetChart extends baseChart<Ledger> {
 
     public inOutNetChart(String sessionId, LedgerRepository l)
     {
@@ -17,7 +17,7 @@ public class inOutNetChart extends baseChart implements chartData<Ledger> {
 
     @Override
     public List<Ledger> getChartData(List<Ledger> base) {
-        List<Ledger> ret = new ArrayList<Ledger>();
+        List<Ledger> ret = new ArrayList<>();
         for (Ledger l : base) {
             if (l.getStype().getId() != 8)
                 ret.add(l);

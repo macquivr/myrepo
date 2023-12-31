@@ -15,10 +15,11 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class DefaultReport implements ReportI {
-    private Repos repos = null;
+    private final Repos repos;
 
     public DefaultReport(Repos r) {
-        repos = r;
+
+        this.repos = r;
     }
     public void go(FileWriter w, SessionDTO session) throws Exception
     {
@@ -51,7 +52,7 @@ public class DefaultReport implements ReportI {
         printStype("Credit",w,data);
         printStype("Annual",w,adata);
         printStype("Misc",w,data);
-        printSpent(w,dates, session);
+        printSpent(w, session);
         printCategories(w,session);
     }
 
@@ -70,9 +71,6 @@ public class DefaultReport implements ReportI {
         w.write("\n");
     }
 
-    private void stat(IonL idl, Ion idata, Data data, Category t, FileWriter w) throws Exception {
-        line(w,data.getLabel() + " IN: " + idl.getInLabel(idata) + " OUT: " + idl.getOutLabel(idata) + " NET: " + idata.getNet(), null);
-    }
 
     private void setFb(HashMap<Lenum, Data> data, Ion obj, Lenum e)
     {
@@ -157,16 +155,15 @@ public class DefaultReport implements ReportI {
     }
 
     private void printStypes(FileWriter w, List<Ledger> bundle) throws Exception {
-        HashMap<Stype,Double> map = new HashMap<Stype,Double>();
+        HashMap<Stype,Double> map = new HashMap<>();
         for (Ledger l : bundle) {
             Stype s = l.getStype();
             Double d = map.get(s);
             if (d == null)
                 map.put(s,l.getAmount());
             else {
-                double dv = d.doubleValue() + l.getAmount().doubleValue();
-                Double ndv = new Double(dv);
-                map.put(s,ndv);
+                double dv = d + l.getAmount();
+                map.put(s,dv);
             }
         }
         double total = 0;
@@ -181,18 +178,18 @@ public class DefaultReport implements ReportI {
         line(w,"TOTAL",Utils.convertDouble(total));
     }
 
-    private void printSpent(FileWriter w, StartStop dates, SessionDTO session) throws Exception
+    private void printSpent(FileWriter w, SessionDTO session) throws Exception
     {
         w.write("\n");
         w.write("Credit spent\n");
 
-        printSpent(w, "Usaa",  dates, session);
-        printSpent(w, "Aaa",  dates,session);
-        printSpent(w, "CapitalOne",  dates,session);
-        printSpent(w, "Amazon",  dates,session);
+        printSpent(w, "Usaa",  session);
+        printSpent(w, "Aaa",  session);
+        printSpent(w, "CapitalOne",  session);
+        printSpent(w, "Amazon",  session);
     }
 
-    private void printSpent(FileWriter w, String lt, StartStop dates, SessionDTO session) throws Exception
+    private void printSpent(FileWriter w, String lt, SessionDTO session) throws Exception
     {
         Ltype ltype = repos.getLtypeRepository().findByName(lt);
         LData ld = new LData(repos.getLedgerRepository());
@@ -234,10 +231,10 @@ public class DefaultReport implements ReportI {
 
         w.write("\n");
         w.write("By Category\n");
-        HashMap<String, Double> map = new HashMap<String, Double>();
+        HashMap<String, Double> map = new HashMap<>();
 
+        String lstr;
         for (Ledger l : data) {
-            String lstr = null;
             if (l.getChecks() != null) {
                 Checktype ct = l.getChecks().getPayee().getCheckType();
                 if ((ct.getName().equals("Annual")) ||
@@ -258,11 +255,11 @@ public class DefaultReport implements ReportI {
             if (d == null) {
                 map.put(lstr, l.getAmount());
             } else {
-                d = Utils.convertDouble(d.doubleValue() + l.getAmount().doubleValue());
+                d = Utils.convertDouble(d + l.getAmount());
                 map.put(lstr, d);
             }
         }
-        List<Catsort> sort = new Vector<Catsort>();
+        List<Catsort> sort = new Vector<>();
 
         Set<String> keys = map.keySet();
         for (String key : keys) {
@@ -271,7 +268,7 @@ public class DefaultReport implements ReportI {
             Double d = map.get(key);
             Catsort c = new Catsort();
             c.setLabel(akey);
-            c.setAmount(d.doubleValue());
+            c.setAmount(d);
             sort.add(c);
         }
         Collections.sort(sort);
@@ -284,12 +281,12 @@ public class DefaultReport implements ReportI {
         double ret = 0;
         w.write("\n");
         w.write("Stype " + stype + "\n");
-        HashMap<String, Double> map = new HashMap<String, Double>();
+        HashMap<String, Double> map = new HashMap<>();
 
         for (Ledger l : bundle) {
             Stype s = l.getStype();
             if (s.getName().equals(stype)) {
-                String lstr = null;
+                String lstr;
                 if (l.getChecks() != null)
                     lstr = l.getChecks().getPayee().getName();
                 else
@@ -298,7 +295,7 @@ public class DefaultReport implements ReportI {
                 if (d == null) {
                     map.put(lstr, l.getAmount());
                 } else {
-                    double dv = Utils.convertDouble(d.doubleValue() + l.getAmount().doubleValue());
+                    double dv = Utils.convertDouble(d + l.getAmount());
                     map.put(lstr, dv);
                 }
             }
@@ -306,7 +303,7 @@ public class DefaultReport implements ReportI {
         Set<String> keys = map.keySet();
         for (String key : keys) {
             Double d = map.get(key);
-            ret += d.doubleValue();
+            ret += d;
             w.write(key + " " + d + "\n");
         }
         return Utils.convertDouble(ret);

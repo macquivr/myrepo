@@ -47,7 +47,7 @@ public class CRBeant {
 
 
     public void update(CRBean b) {
-        int len = 0;
+        int len;
         String l = b.getLabel();
         if ((label == -1) || (l.length() > label)) {
             label = l.length();

@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 public class LData {
     private static final Logger logger= LoggerFactory.getLogger(LedgerService.class);
-    private LedgerRepository repository;
-    private StartStop dates = null;
+    private final LedgerRepository repository;
+    private final StartStop dates;
 
     public LData(LedgerRepository l)
     {
-        repository = l;
-        dates = new StartStop();
+        this.repository = l;
+        this.dates = new StartStop();
     }
 
     public StartStop getDates() { return dates; }
@@ -73,11 +73,11 @@ public class LData {
         }
 
         logger.error("Bad Type " + w);
-        return new Vector<Ledger>();
+        return new Vector<>();
     }
 
     public void filterLow(List<Ledger> df) {
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : df) {
             int lid = l.getLtype().getId();
             if ((lid > 14) || (lid == 4))
@@ -87,7 +87,7 @@ public class LData {
     }
 
     public void filterBundle(List<Ledger> df) {
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : df) {
             int lid = l.getLtype().getId();
             if ((lid != 3) &&

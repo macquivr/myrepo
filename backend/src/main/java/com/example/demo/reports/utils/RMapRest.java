@@ -3,9 +3,10 @@ package com.example.demo.reports.utils;
 import com.example.demo.domain.Ledger;
 
 public class RMapRest implements RMapI {
-    private boolean check = false;
+    private final boolean check;
 
-    public RMapRest(boolean c) {
+    public RMapRest(boolean c)
+    {
         this.check = c;
     }
     public boolean apply(Ledger data) {

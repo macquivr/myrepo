@@ -18,19 +18,19 @@ import java.util.Vector;
 
 public class PdfData extends PLines {
 	private static final Logger log = LoggerFactory.getLogger(PdfData.class);
-	private HashMap<String,String> map = null;
+	private final HashMap<String,String> map;
 
-	private List<String> checks = null;
-	private IData idata = null;
-	private CsbEType etype;
+	private final List<String> checks;
+	private final IData idata;
+	private final CsbEType etype;
 
 	public PdfData(IBase obj, IData data, CsbEType et) throws BadDataException {
 		super(obj);
 
-		map = new HashMap<String,String>();
+		map = new HashMap<>();
 		etype = et;
 
-		checks = new Vector<String>();
+		checks = new Vector<>();
 		idata = data;
 		initMap();
 		populate();
@@ -68,7 +68,7 @@ public class PdfData extends PLines {
 	
 	private void processChecks() throws BadDataException 
 	{
-		int w = 0;
+		int w;
 		for (String c : checks) {
 			w = 0;
 			CData ch = new CData();
@@ -97,16 +97,16 @@ public class PdfData extends PLines {
 		if (token.charAt(token.length()-1) == '*') {
 			token = token.substring(0,token.length()-1);
 		}
-		int num = 0;
+		int num;
 		try {
-			num = Integer.valueOf(token);
+			num = Integer.parseInt(token);
 		} catch (Exception ex) {
 			throw new BadDataException("Couldn't parse check number " + token);
 		}
 		ch.setNum(num);
 	}
 	
-	private void addDate(String token,CData ch) throws BadDataException
+	private void addDate(String token,CData ch)
 	{
 		ch.setDate(token);
 	}
@@ -115,7 +115,9 @@ public class PdfData extends PLines {
 		String amts = token.substring(1);
 		double amt = 0;
 		try {
-			amt = Utils.dval(amts);
+			Double d = Utils.dval(amts);
+			if (d != null)
+				amt = d;
 		} catch (Exception ex) {
 			throw new BadDataException("Couldn't parse amount " + token);
 		}
@@ -124,13 +126,15 @@ public class PdfData extends PLines {
 	
 	private void stmtLine(String line,int l) 
 	{
-		int idx = 0;
-		String str = null;
+		int idx;
+		String str;
 		double amt = 0;
 		if (l < 4) {
 			idx = line.indexOf('$');
 			str = line.substring(idx+1).replaceAll(",","");
-			amt = Utils.dval(str);
+			Double d = Utils.dval(str);
+			if (d != null)
+				amt = d;
 		}
 		Statement stmt = idata.getStmt();
 		switch(l) {
@@ -185,7 +189,7 @@ public class PdfData extends PLines {
 			log.info("TAG: bad target " + data + " TGT: #" + tgt + "#");
 			target = "BAD";
 		}
-		String estr = etype.toString().substring(0,1) + etype.toString().substring(1).toLowerCase();
+		String estr = etype.toString().charAt(0) + etype.toString().substring(1).toLowerCase();
 
 		return dw + " " + estr + " " + tof + " " + target;
 	}
@@ -223,15 +227,20 @@ public class PdfData extends PLines {
 
 		double newb = 0;
 		try {
-			newb = Utils.dval(bals);
-			nd.setBalance(newb);
+			Double d = Utils.dval(bals);
+			if (d != null) {
+				newb = d;
+				nd.setBalance(newb);
+			}
 		} catch (Exception ex) {
 			throw new BadDataException("Could not parse balance for line " + line);
 		}
 		
 		double amta = 0;
 		try {
-			amta = Utils.dval(amt);
+			Double d =  Utils.dval(amt);
+			if (d != null)
+				amta = d;
 		} catch (Exception ex) {
 			throw new BadDataException("Could not parse amount for line " + line);
 		}
@@ -250,12 +259,14 @@ public class PdfData extends PLines {
 	private String findDate(Iterator<String> iter)
 	{
 		boolean done = false;
-		
+		String ret = null;
 		while (!done) {
-			if (!iter.hasNext())
-				return null;
+			if (!iter.hasNext()) {
+				done = true;
+				continue;
+			}
 		
-			String dstr = null;
+			String dstr;
 			String str = iter.next();
 			
 			int idx = str.indexOf(' ');
@@ -264,11 +275,13 @@ public class PdfData extends PLines {
 			else
 				dstr = str.substring(0,idx);
 		
-			if (DUtil.isValidDate(dstr,DUtil.MMDDYYYY))
-				return str;
+			if (DUtil.isValidDate(dstr,DUtil.MMDDYYYY))  {
+				done = true;
+				ret = str;
+			}
 		}
 		
-		return null;
+		return ret;
 	}
 	private String getNext(Iterator<String> iter)
 	{
@@ -332,10 +345,7 @@ public class PdfData extends PLines {
 	{
 		NData prev = new NData();
 		prev.setBalance(idata.getStmt().getSbalance());
-		String cur = null;
 		int l = 0;
-		boolean on = false;
-		boolean nm = false;
 		boolean done = false;
 		Iterator<String> iter = lines.iterator();
 		

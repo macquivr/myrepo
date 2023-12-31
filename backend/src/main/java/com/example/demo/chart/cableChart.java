@@ -6,7 +6,7 @@ import com.example.demo.utils.idata.CableIData;
 
 import java.util.List;
 
-public class cableChart extends baseChart implements chartData<Utilities> {
+public class cableChart extends baseChart<Utilities> {
 
     public cableChart(String sessionId, UtilitiesRepository u) {
         this.bidata = new CableIData(sessionId, u);

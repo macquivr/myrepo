@@ -1,40 +1,25 @@
 package com.example.demo.reports;
 
-import com.example.demo.bean.MRBean;
-import com.example.demo.bean.MRBeanl;
 import com.example.demo.bean.StartStop;
-import com.example.demo.domain.Checks;
 import com.example.demo.domain.Ledger;
 import com.example.demo.domain.Ltype;
-import com.example.demo.domain.Stype;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.importer.Repos;
 import com.example.demo.repository.LtypeRepository;
 import com.example.demo.utils.LData;
-import com.example.demo.utils.Utils;
-
 import java.io.FileWriter;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class RetireReport implements ReportI {
-    private Repos repos = null;
-    private MRBeanl bdata = null;
-    private MRBeanl cdata = null;
+    private final Repos repos;
 
     public RetireReport(Repos r) {
         repos = r;
-        bdata = new MRBeanl();
-        cdata = new MRBeanl();
     }
 
     public void go(FileWriter w, SessionDTO session) throws Exception
     {
-        bdata = new MRBeanl();
-        cdata = new MRBeanl();
-
         LData ld = new LData(repos.getLedgerRepository());
         LtypeRepository lt = repos.getLtypeRepository();
 

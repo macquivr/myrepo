@@ -15,7 +15,7 @@ public class LocationService {
 
     public List<Location> findAll() {
 
-        return (List<Location>) repository.findAll();
+        return repository.findAll();
     }
 
 }

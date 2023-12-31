@@ -9,10 +9,10 @@ import com.example.demo.utils.idate.Idate;
 
 import java.util.List;
 
-public class BillsUI extends Base {
+public class BillsUI extends Base<BillsRowDTO> {
 
     public Object factory() { return new BillsRowDTO(); }
-    public void addStuff(List l, Object data, String dstr) {
+    public void addStuff(List<BillsRowDTO> l, Object data, String dstr) {
         BillsRowDTO d = (BillsRowDTO) data;
         d.setLabel(dstr);
         l.add(d);

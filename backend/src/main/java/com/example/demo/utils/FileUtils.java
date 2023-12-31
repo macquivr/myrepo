@@ -18,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 
 public class FileUtils {
+	public static final String LINE_SEPARATOR = System.lineSeparator();
 	public static String normalizePath(String path) {
 		if (path == null)
 			return null;
@@ -35,8 +36,8 @@ public class FileUtils {
 	}
 
 	public static String readFile(File file) throws IOException {
-		final String LINE_SEPARATOR = System.getProperty("line.separator");
-		StringBuffer buffer = new StringBuffer();
+
+		StringBuilder buffer = new StringBuilder();
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(file));
@@ -50,13 +51,14 @@ public class FileUtils {
 				try {
 					reader.close();
 				} catch (IOException e) {
+					// ignore
 				}
 		}
 		return buffer.toString();
 	}
 
     public static String readFileTail(File file, int maxLines) throws IOException {             
-        List<String> lines = new ArrayList<String>(maxLines);
+        List<String> lines = new ArrayList<>(maxLines);
         int linesCharCount = 0;
         ReversedLinesFileReader reader = null;
         try {
@@ -75,12 +77,12 @@ public class FileUtils {
                 try {
                     reader.close();
                 } catch (IOException e) {
+					// ignore
                 }
         }
         
         int lineCount = lines.size();
         if (lineCount > 0) {
-            final String LINE_SEPARATOR = System.getProperty("line.separator");
             int lineSeparatorsCharCount = (lineCount-1) * LINE_SEPARATOR.length();
                         
             StringBuilder buffer = new StringBuilder(linesCharCount + lineSeparatorsCharCount);
@@ -105,6 +107,7 @@ public class FileUtils {
 				try {
 					writer.close();
 				} catch (IOException e) {
+					// ignore
 				}
 		}
 	}
@@ -120,18 +123,22 @@ public class FileUtils {
 				try {
 					writer.close();
 				} catch (IOException e) {
+					// ignore
 				}
 		}
 	}
 	
 	public static List<String> getFilenames(String path, boolean trimExtension) {
-		List<String> filenames = new ArrayList<String>();
+		List<String> filenames = new ArrayList<>();
 		if (path != null) {
 			File folder = new File(path);
 			if (folder.exists()) {
-				for (File file : folder.listFiles()) {
-					if (file.isFile()) {
-						filenames.add(trimExtension ? FilenameUtils.getBaseName(file.getName()) : file.getName());
+				File[] dirs = folder.listFiles();
+				if (dirs != null) {
+					for (File file : dirs) {
+						if (file.isFile()) {
+							filenames.add(trimExtension ? FilenameUtils.getBaseName(file.getName()) : file.getName());
+						}
 					}
 				}
 			}
@@ -152,14 +159,17 @@ public class FileUtils {
 	}
 
 	public static List<String> getFilenames(String path, String extension) {
-		List<String> filenames = new ArrayList<String>();
+		List<String> filenames = new ArrayList<>();
 		if (path != null) {
 			File imagesFolder = new File(path);
 			if (imagesFolder.exists()) {
-				for (File file : imagesFolder.listFiles()) {
-					if (file.isFile()) {
-						if (extension == null || FileUtils.endsWithIgnoreCase(file.getName(), "." + extension))
-							filenames.add(file.getName());
+				File[] dirs = imagesFolder.listFiles();
+				if (dirs != null) {
+					for (File file : dirs) {
+						if (file.isFile()) {
+							if (extension == null || FileUtils.endsWithIgnoreCase(file.getName(), "." + extension))
+								filenames.add(file.getName());
+						}
 					}
 				}
 			}

@@ -1,6 +1,5 @@
 package com.example.demo.controllers;
 
-import com.example.demo.dto.NameLocCatDTO;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.dto.SessionUpdateDTO;
 import com.example.demo.dto.StatusDTO;

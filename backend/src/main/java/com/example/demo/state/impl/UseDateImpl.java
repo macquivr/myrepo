@@ -33,7 +33,7 @@ public class UseDateImpl implements SessionI {
             return;
         }
 
-        logger.info("UseDate updated to " + w.toString());
+        logger.info("UseDate updated to " + w);
         session.setWhichDate(w);
     }
 }

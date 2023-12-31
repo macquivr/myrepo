@@ -13,7 +13,9 @@ public class CData {
 	public int getNum() { return num; }
 	public String getDate() { return date; }
 	public double getAmt() { return amt; }
-	
+
+	public int getPayee() { return this.payee; }
+
 	public void Print()
 	{
 		System.out.println("Check: " + num + " Date: " + date + " Amount: " + amt);

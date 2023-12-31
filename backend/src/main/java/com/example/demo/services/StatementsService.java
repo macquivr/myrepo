@@ -14,7 +14,7 @@ public class StatementsService {
     private StatementsRepository repository;
 
     public List<Statements> findAll() {
-        return (List<Statements>) repository.findAll();
+        return repository.findAll();
     }
 
 }

@@ -2,7 +2,6 @@ package com.example.demo.state.impl;
 
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.dto.SessionUpdateDTO;
-import com.example.demo.state.Consolidate;
 import com.example.demo.state.SessionI;
 import com.example.demo.state.Sessions;
 import org.slf4j.Logger;
@@ -14,7 +13,7 @@ public class PercentImpl implements SessionI {
     @Override
     public boolean validate(String data) {
         try {
-            Boolean.valueOf(data);
+            Boolean.parseBoolean(data);
         } catch (Exception ex) {
             return false;
         }
@@ -27,9 +26,9 @@ public class PercentImpl implements SessionI {
         Sessions sobj = Sessions.getObj();
         SessionDTO session = sobj.getSession(data.getSession());
 
-        boolean c = false;
+        boolean c;
         try {
-            c = Boolean.valueOf(data.getData());
+            c = Boolean.parseBoolean(data.getData());
         } catch (Exception ex) {
             return;
         }

@@ -44,20 +44,20 @@ public class LedgerService {
     public List<Ledger> getData(String sessionId) {
         if (sessionId == null) {
             logger.error("No Session.");
-            return new Vector<Ledger>();
+            return new Vector<>();
         }
         if (sessionId.isEmpty()) {
             logger.error("Empty Session.");
-            return new Vector<Ledger>();
+            return new Vector<>();
         }
 
         SessionDTO filter = Sessions.getObj().getSession(sessionId);
         if (filter == null) {
             logger.error("COULDN'T find session.");
-            return new Vector<Ledger>();
+            return new Vector<>();
         }
 
-        List<Ledger> df = null;
+        List<Ledger> df;
         int ltype = filter.getLtype();
         int stype = filter.getStype();
 
@@ -81,7 +81,7 @@ public class LedgerService {
         if (ltype == -1)
             ld.filterBundle(df);
 
-        List<Ledger> ret = null;
+        List<Ledger> ret;
 
         if (!filter.getNlc().equals("NONE")) {
            ret = filterByNlc(filter,df);
@@ -89,7 +89,7 @@ public class LedgerService {
         else
             ret = df;
 
-        if (ret.size() == 0)
+        if (ret.isEmpty())
             return ret;
 
         double total = 0;
@@ -111,7 +111,7 @@ public class LedgerService {
 
     private List<Ledger> filterByNlc(SessionDTO filter,List<Ledger> data)
     {
-        List<Ledger> ret = new Vector<Ledger>();
+        List<Ledger> ret = new Vector<>();
         String name = filter.getNlcv();
         if (name == null)
             return data;

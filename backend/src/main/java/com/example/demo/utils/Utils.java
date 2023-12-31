@@ -6,9 +6,9 @@ import java.util.HashMap;
 public class Utils {
     public static String getAkey(String key, HashMap<String,Double> map)
     {
-        String akey = null;
+        String akey;
         String nkey = key.substring(2);
-        String wkey = null;
+        String wkey;
         if (key.startsWith("C "))
             wkey = "D " + nkey;
         else
@@ -37,7 +37,7 @@ public class Utils {
 	public static double dv(double x)
 	{
 		int numberofDecimals = 2;
-		BigDecimal d = null;
+		BigDecimal d;
 	    if ( x > 0) {
 	        d = new BigDecimal(String.valueOf(x)).setScale(numberofDecimals, BigDecimal.ROUND_HALF_DOWN);
 	    } else {
@@ -56,7 +56,7 @@ public class Utils {
 	public static String itrim(String str)
 	{
 		if (str == null)
-			return str;
+			return null;
 		String ret = str;
 		while (ret.contains("  ")) {
 			ret = ret.replaceAll("  ", " ");

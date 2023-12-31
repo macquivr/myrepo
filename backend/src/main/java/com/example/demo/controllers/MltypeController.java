@@ -22,8 +22,6 @@ public class MltypeController {
     public @ResponseBody
     MltypeDTO getMltypes() {
         List<Mltype> data = service.findAll();
-        MltypeDTO ret = new MltypeDTO(data);
-
-        return ret;
+        return new MltypeDTO(data);
     }
 }

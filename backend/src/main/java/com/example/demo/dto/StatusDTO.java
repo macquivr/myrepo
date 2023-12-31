@@ -1,9 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.domain.Stype;
-
-import java.util.List;
-
 public class StatusDTO {
     private boolean status;
     private String message;

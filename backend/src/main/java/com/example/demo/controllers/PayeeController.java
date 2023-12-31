@@ -22,8 +22,6 @@ public class PayeeController {
     public @ResponseBody
     PayeeDTO getPayee() {
         List<Payee> data = service.findAll();
-        PayeeDTO ret = new PayeeDTO(data);
-
-        return ret;
+        return new PayeeDTO(data);
     }
 }

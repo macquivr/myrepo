@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class BalanceUtils {
-    private Repos repos;
+    private final Repos repos;
 
     public BalanceUtils(Repos r) {
         this.repos = r;

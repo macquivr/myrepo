@@ -5,7 +5,7 @@ import com.example.demo.domain.Utilities;
 import java.time.LocalDate;
 
 public class Elecdvi implements Dvi {
-    private Utilities data;
+    private final Utilities data;
 
     public Dvi factory(Object obj)
     {

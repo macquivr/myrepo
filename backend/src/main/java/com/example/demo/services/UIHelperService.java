@@ -24,7 +24,7 @@ public class UIHelperService {
 
     public List<UIKeyValueDTO> getPayees() {
         List<Payee> payees = payeeRepository.findAll();
-        List<UIKeyValueDTO> ret = new Vector<UIKeyValueDTO>();
+        List<UIKeyValueDTO> ret = new Vector<>();
 
         for (Payee p : payees) {
             UIKeyValueDTO data = new UIKeyValueDTO();
@@ -40,7 +40,7 @@ public class UIHelperService {
 
     public List<UIKeyValueDTO> getStypes() {
         List<Stype> stypes = stypeRepository.findAll();
-        List<UIKeyValueDTO> ret = new Vector<UIKeyValueDTO>();
+        List<UIKeyValueDTO> ret = new Vector<>();
 
         for (Stype p : stypes) {
             UIKeyValueDTO data = new UIKeyValueDTO();

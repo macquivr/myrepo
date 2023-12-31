@@ -5,4 +5,4 @@ public enum ImportUpdate {
     DUP,
     NEWL,
     STYPE,
-};
+}

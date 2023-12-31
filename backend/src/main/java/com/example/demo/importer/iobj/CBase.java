@@ -47,7 +47,7 @@ public abstract class CBase extends IBase {
 	{
 		SaveO obj = new SaveO(this, ltype, data, imdata,err);
 	
-		return obj.makeData(stmts);
+		return obj.makeData();
 	}
 
 	public void attachStatement(Statements stmts,Statement stmt)

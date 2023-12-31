@@ -1,7 +1,6 @@
 package com.example.demo.utils.idata;
 
 import com.example.demo.chart.chartData;
-import com.example.demo.domain.Label;
 import com.example.demo.domain.Ledger;
 import com.example.demo.domain.Stype;
 import com.example.demo.dto.SessionDTO;
@@ -18,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.List;
 
-public class LedgerIData extends baseIData {
+public class LedgerIData extends baseIData<Ledger> {
     private static final Logger logger= LoggerFactory.getLogger(LedgerIData.class);
 
     private LedgerRepository repository;
@@ -52,19 +51,19 @@ public class LedgerIData extends baseIData {
     }
 
     public Idate factory(Object obj) {
-        Ledger l = null;
+        Ledger l;
         if (obj instanceof Ledger) {
             l = (Ledger) obj;
         } else {
           l = new Ledger();
           l.setTransdate((LocalDate) obj);
-          l.setAmount(Double.valueOf(0.0));
+          l.setAmount(0.0);
         }
 
         return new LedgerIDate(l);
     }
 
-    public boolean initialize(chartData chartI) {
+    public boolean initialize(chartData<Ledger> chartI) {
         if (this.filter == null) {
             return false;
         }
@@ -82,7 +81,7 @@ public class LedgerIData extends baseIData {
             ld.filterBundle(d);
         }
 
-        Ldvil<Ledger> ldvil = new Ldvil<Ledger>(d, new Ldvi(null));
+        Ldvil<Ledger> ldvil = new Ldvil<>(d, new Ldvi(null));
         chartI.filterSpecific(this.filter.getConsolidate(), ldvil);
         this.data = chartI.getChartData(d);
         this.dates = ld.getDates();

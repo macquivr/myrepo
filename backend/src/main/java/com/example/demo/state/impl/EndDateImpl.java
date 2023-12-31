@@ -36,6 +36,6 @@ public class EndDateImpl implements SessionI {
         dt = DUtil.lastOfMonth(dt);
 
         session.setStop(dt);
-        logger.info("Updated end date to " + dt.toString());
+        logger.info("Updated end date to " + dt);
     }
 }

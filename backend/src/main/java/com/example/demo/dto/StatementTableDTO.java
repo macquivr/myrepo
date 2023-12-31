@@ -1,7 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.domain.Statement;
-
 import java.util.List;
 
 public class StatementTableDTO {

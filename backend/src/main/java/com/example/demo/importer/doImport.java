@@ -4,7 +4,6 @@ import com.example.demo.dto.ImportDTO;
 import com.example.demo.reports.postimport.balanceReport;
 import com.example.demo.reports.postimport.ocReport;
 import com.example.demo.reports.postimport.outReport;
-import com.example.demo.repository.OcRepository;
 import com.example.demo.repository.StatementsRepository;
 import com.example.demo.state.importer.ImportState;
 import com.example.demo.utils.runner.OcMaintenance;
@@ -21,18 +20,18 @@ public class doImport extends importBase {
 	private static final Logger log = LoggerFactory.getLogger(doImport.class);
 	private List<Iimport> data = null;
 	private Statements stmts = null;
-	private Repos repos = null;
-	private ImportDTO idto = null;
-	private UtilImport util = null;
+	private final Repos repos;
+	private final ImportDTO idto;
+
 	public doImport(UUID uuid,Repos r, ImportDTO dto)
 	{
 		super(uuid);
 
-		idto = dto;
-		repos = r;
+		this.idto = dto;
+		this.repos = r;
 		initStatements();
-		data = new Vector<Iimport>();
-		util = new UtilImport(uuid,repos,idto);
+		data = new Vector<>();
+		UtilImport util = new UtilImport(uuid,repos,idto);
 		util.setRepo(repos.getUtilitiesRepository());
 
 		data.add(new MainAcct(uuid,repos,idto));
@@ -58,7 +57,7 @@ public class doImport extends importBase {
 	
 	public List<String> go()
 	{
-		List<String> ret = new Vector<String>();
+		List<String> ret = new Vector<>();
 		process(ret);
 		return ret;		
 	}
@@ -80,15 +79,14 @@ public class doImport extends importBase {
 			return;
 		}
 		
-		if (missingLabels.size() > 0) {
+		if (!missingLabels.isEmpty()) {
 			idto.setImportState(ImportState.MISSING_LABELS);
-			for (String s : missingLabels)
-				ret.add(s);
+			ret.addAll(missingLabels);
 			return;
 		}
 
 		doStypes(ret);
-		if (ret.size() > 0) {
+		if (!ret.isEmpty()) {
 			idto.setImportState(ImportState.MISSING_STYPES);
 			return;
 		}
@@ -97,11 +95,11 @@ public class doImport extends importBase {
 
 		log.info("Importing data...");
 		boolean b = importData(ret);
-		if (!b && (ret.size() == 0)) {
+		if (!b && (ret.isEmpty())) {
 			ret.add("Could not import data.");
 		}
 
-		if (b && (ret.size() == 0))
+		if (b && (ret.isEmpty()))
 			idto.setImportState(ImportState.SAVED);
 
 	}
@@ -109,7 +107,7 @@ public class doImport extends importBase {
 	private void doStypes(List<String> ret) {
 		for (Iimport I : data) {
 			I.setStype(ret);
-			if (ret.size() > 0)
+			if (!ret.isEmpty())
 				return;
 		}
 	}
@@ -118,7 +116,7 @@ public class doImport extends importBase {
 	{
 		for (Iimport I : data) {
 			if (!I.verifyFile(ret))
-			return false;
+				return false;
 		}
 		
 		return true;
@@ -136,10 +134,10 @@ public class doImport extends importBase {
 	
 	private void addStuff(List<String> ret,List<String> tmp) 
 	{
-		if (tmp.size() > 0) {
+		if (!tmp.isEmpty()) {
 			for (String s : tmp) 
 				if (!ret.contains(s)) {
-					if (s.length() > 0) {
+					if (!s.isEmpty()) {
 						//log.info("TAG: Adding " + s);
 						ret.add(s);
 					}
@@ -149,8 +147,8 @@ public class doImport extends importBase {
 	
 	private List<String> validateLabels()
 	{
-		List<String> tmp = null;
-		List<String> ret = new Vector<String>();
+		List<String> tmp;
+		List<String> ret = new Vector<>();
 
 		for (Iimport I : data) {
 			tmp = I.validateLabels(getUuid().toString());
@@ -166,7 +164,7 @@ public class doImport extends importBase {
 
 	private boolean importData(List<String> err)
 	{
-		boolean ret = true;
+		boolean ret;
 		
 		ret = importData(false,err);
 		if (ret) {
@@ -222,12 +220,6 @@ public class doImport extends importBase {
 		
 		return true;
 	}
-	
-	public static void main(String[] args)
-	{
-		doImport obj = new doImport(null,null, null);
-	    
-		obj.go();
-	}
+
 }
 

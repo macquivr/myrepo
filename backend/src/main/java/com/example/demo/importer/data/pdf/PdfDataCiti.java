@@ -47,7 +47,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = s.substring(idx+1);
-					payments = Double.valueOf(str).doubleValue();
+					payments = Double.parseDouble(str);
 				}
 			}
 			
@@ -55,33 +55,33 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = s.substring(idx+1);
-					credits = Double.valueOf(str).doubleValue();
+					credits = Double.parseDouble(str);
 				}
 			}
 			
 			if (s.startsWith("Previous balance")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1);
-				stmt.setSbalance(Double.valueOf(str).doubleValue());
+				stmt.setSbalance(Double.parseDouble(str));
 			}
 			
 			if (s.startsWith("New balance")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1);
-				stmt.setFbalance(Double.valueOf(str).doubleValue());
+				stmt.setFbalance(Double.parseDouble(str));
 			}
 	
 			if (s.startsWith("Purchases +")) {
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = s.substring(idx+1);
-					stmt.setOuta(Double.valueOf(str).doubleValue());
+					stmt.setOuta(Double.parseDouble(str));
 				}
 			}
 			if (s.startsWith("Fees +")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1);
-				stmt.setFee(Double.valueOf(str).doubleValue());
+				stmt.setFee(Double.parseDouble(str));
 			}
 		}
 		stmt.setIna(Utils.dvAdd(payments, credits));
@@ -163,16 +163,16 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 		int idx = rest.indexOf('$');
 		String amount = rest.substring(idx+1);
 		if (rest.contains("NATIONAL GRID")) {
-			electric += Double.valueOf(amount);
+			electric += Double.parseDouble(amount);
 		}
 		if (rest.contains("SOLAR")) {
-			electric += Double.valueOf(amount);
+			electric += Double.parseDouble(amount);
 		}
 		if (rest.contains("COMCAST")) {
-			cable = Double.valueOf(amount);
+			cable = Double.parseDouble(amount);
 		}
 		if (rest.contains("XFINITY")) {
-			cell = Double.valueOf(amount);
+			cell = Double.parseDouble(amount);
 		}
 
 	}

@@ -22,8 +22,6 @@ public class CheckTypeController {
     public @ResponseBody
     CheckTypeDTO getCheckType() {
         List<Checktype> data = service.findAll();
-        CheckTypeDTO ret = new CheckTypeDTO(data);
-
-        return ret;
+        return new CheckTypeDTO(data);
     }
 }

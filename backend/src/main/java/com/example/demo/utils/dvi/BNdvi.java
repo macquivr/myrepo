@@ -5,7 +5,7 @@ import com.example.demo.domain.Budget;
 import java.time.LocalDate;
 
 public class BNdvi implements Dvi {
-    private Budget data;
+    private final Budget data;
 
     public Dvi factory(Object obj)
     {

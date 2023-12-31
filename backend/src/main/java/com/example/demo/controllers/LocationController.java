@@ -25,9 +25,7 @@ public class LocationController {
     public @ResponseBody
     LocationDTO getLocation() {
         List<Location> data = service.findAll();
-        LocationDTO ret = new LocationDTO(data);
-
-        return ret;
+        return new LocationDTO(data);
     }
 
     @GetMapping(value = "/locationtable", produces = "application/json")

@@ -2,10 +2,8 @@ package com.example.demo.utils;
 
 import com.example.demo.bean.StartStop;
 import com.example.demo.domain.Budget;
-import com.example.demo.domain.Utilities;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.repository.BudgetRepository;
-import com.example.demo.repository.UtilitiesRepository;
 import com.example.demo.services.LedgerService;
 import com.example.demo.state.WhichDate;
 import com.example.demo.utils.mydate.DUtil;
@@ -19,13 +17,13 @@ import java.util.stream.Collectors;
 
 public class BData {
     private static final Logger logger= LoggerFactory.getLogger(LedgerService.class);
-    private BudgetRepository repository;
-    private StartStop dates = null;
+    private final BudgetRepository repository;
+    private final StartStop dates;
 
     public BData(BudgetRepository l)
     {
-        repository = l;
-        dates = new StartStop();
+        this.repository = l;
+        this.dates = new StartStop();
     }
 
     public StartStop getDates() { return dates; }
@@ -73,7 +71,7 @@ public class BData {
         }
 
         logger.error("Bad Type " + w);
-        return new Vector<Budget>();
+        return new Vector<>();
     }
 
     private List<Budget> doFilter(LocalDate start, LocalDate stop) {

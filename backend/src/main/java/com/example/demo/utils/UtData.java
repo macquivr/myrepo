@@ -1,12 +1,8 @@
 package com.example.demo.utils;
 
 import com.example.demo.bean.StartStop;
-import com.example.demo.domain.Ledger;
-import com.example.demo.domain.Ltype;
-import com.example.demo.domain.Stype;
 import com.example.demo.domain.Utilities;
 import com.example.demo.dto.SessionDTO;
-import com.example.demo.repository.LedgerRepository;
 import com.example.demo.repository.UtilitiesRepository;
 import com.example.demo.services.LedgerService;
 import com.example.demo.state.WhichDate;
@@ -21,13 +17,13 @@ import java.util.stream.Collectors;
 
 public class UtData {
     private static final Logger logger= LoggerFactory.getLogger(LedgerService.class);
-    private UtilitiesRepository repository;
-    private StartStop dates = null;
+    private final UtilitiesRepository repository;
+    private final StartStop dates;
 
     public UtData(UtilitiesRepository l)
     {
-        repository = l;
-        dates = new StartStop();
+        this.repository = l;
+        this.dates = new StartStop();
     }
 
     public StartStop getDates() { return dates; }
@@ -75,7 +71,7 @@ public class UtData {
         }
 
         logger.error("Bad Type " + w);
-        return new Vector<Utilities>();
+        return new Vector<>();
     }
 
     private List<Utilities> doFilter(LocalDate start, LocalDate stop) {

@@ -22,8 +22,6 @@ public class ChecksController {
     public @ResponseBody
     ChecksDTO getChecks() {
         List<Checks> data = service.findAll();
-        ChecksDTO ret = new ChecksDTO(data);
-
-        return ret;
+        return new ChecksDTO(data);
     }
 }

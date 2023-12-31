@@ -1,6 +1,5 @@
 package com.example.demo.controllers;
 
-import com.example.demo.domain.Label;
 import com.example.demo.domain.Names;
 import com.example.demo.dto.JustNameDTO;
 import com.example.demo.dto.NamesDTO;
@@ -24,17 +23,13 @@ public class NamesController {
     public @ResponseBody
     JustNameDTO getImportNames() {
         List<Names> data = service.findAll();
-        JustNameDTO ret = new JustNameDTO(data);
-
-        return ret;
+        return new JustNameDTO(data);
     }
 
     @GetMapping(value = "/Names", produces = "application/json")
     public @ResponseBody
     NamesDTO getNames() {
         List<Names> data = service.findAll();
-        NamesDTO ret = new NamesDTO(data);
-
-        return ret;
+        return new NamesDTO(data);
     }
 }

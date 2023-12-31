@@ -13,14 +13,14 @@ import com.example.demo.importer.data.NData;
 
 public abstract class PBase extends PLines {
 	private static final Logger log = LoggerFactory.getLogger(PBase.class);
-	protected IData idata = null;
-	protected HashMap<String, String> map = null;
+	protected IData idata;
+	protected HashMap<String, String> map;
 	
 	public PBase(IBase obj,IData data) throws BadDataException {
 		super(obj);
 
 		idata = data;
-		map = new HashMap<String,String>();
+		map = new HashMap<>();
 	}
 	
 	protected abstract String transform(String str);
@@ -48,13 +48,13 @@ public abstract class PBase extends PLines {
 		nd.setLabel(lbl);
 		
 		Double d = Utils.dval(amt);
-		if ((d == null) || (d.doubleValue() == 0))
+		if ((d == null) || (d == 0))
 			return;
 		
-		if (d.doubleValue() > 0) 
-			nd.setDebit(d.doubleValue());
+		if (d > 0)
+			nd.setDebit(d);
 		else
-			nd.setCredit(d.doubleValue() * -1);
+			nd.setCredit(d * -1);
         
 		idata.getData().add(nd);
 	}

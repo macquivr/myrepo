@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class GReport implements ReportI {
-    private Repos repos = null;
+    private final Repos repos;
 
     public GReport(Repos r) {
         this.repos = r;
@@ -30,7 +30,7 @@ public class GReport implements ReportI {
         RMap r = new RMap(data);
         printPeriod(w,dates);
 
-        List<Catsort> summary = new Vector<Catsort>();
+        List<Catsort> summary = new Vector<>();
 
         List<Catsort> ina = r.apply(new RMapIn());
         List<Catsort> atm = getData(r,"Atm", new RMapAtm(), summary);
@@ -42,7 +42,7 @@ public class GReport implements ReportI {
         List<Catsort> bills = getData(r,"Bills", new RMapBills(), summary);
         List<Catsort> sears = getData(r,"Sears", new RMapSears(), summary);
 
-        List<Catsort> annual = Annual(r,summary);
+        List<Catsort> annual = Annual(r);
         double t = doTotal(annual);
         doSummary("Annual", t, summary);
 
@@ -62,9 +62,9 @@ public class GReport implements ReportI {
         double out = doTotal(summary);
         double net = Utils.convertDouble(tin + out);
 
-        percent(w,"Percent", summary, out);
+        percent(w, summary, out);
 
-        Collections.sort(ina, Collections.reverseOrder());
+        ina.sort(Collections.reverseOrder());
         p(w,"In",ina,false);
         w.write("NET: " + net + "\n\n");
 
@@ -89,23 +89,6 @@ public class GReport implements ReportI {
         return ret;
     }
 
-    private void Rest(FileWriter w, RMap r,List<Catsort> s) throws Exception
-    {
-        double total = 0;
-
-        List<Catsort> data = r.apply(new RMapRest(false));
-
-        total = doTotal(data);
-        //total = p(w,"Misc", data);
-
-        data = r.apply(new RMapRest(true),true);
-
-        //total += p(w, "Misc Checks", data);
-        total += doTotal(data);
-
-        doSummary("Misc",total,s);
-    }
-
     private void doSummary(String label, double amount, List<Catsort> s) {
         Catsort sobj = new Catsort();
         sobj.setLabel(label);
@@ -113,41 +96,11 @@ public class GReport implements ReportI {
         s.add(sobj);
     }
 
-    private void generic(FileWriter w, RMap r, List<Catsort> s,String label, RMapI ri) throws Exception
-    {
-        List<Catsort> data = r.apply(ri);
-
-        double t = p(w,label, data,false);
-        doSummary(label, t, s);
-    }
-
-    private void genericT(FileWriter w, RMap r, List<Catsort> s, String label, RMapI ri) throws Exception
-    {
-        List<Catsort> data = r.apply(ri);
-        double total = 0;
-        for (Catsort c : data) {
-            total += c.getAmount();
-        }
-        total = Utils.convertDouble(total);
-        w.write(label + ": " + total + "\n\n");
-        doSummary(label,total,s);
-    }
-
-    private void In(FileWriter w, RMap r, List<Catsort> s) throws Exception
-    {
-        generic(w,r,s, "In", new RMapIn());
-    }
-
-    private void Atm(FileWriter w, RMap r, List<Catsort> s) throws Exception
-    {
-        generic(w,r,s, "Atm", new RMapAtm());
-    }
-
-    private List<Catsort> Annual(RMap r, List<Catsort> s) throws Exception
+    private List<Catsort> Annual(RMap r)
     {
         List<Catsort> data = r.apply(new RMapAnnual(false));
         List<Catsort> annualChecks = r.apply(new RMapAnnual(true),true);
-        List<Catsort> adata = new Vector<Catsort>();
+        List<Catsort> adata = new Vector<>();
         adata.addAll(data);
         adata.addAll(annualChecks);
         Collections.sort(adata);
@@ -156,45 +109,8 @@ public class GReport implements ReportI {
 
     }
 
-    private void Bills(FileWriter w, RMap r,List<Catsort> s) throws Exception
-    {
-        generic(w,r,s,"Bills", new RMapBills());
-    }
-
-    private void Credit(FileWriter w, RMap r, List<Catsort> s) throws Exception
-    {
-        genericT(w,r,s,"Credit", new RMapCredit());
-    }
-
-    private void Sears(FileWriter w, RMap r,List<Catsort> s) throws Exception
-    {
-        genericT(w,r,s,"Sears", new RMapSears());
-    }
-
-    private void Emma(FileWriter w, RMap r, List<Catsort> s) throws Exception
-    {
-        genericT(w,r,s,"Emma",new RMapEmma());
-    }
-
-    private void Dog(FileWriter w, RMap r,List<Catsort> s) throws Exception
-    {
-        genericT(w,r,s,"Dog", new RMapDog());
-    }
-    private void Pos(FileWriter w, RMap r, List<Catsort> s) throws Exception
-    {
-        genericT(w,r,s,"POS",new RMapPos());
-    }
-
-    private void Util(FileWriter w, RMap r, List<Catsort> s) throws Exception
-    {
-        genericT(w,r,s,"Utils",new RMapUtils());
-    }
-
     private void pMisc(FileWriter w, List<Catsort> misc, List<Catsort> miscChecks) throws Exception {
         w.write("Misc:\n");
-        double total = 0;
-        double mt = 0;
-        double mtc = 0;
 
         for (Catsort c : misc) {
             w.write("  " + c.getLabel() + " " + c.getAmount() + "\n");
@@ -206,7 +122,7 @@ public class GReport implements ReportI {
         }
     }
 
-    private double p(FileWriter w, String label, List<Catsort> data, boolean s) throws Exception
+    private void p(FileWriter w, String label, List<Catsort> data, boolean s) throws Exception
     {
         if (!s) {
             w.write(label + "\n");
@@ -224,12 +140,11 @@ public class GReport implements ReportI {
         } else {
             w.write(label + ": " + total + "\n\n");
         }
-        return total;
     }
 
-    private void percent(FileWriter w, String label, List<Catsort> data, double totalo) throws Exception
+    private void percent(FileWriter w, List<Catsort> data, double totalo) throws Exception
     {
-        w.write(label + "\n");
+        w.write("Amount and Percent\n");
         double tp = 0;
 
         for (Catsort c : data) {

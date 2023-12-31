@@ -1,12 +1,8 @@
 package com.example.demo.controllers;
 
-import com.example.demo.domain.Budget;
 import com.example.demo.domain.Budgets;
-import com.example.demo.dto.BudgetRowDTO;
-import com.example.demo.dto.BudgetTableDTO;
 import com.example.demo.dto.BudgetsRowDTO;
 import com.example.demo.dto.BudgetsTableDTO;
-import com.example.demo.services.BudgetService;
 import com.example.demo.services.BudgetsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

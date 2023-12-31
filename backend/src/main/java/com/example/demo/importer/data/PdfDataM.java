@@ -6,10 +6,8 @@ import java.util.List;
 import com.example.demo.utils.mydate.DUtil;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.UUID;
 import com.example.demo.importer.IBase;
 import com.example.demo.importer.Repos;
-import com.example.demo.repository.MltypeRepository;
 import com.example.demo.utils.Utils;
 import com.example.demo.domain.Mltype;
 import com.example.demo.importer.BadDataException;
@@ -27,18 +25,16 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 	private double target = 0;
 	private int transl = 0;
 	private int year = 0;
-	private IData idata = null;
-	private List<String> mlines = null;
-	private String dir = null;
-	private UUID uuid = null;
+	private final IData idata;
+	private List<String> mlines;
+	private final String dir;
 
-	private Repos repos = null;
+	private final Repos repos;
 
-	public PdfDataM(UUID u,IBase obj,IData data, String d) throws BadDataException {
+	public PdfDataM(IBase obj,IData data, String d) throws BadDataException {
 		super(obj);
 
 		repos = obj.getRepos();
-		uuid = u;
 		dir = d;
 		idata = data;
 	}
@@ -109,9 +105,14 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			if (dstr != null)
 				lstr = dstr;
 			if (s.contains("ML BANK DEPOSIT PROGRAM")) {
-				s = lstr.concat(trim(s));
+				if (lstr != null) {
+					String t = trim(s);
+					if (t != null) {
+						s = lstr.concat(t);
+					}
+				}
 			}
-			addNData(s,true,false,false);
+			addNData(s,false,false);
 		}
 	}
 	
@@ -151,7 +152,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		NData ret = new NData();
 
         String dstr = rest.substring(0,idx);
-		String ndstr = null;
+		String ndstr;
 
 		if (DUtil.isValidMMDD(dstr)) {
 			ndstr = dstr + "/" + year;
@@ -165,9 +166,9 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 
 		return ret;
 	}
-	private void addNData(String lstr, boolean credit, boolean sd, boolean check) throws BadDataException
+	private void addNData(String lstr, boolean sd, boolean check) throws BadDataException
 	{
-		String ndstr = null;
+		String ndstr;
 		String s = trim(lstr);
 		if (s == null)
 			return;
@@ -210,7 +211,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			int cnum = 0;
 			boolean err = false;
 			try {
-				cnum = Integer.valueOf(cstr);
+				cnum = Integer.parseInt(cstr);
 			} catch (Exception ex) {
 				err = true;
 				int nidx = lbl.indexOf(' ');
@@ -219,7 +220,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 					nidx = nstr.indexOf('#');
 					nstr = nstr.substring(0, nidx);
 					try {
-						cnum = Integer.valueOf(nstr);
+						cnum = Integer.parseInt(nstr);
 						err = false;
 					} catch (Exception nex) {
 						// fall thru
@@ -242,11 +243,19 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 
 		boolean ok = true;
 		n.setLabel(mendLabel(lbl.trim()));
-        if (lbl.contains("Deposit")) 
-        	n.setCredit(Utils.dval(v));
+        if (lbl.contains("Deposit")) {
+			Double d = Utils.dval(v);
+			if (d != null) {
+				n.setCredit(d);
+			}
+		}
         else {
-        	if ((lbl.contains("Withdrawal") || lbl.equals("Check")))
-        		n.setDebit(Utils.dval(v));
+        	if ((lbl.contains("Withdrawal") || lbl.equals("Check"))) {
+				Double d = Utils.dval(v);
+				if (d != null) {
+					n.setDebit(d);
+				}
+			}
 			else
 				ok = determineType(n,v);
         }
@@ -257,7 +266,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 	
 	public void readLines() throws BadDataException
 	{
-		String fileStr = null;
+		String fileStr;
 		File f = new File(dir,"ml.csv");
 		
 		try {
@@ -266,7 +275,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			throw new BadDataException("Problem with ML csv");
 		}
 		
-		mlines = new Vector<String>();
+		mlines = new Vector<>();
 		StringTokenizer st = new StringTokenizer(fileStr,"\n");
 
 		while (st.hasMoreTokens()) {
@@ -275,10 +284,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		}
 	}
 	
-	private boolean determineType(NData n, String v) throws BadDataException
+	private boolean determineType(NData n, String v)
 	{
 		if (n.getLabel().contains("BANK DEPOSIT INTEREST")) {
-			n.setCredit(Double.valueOf(v));
+			n.setCredit(Double.parseDouble(v));
 			return true;
 		}
 		
@@ -286,7 +295,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		for (String s : mlines) {
 			int idx = 0;
 			String dstr2 = null;
-			if (s.length() > 0) {
+			if (!s.isEmpty()) {
 				StringTokenizer st = new StringTokenizer(s,"\"");
 				while (st.hasMoreTokens()) {
 					String str = st.nextToken().trim();
@@ -298,7 +307,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				}
 			}
 		
-			if (s.contains(v) && ((n.getNDstr() == null) || (dstr2.equals(n.getNDstr())))) 
+			if (s.contains(v) && ((n.getNDstr() == null) || ((dstr2 != null) && (dstr2.equals(n.getNDstr())))))
 				l = s;
 		}
 
@@ -311,13 +320,14 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		int idx = 0;
 		String vstr = null;
 		boolean f = false;
-		if ((n.getLabel().contains(" Sale ")) || (n.getLabel().contains(" Purchase "))) {
+		String lbl = n.getLabel();
+		if ((lbl.contains(" Sale ")) || (lbl.contains(" Purchase "))) {
 			f = true;
 		}
 		while (st.hasMoreTokens()) {
 			String str = st.nextToken().trim();
 			
-			if (!f && (idx == 12) && (str.length() > 0))   
+			if (!f && (idx == 12) && (!str.isEmpty()))
 				vstr = str;
 			
 			if (!f && (idx == 13) && (vstr == null)) 
@@ -334,11 +344,17 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			return false;
 		}
 
-		if (vstr.startsWith("$")) 
-			n.setCredit(Utils.dval(vstr.substring(1)));
-		else 
-			n.setDebit(Utils.dval(vstr.substring(2)));
-
+		if (vstr.startsWith("$")) {
+			Double d= Utils.dval(vstr.substring(1));
+			if (d != null) {
+				n.setCredit(d);
+			}
+		} else {
+			Double d = Utils.dval(vstr.substring(2));
+			if (d != null) {
+				n.setDebit(d);
+			}
+		}
 		return true;
 	}
 	
@@ -388,10 +404,9 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				lidx++;
 				continue;
 			}
-			if (s.length() == 0)
-				continue;
 			if (s.isEmpty())
 				continue;
+
 			on = true;
 			if (s.startsWith("VISA ACCESS CARD ACTIVITY")) 
 				return;
@@ -401,7 +416,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				return;
 			String str = trim(s);
 			if (str != null) {
-				addNData(str,false,false,false);
+				addNData(str,false,false);
 			}
 		}
 	}
@@ -409,20 +424,20 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 	private String trim(String data) 
 	{
 		String ret = data;
-		if ((ret == null) || (ret.length() == 0))
+		if ((ret == null) || (ret.isEmpty()))
 			return null;
 		
 		while (ret.charAt(0) == ' ')
 		{
 			ret = ret.substring(1);	
-			if (ret.length() == 0)	
+			if (ret.isEmpty())
 				return null;
 		}
 		
 		if (ret.charAt(0) == '.')
 			ret = ret.substring(1);
 		
-		if (ret.length() == 0)
+		if (ret.isEmpty())
 			return null;
 		
 		return ret;
@@ -447,7 +462,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			if (s.startsWith("YOUR CMA MONEY ACCOUNT TRANSACTIONS")) 
 				return;
 			String str = trim(s);
-			addNData(str,false,true,false);
+			addNData(str,true,false);
 		}		
 	}
 	
@@ -469,7 +484,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				return;
 			String str = trim(s);
 			if (str != null)
-				addNData(str,false,true,true);
+				addNData(str,true,true);
 		}		
 	}
 	
@@ -493,7 +508,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				String str = s.substring(didx+2);
                 didx = str.indexOf(' ');
                 str = str.substring(0,didx);
-                year = Integer.valueOf(str);
+                year = Integer.parseInt(str);
 			}
 			if (on) {
 				try {
@@ -509,7 +524,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 							str = "-" + str.substring(0, str.length() - 1);
 						}
 						log.info("STARTV: " + str);
-						start = Utils.dval(str);
+						Double d = Utils.dval(str);
+						if (d != null) {
+							start = d;
+						}
 					}
 				} catch (Exception ex) {
 					throw new BadDataException("Bad Start " + s);
@@ -532,7 +550,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 							str = "-" + str.substring(0,str.length()-1);
 						}
 						log.info("STOPV:" + str);
-						stop = Utils.dval(str);
+						Double d = Utils.dval(str);
+						if (d != null) {
+							stop = d;
+						}
 					} catch (Exception ex) {
 						stop = 0;
 						//throw new BadDataException("Bad Stop " + s);

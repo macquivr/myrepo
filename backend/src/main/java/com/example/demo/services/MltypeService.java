@@ -15,7 +15,7 @@ public class MltypeService {
 
     public List<Mltype> findAll() {
 
-        return (List<Mltype>) repository.findAll();
+        return repository.findAll();
     }
 
 }

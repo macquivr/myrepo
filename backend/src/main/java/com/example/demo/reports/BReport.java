@@ -10,9 +10,7 @@ import com.example.demo.dto.ui.BVNTableDTO;
 import com.example.demo.importer.Repos;
 import com.example.demo.repository.BudgetValuesRepository;
 import com.example.demo.repository.CategoryRepository;
-import com.example.demo.repository.StypeRepository;
 import com.example.demo.state.Consolidate;
-import com.example.demo.state.Sessions;
 import com.example.demo.utils.BData;
 import com.example.demo.utils.BSData;
 import com.example.demo.utils.LData;
@@ -33,20 +31,12 @@ import java.util.List;
 import java.util.Vector;
 
 public class BReport implements ReportI {
-    private Repos repos = null;
-    private MRBeanl bdata = null;
-    private MRBeanl cdata = null;
+    private final Repos repos;
 
     public BReport(Repos r) {
         repos = r;
-        bdata = new MRBeanl();
-        cdata = new MRBeanl();
     }
-
-    public double pc()
-    {
-        return 0.0;
-    }
+    
 
     public void go(FileWriter w, SessionDTO session) throws Exception {
         LData ld = new LData(repos.getLedgerRepository());
@@ -179,38 +169,46 @@ public class BReport implements ReportI {
         pSpent(w,vmap, m, rlsvalues.get(0),rlsnet.get(0));
     }
 
+    private double mult(HashMap<String, Double> vmap, String tag, int m)
+    {
+        Double v = vmap.get(tag);
+        if (v == null) {
+            return 0;
+        }
+        return v * m;
+    }
     private void pSpent(FileWriter w, HashMap<String, Double> vmap,int m, BVNRowDTO svalues, BVNRowDTO snet) {
         MRBeanl budgetl = new MRBeanl();
 
-        double utilsValue = vmap.get("Utils").doubleValue() * m;
+        double utilsValue = mult(vmap, "Utils", m);
         MRBean utils = new MRBean("Utils", svalues.getUtils(), utilsValue, snet.getUtils());
         budgetl.add(utils);
 
-        double usaaValue = vmap.get("Usaa").doubleValue() * m;
+        double usaaValue = mult(vmap,"Usaa", m);
         MRBean usaa = new MRBean("Usaa", svalues.getUsaa(), usaaValue, snet.getUsaa());
         budgetl.add(usaa);
 
-        double caponeValue = vmap.get("Capone").doubleValue() * m;
+        double caponeValue = mult(vmap,"Capone", m);
         MRBean capone = new MRBean("Capone", svalues.getCapone(), caponeValue, snet.getCapone());
         budgetl.add(capone);
 
-        double aaaValue = vmap.get("Aaa").doubleValue() * m;
+        double aaaValue = mult(vmap,"Aaa", m);
         MRBean aaa = new MRBean("Aaa", svalues.getAaa(), aaaValue, snet.getAaa());
         budgetl.add(aaa);
 
-        double amazonValue = vmap.get("Amazon").doubleValue() * m;
+        double amazonValue = mult(vmap,"Amazon", m);
         MRBean amazon = new MRBean("Amazon", svalues.getAmazon(), amazonValue, snet.getAmazon());
         budgetl.add(amazon);
 
         budgetl.Print(w);
     }
     private void pIn(FileWriter w, List<Ledger> data) throws Exception {
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         double work = 0;
         double other = 0;
-        double tin = 0;
+        double tin;
         double out = 0;
-        double net = 0;
+        double net;
         for (Ledger l : data) {
             if (l.getAmount() < 0) {
                 out += l.getAmount();
@@ -248,7 +246,7 @@ public class BReport implements ReportI {
     }
 
     private void potherStype(FileWriter w, List<Ledger> data, String label) throws Exception {
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         double amt = 0;
         int cnt=0;
         for (Ledger l : data) {
@@ -265,7 +263,7 @@ public class BReport implements ReportI {
     }
 
     private void noTransfer(List<Ledger> data) {
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : data) {
             if (l.getStype().getName().equals("Transfer"))
                 death.add(l);
@@ -278,7 +276,7 @@ public class BReport implements ReportI {
 
         double total = 0;
         int cnt = 0;
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : data) {
             if (l.getStype().getName().equals("Bills")) {
                 death.add(l);
@@ -294,11 +292,10 @@ public class BReport implements ReportI {
         w.write("\n");
     }
     private MRBean validateDog(FileWriter w, int m, HashMap<String, Double> map, double rlvalues, double rlnet, List<Ledger> data) throws Exception {
-        double value = map.get("Dog").doubleValue() * m;
+        double value = mult(map,"Dog", m);
 
-        double other = 0;
         double p = 0;
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : data) {
             if (isDog(l))   {
                 p += l.getAmount();
@@ -325,11 +322,11 @@ public class BReport implements ReportI {
     }
 
     private MRBean validateStuff(FileWriter w, int lid, int m, String bstr, HashMap<String, Double> map, double rlvalues, double rlnet, List<Ledger> data) throws Exception {
-        double value = map.get(bstr).doubleValue() * m;
+        double value = mult(map, bstr,m);
 
         double other = 0;
         double p = 0;
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : data) {
             if (l.getLabel().getId() == lid)  {
                 if (l.getLtype().getId() != 3) {
@@ -361,9 +358,9 @@ public class BReport implements ReportI {
     }
 
     private MRBean validatePos(FileWriter w, int m, Double mapv, double rlvalues, double rlsvalues, double rlnet, double rlsnet,List<Ledger> data) throws Exception {
-        double value = mapv.doubleValue() * m;
+        double value = mapv * m;
         double p = 0;
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : data) {
             if (l.getStype().getName().equals("POS")) {
                 p += l.getAmount();
@@ -399,9 +396,9 @@ public class BReport implements ReportI {
     }
 
     private MRBean validateAtm(FileWriter w, int m, Double mapv, double rlvalues, double rlsvalues, double rlnet, double rlsnet,List<Ledger> data) throws Exception {
-        double value = mapv.doubleValue() * m;
+        double value = mapv * m;
         double p = 0;
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : data) {
             if (l.getStype().getName().equals("ATM")) {
                 p += l.getAmount();
@@ -441,15 +438,13 @@ public class BReport implements ReportI {
         StartStop dates = bdata.getDates();
 
         BVNTableDTO ret = new BVNTableDTO();
-        List<BVNRowDTO> rdata = new Vector<BVNRowDTO>();
+        List<BVNRowDTO> rdata = new Vector<>();
         ret.setBvn(rdata);
 
-        BudgetValuesRepository bvr = repos.getBudgetValuesRepository();
-        List<Budgetvalues> bl = bvr.findAll();
-
         BNIData ldata = new BNIData(bndata);
+        ldata.setDates(dates);
         BNUI bobj = new BNUI(map);
-        bobj.go(session, dates, ldata, rdata);
+        bobj.go(session, ldata, rdata);
 
         return ret;
     }
@@ -460,12 +455,13 @@ public class BReport implements ReportI {
         StartStop dates = bdata.getDates();
 
         BVNTableDTO ret = new BVNTableDTO();
-        List<BVNRowDTO> rdata = new Vector<BVNRowDTO>();
+        List<BVNRowDTO> rdata = new Vector<>();
         ret.setBvn(rdata);
 
         BNSIData ldata = new BNSIData(bndata);
+        ldata.setDates(dates);
         BNSUI bobj = new BNSUI(map);
-        bobj.go(session, dates, ldata, rdata);
+        bobj.go(session, ldata, rdata);
 
         return ret;
     }
@@ -473,7 +469,7 @@ public class BReport implements ReportI {
     private HashMap<String, Integer> getMap() {
         BudgetValuesRepository bvr = repos.getBudgetValuesRepository();
         List<Budgetvalues> bl = bvr.findAll();
-        HashMap<String,Integer> map = new HashMap<String, Integer>();
+        HashMap<String,Integer> map = new HashMap<>();
         for (Budgetvalues b : bl) {
             map.put(b.getName(),b.getId());
         }
@@ -483,7 +479,7 @@ public class BReport implements ReportI {
     private HashMap<String, Double> getMapV() {
         BudgetValuesRepository bvr = repos.getBudgetValuesRepository();
         List<Budgetvalues> bl = bvr.findAll();
-        HashMap<String,Double> map = new HashMap<String, Double>();
+        HashMap<String,Double> map = new HashMap<>();
         for (Budgetvalues b : bl) {
             map.put(b.getName(),b.getValue());
         }
@@ -495,14 +491,15 @@ public class BReport implements ReportI {
         List<Budget> bvdata = bdata.filterByDate(session);
 
         BVNTableDTO ret = new BVNTableDTO();
-        List<BVNRowDTO> rdata = new Vector<BVNRowDTO>();
+        List<BVNRowDTO> rdata = new Vector<>();
         ret.setBvn(rdata);
 
         StartStop dates = bdata.getDates();
 
         BVIData ldata = new BVIData(bvdata);
+        ldata.setDates(dates);
         BVUI bobj = new BVUI(map);
-        bobj.go(session, dates, ldata, rdata);
+        bobj.go(session,  ldata, rdata);
 
         return ret;
     }
@@ -512,42 +509,20 @@ public class BReport implements ReportI {
         List<Budgets> bvdata = bdata.filterByDate(session);
 
         BVNTableDTO ret = new BVNTableDTO();
-        List<BVNRowDTO> rdata = new Vector<BVNRowDTO>();
+        List<BVNRowDTO> rdata = new Vector<>();
         ret.setBvn(rdata);
 
         StartStop dates = bdata.getDates();
 
         BVSIData ldata = new BVSIData(bvdata);
+        ldata.setDates(dates);
         BVSUI bobj = new BVSUI(map);
-        bobj.go(session, dates, ldata, rdata);
+        bobj.go(session, ldata, rdata);
 
         return ret;
     }
 
-    public void go2(FileWriter w, SessionDTO session) throws Exception
-    {
-        double tout = 0;
-        bdata = new MRBeanl();
-        cdata = new MRBeanl();
 
-        StypeRepository sr = repos.getStypeRepository();
-        Stype misc = sr.findByName("Misc");
-        LData ld = new LData(repos.getLedgerRepository());
-        List<Ledger> data  = ld.filterByDate(session,misc,null);
-        ld.filterBundle(data);
-        StartStop dates = ld.getDates();
-
-        printPeriod(w,dates);
-        List<Ledger> death = new Vector<Ledger>();
-        for (Ledger l : data) {
-            if (isDog(l) || (l.getAmount() > 0)) {
-                death.add(l);
-            }
-        }
-        data.removeAll(death);
-        consolidateMisc(data);
-        printMisc(w,data);
-    }
     private boolean isDog(Ledger l) {
         if (l.getChecks() != null) {
             Checks c = l.getChecks();
@@ -555,10 +530,7 @@ public class BReport implements ReportI {
                 return true;
             }
         }
-        if (l.getLabel().getId() == 13137)
-            return true;
-
-        return false;
+        return l.getLabel().getId() == 13137;
     }
     private void printPeriod(FileWriter w,StartStop dates) throws Exception {
 
@@ -569,7 +541,7 @@ public class BReport implements ReportI {
     }
 
     private void consolidateMisc(List<Ledger> data) {
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Ledger l : data) {
             if (!(l.getStype().getName().equals("Misc")))
                 continue;
@@ -618,7 +590,7 @@ public class BReport implements ReportI {
         double total = 0;
         CategoryRepository cr = repos.getCategoryRepository();
         List<Category> crl = cr.findAll();
-        List<Ledger> death = new Vector<Ledger>();
+        List<Ledger> death = new Vector<>();
         for (Category c : crl) {
             int f = category(data, c.getId());
             double t = 0;

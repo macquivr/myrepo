@@ -22,8 +22,6 @@ public class StypeController {
     public @ResponseBody
     StypeDTO getStype() {
         List<Stype> data = service.findAll();
-        StypeDTO ret = new StypeDTO(data);
-
-        return ret;
+        return new StypeDTO(data);
     }
 }

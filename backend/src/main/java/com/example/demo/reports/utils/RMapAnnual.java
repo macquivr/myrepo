@@ -4,9 +4,10 @@ import com.example.demo.domain.Ledger;
 
 public class RMapAnnual implements RMapI {
 
-    private boolean check = false;
+    private final boolean check;
 
     public RMapAnnual(boolean c) {
+
         this.check = c;
     }
     public boolean apply(Ledger data) {

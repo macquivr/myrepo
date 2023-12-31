@@ -1,7 +1,6 @@
 package com.example.demo.utils.uidata;
 
 import com.example.demo.domain.Budget;
-import com.example.demo.dto.BudgetRowDTO;
 import com.example.demo.dto.ui.BVNRowDTO;
 import com.example.demo.utils.Utils;
 import com.example.demo.utils.idate.Idate;
@@ -9,13 +8,13 @@ import com.example.demo.utils.idate.Idate;
 import java.util.HashMap;
 import java.util.List;
 
-public class BNUI extends BBase {
+public class BNUI extends BBase<BVNRowDTO> {
 
     public BNUI(HashMap<String, Integer> m) {
         super(m);
     }
     public Object factory() { return new BVNRowDTO();}
-    public void addStuff(List l, Object data, String dstr)
+    public void addStuff(List<BVNRowDTO> l, Object data, String dstr)
     {
         BVNRowDTO d = (BVNRowDTO) data;
         d.setDate(dstr);
@@ -64,7 +63,6 @@ public class BNUI extends BBase {
         }
         if (u.getBid().getId() == map.get("Total")) {
             data.setTotal(Utils.convertDouble(data.getTotal() + u.getNet()));
-            return;
         }
     }
 }

@@ -8,8 +8,8 @@ import com.example.demo.utils.idate.Idate;
 
 import java.util.List;
 
-public class ChartUI extends Base {
-    private chartData chart;
+public class ChartUI extends Base<Lvd> {
+    private final chartData chart;
 
     public ChartUI(chartData c)
     {
@@ -17,7 +17,7 @@ public class ChartUI extends Base {
     }
 
     public Object factory() { return new Lvd(); }
-    public void addStuff(List l, Object data, String dstr) {
+    public void addStuff(List<Lvd> l, Object data, String dstr) {
         Lvd d = (Lvd) data;
         d.setLabel(dstr);
         l.add(d);
@@ -26,7 +26,7 @@ public class ChartUI extends Base {
     public void apply(Idate ld, Object obj) {
         Dvi l = ld.getData();
         Lvd lv = (Lvd) obj;
-        double nv = 0;
+        double nv;
         double amt = (l.aValue() * -1);
 
         if (this.chart != null) {
@@ -37,9 +37,9 @@ public class ChartUI extends Base {
         if (lv.getValue() == null)
             nv = amt;
         else {
-            double ov = Double.valueOf(lv.getValue());
+            double ov = lv.getValue();
             nv = Utils.convertDouble(amt + ov);
         }
-        lv.setValue(Double.valueOf(nv));
+        lv.setValue(nv);
     }
 }

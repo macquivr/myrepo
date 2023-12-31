@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-public class StypeUI extends Base {
+public class StypeUI extends Base<StypeRowDTO> {
 
     public Object factory() { return new HashMap<Stype, Double>(); }
     public void apply(Idate ld, Object obj) {
@@ -23,13 +23,12 @@ public class StypeUI extends Base {
         if (d == null)
             map.put(s, l.getAmount());
         else {
-            double dv = d.doubleValue() + l.getAmount().doubleValue();
-            Double ndv = new Double(dv);
-            map.put(s, ndv);
+            double dv = d + l.getAmount();
+            map.put(s, dv);
         }
     }
 
-    public void addStuff(List data, Object obj, String label) {
+    public void addStuff(List<StypeRowDTO> data, Object obj, String label) {
         HashMap<Stype, Double> map = (HashMap<Stype,Double>) obj;
 
         StypeRowDTO row = new StypeRowDTO();

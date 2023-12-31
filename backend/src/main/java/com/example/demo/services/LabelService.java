@@ -15,7 +15,7 @@ public class LabelService {
 
     public List<Label> findAll() {
 
-        return (List<Label>) repository.findAll();
+        return repository.findAll();
     }
 
 }

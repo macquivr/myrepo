@@ -4,7 +4,6 @@ package com.example.demo.services;
 import com.example.demo.bean.Ion;
 import com.example.demo.bean.StartStop;
 import com.example.demo.domain.*;
-import com.example.demo.dto.SessionDTO;
 import com.example.demo.importer.Repos;
 import com.example.demo.repository.*;
 import com.example.demo.dto.ui.*;
@@ -130,15 +129,13 @@ public class TableDataService {
         StartStop dates = bdata.getDates();
 
         BVNTableDTO ret = new BVNTableDTO();
-        List<BVNRowDTO> rdata = new Vector<BVNRowDTO>();
+        List<BVNRowDTO> rdata = new Vector<>();
         ret.setBvn(rdata);
 
-        BudgetValuesRepository bvr = repos.getBudgetValuesRepository();
-        List<Budgetvalues> bl = bvr.findAll();
-
         BNIData ldata = new BNIData(bndata);
+        ldata.setDates(dates);
         BNUI bobj = new BNUI(getMap());
-        bobj.go(session, dates, ldata, rdata);
+        bobj.go(session, ldata, rdata);
 
         return ret;
     }
@@ -154,12 +151,13 @@ public class TableDataService {
         StartStop dates = bdata.getDates();
 
         BVNTableDTO ret = new BVNTableDTO();
-        List<BVNRowDTO> rdata = new Vector<BVNRowDTO>();
+        List<BVNRowDTO> rdata = new Vector<>();
         ret.setBvn(rdata);
 
         BNSIData ldata = new BNSIData(bndata);
+        ldata.setDates(dates);
         BNSUI bobj = new BNSUI(getMap());
-        bobj.go(session, dates, ldata, rdata);
+        bobj.go(session, ldata, rdata);
 
         return ret;
     }
@@ -167,7 +165,7 @@ public class TableDataService {
     private HashMap<String, Integer> getMap() {
         BudgetValuesRepository bvr = repos.getBudgetValuesRepository();
         List<Budgetvalues> bl = bvr.findAll();
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        HashMap<String, Integer> map = new HashMap<>();
         for (Budgetvalues b : bl) {
             map.put(b.getName(), b.getId());
         }
@@ -184,16 +182,15 @@ public class TableDataService {
         List<Budget> bvdata = bdata.filterByDate(session);
 
         BVNTableDTO ret = new BVNTableDTO();
-        List<BVNRowDTO> rdata = new Vector<BVNRowDTO>();
+        List<BVNRowDTO> rdata = new Vector<>();
         ret.setBvn(rdata);
 
         StartStop dates = bdata.getDates();
 
-        HashMap<String, Integer> map = getMap();
-
         BVIData ldata = new BVIData(bvdata);
+        ldata.setDates(dates);
         BVUI bobj = new BVUI(getMap());
-        bobj.go(session, dates, ldata, rdata);
+        bobj.go(session, ldata, rdata);
 
         return ret;
     }
@@ -208,16 +205,15 @@ public class TableDataService {
         List<Budgets> bvdata = bdata.filterByDate(session);
 
         BVNTableDTO ret = new BVNTableDTO();
-        List<BVNRowDTO> rdata = new Vector<BVNRowDTO>();
+        List<BVNRowDTO> rdata = new Vector<>();
         ret.setBvn(rdata);
 
         StartStop dates = bdata.getDates();
 
-        HashMap<String, Integer> map = getMap();
-
         BVSIData ldata = new BVSIData(bvdata);
+        ldata.setDates(dates);
         BVSUI bobj = new BVSUI(getMap());
-        bobj.go(session, dates, ldata, rdata);
+        bobj.go(session, ldata, rdata);
 
         return ret;
     }
@@ -228,7 +224,7 @@ public class TableDataService {
         if (repos == null)
             init();
         InOutNetTableDTO ret = new InOutNetTableDTO();
-        List<InOutNetRowDTO> data = new Vector<InOutNetRowDTO>();
+        List<InOutNetRowDTO> data = new Vector<>();
         ret.setInoutnet(data);
 
         if (session == null)
@@ -251,13 +247,12 @@ public class TableDataService {
         return utils.makeTableData(dt);
     }
 
-    public BalanceTableDTO doBalance(String sessionId) {
-        SessionDTO session = Sessions.getObj().getSession(sessionId);
+    public BalanceTableDTO doBalance() {
 
         if (repos == null)
             init();
 
-        List<BalanceRowDTO> data = new Vector<BalanceRowDTO>();
+        List<BalanceRowDTO> data = new Vector<>();
         StatementsRepository srepo = repos.getStatementsRepository();
         List<Statements> all = srepo.findAll();
         Statements last = all.get(all.size() - 1);
@@ -334,7 +329,7 @@ public class TableDataService {
             init();
 
         StypeTableDTO ret = new StypeTableDTO();
-        List<StypeRowDTO> data = new Vector<StypeRowDTO>();
+        List<StypeRowDTO> data = new Vector<>();
         ret.setStype(data);
 
         if (session == null)
@@ -356,15 +351,16 @@ public class TableDataService {
         if (repos == null)
             init();
 
-        List<Ledger> data = new Vector<Ledger>();
+        List<Ledger> data = new Vector<>();
         StartStop dates = addSType(session, "Bills", data);
 
-        List<BillsRowDTO> bdata = new Vector<BillsRowDTO>();
+        List<BillsRowDTO> bdata = new Vector<>();
         BillsTableDTO ret = new BillsTableDTO(bdata);
 
         LedgerIData ldata = new LedgerIData(data);
+        ldata.setDates(dates);
         BillsUI bobj = new BillsUI();
-        bobj.go(session, dates, ldata, bdata);
+        bobj.go(session,  ldata, bdata);
 
         return ret;
     }
@@ -372,7 +368,7 @@ public class TableDataService {
     public StatementTableDTO doStatements(String sessionId) {
         SessionDTO session = Sessions.getObj().getSession(sessionId);
 
-        List<StatementRowDTO> rdata = new Vector<StatementRowDTO>();
+        List<StatementRowDTO> rdata = new Vector<>();
         StatementTableDTO ret = new StatementTableDTO(rdata);
 
         if (repos == null)
@@ -393,7 +389,7 @@ public class TableDataService {
 
         StatementsRepository repo = repos.getStatementsRepository();
         List<Statements> sdata = repo.findAllByStmtdateBetween(dates.getStart(), dates.getStop());
-        List<Statement> stmts = new Vector<Statement>();
+        List<Statement> stmts = new Vector<>();
         for (Statements st : sdata) {
             for (Statement s : st.getStatement()) {
                 if (s.getLtype().getId() == lid)
@@ -411,10 +407,10 @@ public class TableDataService {
         if (repos == null)
             init();
 
-        List<Ledger> data = new Vector<Ledger>();
+        List<Ledger> data = new Vector<>();
         StartStop dates = addSType(session, "Annual", data);
 
-        List<AnnualRowDTO> adata = new Vector<AnnualRowDTO>();
+        List<AnnualRowDTO> adata = new Vector<>();
         AnnualTableDTO ret = new AnnualTableDTO(adata);
         AnnualUI aobj = new AnnualUI();
 
@@ -430,7 +426,7 @@ public class TableDataService {
             }
         } else {
             LedgerIData ldata = new LedgerIData(data);
-            aobj.go(session, dates, ldata, adata);
+            aobj.go(session, ldata, adata);
         }
         calcAnnualTotal(adata);
         return ret;
@@ -450,13 +446,13 @@ public class TableDataService {
         List<Utilities> data = urepo.findAllByDateBetween(dates.getStart(), dates.getStop());
 
         UtilsTableDTO ret = new UtilsTableDTO();
-        List<UtilsRowDTO> rdata = new Vector<UtilsRowDTO>();
+        List<UtilsRowDTO> rdata = new Vector<>();
         ret.setUtils(rdata);
 
         UtilitiesIData udata = new UtilitiesIData(data);
 
         UtilsUI uobj = new UtilsUI();
-        uobj.go(session, dates, udata, rdata);
+        uobj.go(session, udata, rdata);
 
         return ret;
     }
@@ -487,16 +483,15 @@ public class TableDataService {
 
         LData ld = new LData(repos.getLedgerRepository());
         List<Ledger> ldata = ld.filterByDate(filter, null, null);
-        StartStop dates = ld.getDates();
 
-        List<Lvd> data = new Vector<Lvd>();
+        List<Lvd> data = new Vector<>();
         CategoriesUIDTO ret = new CategoriesUIDTO(data);
-        HashMap<String, Double> map = new HashMap<String, Double>();
+        HashMap<String, Double> map = new HashMap<>();
 
+        String lstr;
         for (Ledger l : ldata) {
             Label lbl = l.getLabel();
             Category c = lbl.getCategory();
-            String lstr = null;
 
             if (l.getAmount() < 0)
                 lstr = "D " + c.getName();
@@ -509,7 +504,7 @@ public class TableDataService {
             if (dv == null)
                 map.put(lstr, l.getAmount());
             else {
-                dv = Utils.convertDouble(dv.doubleValue() + l.getAmount().doubleValue());
+                dv = Utils.convertDouble(dv + l.getAmount());
                 map.put(lstr, dv);
             }
         }
@@ -517,7 +512,7 @@ public class TableDataService {
         Set<String> keys = map.keySet();
         for (String key : keys) {
             Double dv = map.get(key);
-            if (dv.doubleValue() == 0)
+            if (dv == 0)
                 continue;
             String akey = Utils.getAkey(key, map);
             Lvd d = new Lvd();
@@ -562,9 +557,9 @@ public class TableDataService {
         if (repos == null)
             init();
 
-        StartStop dates = null;
+        StartStop dates;
 
-        List<Ledger> data = new Vector<Ledger>();
+        List<Ledger> data = new Vector<>();
         if (paid)
             dates = addSType(session,"Credit",data);
         else {
@@ -575,12 +570,13 @@ public class TableDataService {
         }
 
         CreditTableDTO ret = new CreditTableDTO();
-        List<CreditRowDTO> rdata = new Vector<CreditRowDTO>();
+        List<CreditRowDTO> rdata = new Vector<>();
         ret.setCredit(rdata);
 
         LedgerIData ldata = new LedgerIData(data);
+        ldata.setDates(dates);
         CreditUI uobj = new CreditUI(paid);
-        uobj.go(session,dates, ldata,rdata);
+        uobj.go(session, ldata,rdata);
 
         return ret;
     }
@@ -642,7 +638,7 @@ public class TableDataService {
     }
 
     private void populateStype(List<StypeRowDTO> data, SessionDTO session) {
-        List<Ledger> ldata = new Vector<Ledger>();
+        List<Ledger> ldata = new Vector<>();
         StartStop dates = addSType(session, "Bills", ldata);
         addSType(session, "Annual", ldata);
         addSType(session, "ATM", ldata);
@@ -652,8 +648,9 @@ public class TableDataService {
         addSType(session, "Credit", ldata);
 
         LedgerIData lidata = new LedgerIData(data);
+        lidata.setDates(dates);
         StypeUI sobj = new StypeUI();
-        sobj.go(session, dates, lidata, data);
+        sobj.go(session, lidata, data);
     }
 
     private void populateInOutNet(List<InOutNetRowDTO> data, SessionDTO session) {
@@ -662,7 +659,7 @@ public class TableDataService {
 
         int lt = session.getLtype();
         if (lt > 0) {
-            Ltype ltype = null;
+            Ltype ltype;
             Optional<Ltype> o = repos.getLtypeRepository().findById(lt);
             if (o.isPresent()) {
                 ltype = o.get();
@@ -673,13 +670,13 @@ public class TableDataService {
             ld.filterBundle(d);
         }
 
-	    if ((d == null) || (d.size() == 0))
+	    if ((d == null) || (d.isEmpty()))
 	        return;
 	
         CategoryRepository cr = repos.getCategoryRepository();
         Category transferc = cr.findByName("Transfer");
 
-        List<Ion> il = InOutNet(d, transferc, false, ld.getDates(), session);
+        List<Ion> il = InOutNet(d, transferc,  ld.getDates(), session);
 
         for (Ion i : il) {
             InOutNetRowDTO row = new InOutNetRowDTO();
@@ -691,12 +688,13 @@ public class TableDataService {
         }
     }
 
-    private List<Ion> InOutNet(List<Ledger> data, Category transferc, boolean ltype, StartStop dates, SessionDTO session) {
-        List<Ion> lst = new Vector<Ion>();
+    private List<Ion> InOutNet(List<Ledger> data, Category transferc,  StartStop dates, SessionDTO session) {
+        List<Ion> lst = new Vector<>();
 
         LedgerIData ldata = new LedgerIData(data);
+        ldata.setDates(dates);
         InOutNetUI obj = new InOutNetUI(transferc);
-        obj.go(session,dates,ldata,lst);
+        obj.go(session,ldata,lst);
 
         return lst;
     }

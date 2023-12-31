@@ -4,9 +4,11 @@ import com.example.demo.domain.Ledger;
 import java.time.LocalDate;
 
 public class LedgerIDate implements Idate {
-    private Ledger ledger;
+    private final Ledger ledger;
 
-    public LedgerIDate(Ledger l) { ledger = l; }
+    public LedgerIDate(Ledger l) {
+        this.ledger = l;
+    }
 
     public LocalDate getDate() { return ledger.getTransdate(); }
     public Object getData() { return ledger; }

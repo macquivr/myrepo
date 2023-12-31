@@ -21,7 +21,7 @@ public class MerrilLynch extends IBase {
 	
 	public boolean validateFile(List<String> ret) { 
 		try {
-			new PdfDataM(getUuid(),this,data,checkUtil.getObj().getDir()).go();
+			new PdfDataM(this,data,checkUtil.getObj().getDir()).go();
 		} catch (BadDataException ex) {
 			ret.add("Bad Data " + ex.getMessage());
 			return false;
@@ -41,7 +41,7 @@ public class MerrilLynch extends IBase {
 	{
 		SaveO obj = new SaveO(this, ltype, data, imdata,err);
 	
-		return obj.makeData(stmts);
+		return obj.makeData();
 	}
 
 	public void attachStatement(Statements stmts,Statement stmt)

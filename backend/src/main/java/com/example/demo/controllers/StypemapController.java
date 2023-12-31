@@ -25,9 +25,7 @@ public class StypemapController {
     public @ResponseBody
     StypemapDTO getStypemap() {
         List<Stypemap> data = service.findAll();
-        StypemapDTO ret = new StypemapDTO(data);
-
-        return ret;
+        return new StypemapDTO(data);
     }
 
     @GetMapping(value = "/stypemaptable", produces = "application/json")

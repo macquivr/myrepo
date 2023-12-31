@@ -22,8 +22,6 @@ public class CategoryController {
     public @ResponseBody
     CategoriesDTO getCategories() {
         List<Category> data = service.findAll();
-        CategoriesDTO ret = new CategoriesDTO(data);
-
-        return ret;
+        return new CategoriesDTO(data);
     }
 }

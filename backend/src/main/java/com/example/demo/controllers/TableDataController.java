@@ -24,7 +24,7 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new InOutNetTableDTO(new Vector<InOutNetRowDTO>());
+            return new InOutNetTableDTO(new Vector<>());
         }
 
         return service.doInOutNet(sessionId);
@@ -84,10 +84,10 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new BalanceTableDTO(new Vector<BalanceRowDTO>());
+            return new BalanceTableDTO(new Vector<>());
         }
 
-        return service.doBalance(sessionId);
+        return service.doBalance();
     }
 
     @GetMapping(value = "/cstatus/{sessionId}", produces = "application/json")
@@ -108,7 +108,7 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new StypeTableDTO(new Vector<StypeRowDTO>());
+            return new StypeTableDTO(new Vector<>());
         }
 
         return service.doStype(sessionId);
@@ -120,7 +120,7 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new StatementTableDTO(new Vector<StatementRowDTO>());
+            return new StatementTableDTO(new Vector<>());
         }
 
         return service.doStatements(sessionId);
@@ -132,7 +132,7 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new BillsTableDTO(new Vector<BillsRowDTO>());
+            return new BillsTableDTO(new Vector<>());
         }
 
         return service.doBills(sessionId);
@@ -144,7 +144,7 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new AnnualTableDTO(new Vector<AnnualRowDTO>());
+            return new AnnualTableDTO(new Vector<>());
         }
 
         return service.doAnnual(sessionId);
@@ -156,7 +156,7 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new UtilsTableDTO(new Vector<UtilsRowDTO>());
+            return new UtilsTableDTO(new Vector<>());
         }
 
         return service.doUtils(sessionId);
@@ -168,7 +168,7 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new CreditTableDTO(new Vector<CreditRowDTO>());
+            return new CreditTableDTO(new Vector<>());
         }
 
         return service.doCreditp(sessionId);
@@ -180,7 +180,7 @@ public class TableDataController {
     {
         if ((sessionId != null) && sessionId.equals("null")) {
             logger.error("Bad session....");
-            return new CreditTableDTO(new Vector<CreditRowDTO>());
+            return new CreditTableDTO(new Vector<>());
         }
 
         return service.doCredits(sessionId);

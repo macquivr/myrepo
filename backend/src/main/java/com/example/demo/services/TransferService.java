@@ -15,7 +15,7 @@ public class TransferService {
 
     public List<Transfer> findAll() {
 
-        return (List<Transfer>) repository.findAll();
+        return repository.findAll();
     }
 
 }

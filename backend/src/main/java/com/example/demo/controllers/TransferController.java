@@ -25,9 +25,7 @@ public class TransferController {
     public @ResponseBody
     TransferDTO getTransfer() {
         List<Transfer> data = service.findAll();
-        TransferDTO ret = new TransferDTO(data);
-
-        return ret;
+        return new TransferDTO(data);
     }
 
     @GetMapping(value = "/transfertable", produces = "application/json")

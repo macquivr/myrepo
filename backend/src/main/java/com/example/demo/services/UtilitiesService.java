@@ -15,7 +15,7 @@ public class UtilitiesService {
 
     public List<Utilities> findAll() {
 
-        return (List<Utilities>) repository.findAll();
+        return repository.findAll();
     }
 
 }

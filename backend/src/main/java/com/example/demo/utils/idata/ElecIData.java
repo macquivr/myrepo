@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ElecIData extends baseIData {
+public class ElecIData extends baseIData<Utilities> {
     private static final Logger logger= LoggerFactory.getLogger(ElecIData.class);
 
     private UtilitiesRepository repository;
@@ -40,22 +40,22 @@ public class ElecIData extends baseIData {
     }
 
     public Idate factory(Object obj) {
-        Utilities u = null;
+        Utilities u;
         if (obj instanceof Utilities) {
             u = (Utilities) obj;
         } else {
             u = new Utilities();
             u.setDate((LocalDate) obj);
-            u.setElectric(Double.valueOf(0.0));
+            u.setElectric(0.0);
         }
 
         return new ElecIDate(u);
     }
-    public boolean initialize(chartData chartI) {
+    public boolean initialize(chartData<Utilities> chartI) {
         UtData ld = new UtData(this.repository);
         List<Utilities> d = ld.filterByDate(this.filter);
 
-        Ldvil<Utilities> ldvil = new Ldvil<Utilities>(d, new Elecdvi(null));
+        Ldvil<Utilities> ldvil = new Ldvil<>(d, new Elecdvi(null));
         chartI.filterSpecific(this.filter.getConsolidate(), ldvil);
         this.data = chartI.getChartData(d);
         this.dates = ld.getDates();

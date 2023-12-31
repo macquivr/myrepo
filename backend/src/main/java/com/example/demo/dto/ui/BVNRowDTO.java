@@ -1,7 +1,5 @@
 package com.example.demo.dto.ui;
 
-import java.time.LocalDate;
-
 public class BVNRowDTO {
     protected String date;
 
@@ -28,7 +26,7 @@ public class BVNRowDTO {
 
     public String getDate() {
         return this.date;
-    };
+    }
 
     public double getUtils() {
         return this.utils;
@@ -72,7 +70,7 @@ public class BVNRowDTO {
 
     public void setDate(String d)  {
         this.date = d;
-    };
+    }
 
     public void setUtils(double d)  {
         this.utils = d;

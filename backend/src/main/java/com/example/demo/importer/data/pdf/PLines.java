@@ -10,11 +10,11 @@ import java.util.StringTokenizer;
 
 public abstract class PLines {
 	private static final Logger log = LoggerFactory.getLogger(PLines.class);
-	protected List<String> lines = null;
+	protected List<String> lines;
 	
 	public PLines(IBase obj) throws BadDataException
 	{
-		lines = new Vector<String>();
+		lines = new Vector<>();
 		makeLines(obj.readPdf(),getLabel());
 	}
 
@@ -22,11 +22,11 @@ public abstract class PLines {
 
 	private void makeLines(String txt, String label)
 	{
-		lines = new Vector<String>();
+		lines = new Vector<>();
 		StringTokenizer st = new StringTokenizer(txt,"\n");
 		while (st.hasMoreTokens()) {
 			String l = st.nextToken();
-			log.info("LINE " + label + ": " + l);;
+			log.info("LINE " + label + ": " + l);
 			lines.add(l);
 		}
 	}

@@ -7,11 +7,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class DUtil {
-    public static String FULL_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public static String MMDD = "MM/dd";
-    public static String MMMYYYY = "MMM yyyy";
-    public static String MMDDYYYY = "MM/dd/yyyy";
-    public static String MMDDYY = "MM/dd/yy";
+    public static final String FULL_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String MMDD = "MM/dd";
+    public static final String MMMYYYY = "MMM yyyy";
+    public static final String MMDDYYYY = "MM/dd/yyyy";
+    public static final String MMDDYY = "MM/dd/yy";
     private static DateTimeFormatter getDFmt(String fmt) { return DateTimeFormatter.ofPattern(fmt); }
 
     public static boolean isValidDate(String dstr, String fmt) {
@@ -72,6 +72,8 @@ public class DUtil {
 
     public static String monthMinusOne(String dstr) {
         LocalDate dt = getDate(dstr, MMDDYY);
+        if (dt == null)
+            return null;
         dt = dt.minusMonths(1);
         return dt.format(getDFmt(MMDDYY));
     }
@@ -86,7 +88,7 @@ public class DUtil {
         DateTimeFormatter from = getDFmt(fmtFrom);
         DateTimeFormatter to = getDFmt(fmtTo);
 
-        LocalDate date = null;
+        LocalDate date;
         try {
             date = LocalDate.parse(dstr,from);
         } catch (Exception ex) {

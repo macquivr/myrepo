@@ -6,7 +6,7 @@ import com.example.demo.utils.Utils;
 import java.time.LocalDate;
 
 public class Udvi implements Dvi {
-    private Utilities data;
+    private final Utilities data;
 
     public Dvi factory(Object obj)
     {

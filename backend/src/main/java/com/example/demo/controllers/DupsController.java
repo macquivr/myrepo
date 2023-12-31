@@ -22,8 +22,6 @@ public class DupsController {
     public @ResponseBody
     DupsDTO getDups() {
         List<Dups> data = service.findAll();
-        DupsDTO ret = new DupsDTO(data);
-
-        return ret;
+        return new DupsDTO(data);
     }
 }

@@ -24,21 +24,21 @@ public class StypeImpl implements SessionI {
             logger.error("No Repo.....");
             return false;
         }
-        Long id;
+        long id;
         try {
-            id = Long.valueOf(data);
+            id = Long.parseLong(data);
         } catch (Exception ex) {
             logger.error("Id not numeric " + data);
             return false;
         }
 
-        return repository.findById(id.intValue()).isPresent();
+        return repository.findById((int) id).isPresent();
     }
 
     public void performAction(SessionUpdateDTO data) {
         Sessions sobj = Sessions.getObj();
         SessionDTO session = sobj.getSession(data.getSession());
 
-        session.setStype(Integer.valueOf(data.getData()));
+        session.setStype(Integer.parseInt(data.getData()));
     }
 }

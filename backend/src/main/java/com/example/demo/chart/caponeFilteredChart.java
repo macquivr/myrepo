@@ -8,14 +8,14 @@ import com.example.demo.utils.idata.LedgerIData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class caponeFilteredChart extends baseChart implements chartData<Ledger> {
+public class caponeFilteredChart extends baseChart<Ledger> {
 
     public caponeFilteredChart(String sessionId, LedgerRepository l) {
         this.bidata = new LedgerIData(l,null,false,sessionId,false);
     }
     @Override
     public List<Ledger> getChartData(List<Ledger> base) {
-        List<Ledger> ret = new ArrayList<Ledger>();
+        List<Ledger> ret = new ArrayList<>();
 
         for (Ledger l : base) {
             if ((l.getLtype().getId() == 7) &&

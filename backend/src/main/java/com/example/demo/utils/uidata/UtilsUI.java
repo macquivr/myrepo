@@ -7,10 +7,10 @@ import com.example.demo.dto.ui.UtilsRowDTO;
 import com.example.demo.utils.Utils;
 import com.example.demo.utils.idate.Idate;
 
-public class UtilsUI extends Base {
+public class UtilsUI extends Base<UtilsRowDTO> {
 
     public Object factory() { return new UtilsRowDTO();}
-    public void addStuff(List l, Object data, String dstr)
+    public void addStuff(List<UtilsRowDTO>  l, Object data, String dstr)
     {
         UtilsRowDTO d = (UtilsRowDTO) data;
         d.setLabel(dstr);

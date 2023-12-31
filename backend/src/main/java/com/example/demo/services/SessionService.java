@@ -8,8 +8,6 @@ import com.example.demo.repository.StypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.state.*;
-import java.util.List;
-import java.util.Vector;
 
 @Service
 public class SessionService {
@@ -84,7 +82,7 @@ public class SessionService {
 
     private boolean validateType(StatusDTO status, String type)
     {
-        SessionParameters sp = null;
+        SessionParameters sp;
         try {
             sp = SessionParameters.valueOf(type);
         } catch (Exception ex) {

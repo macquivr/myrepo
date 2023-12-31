@@ -18,9 +18,9 @@ public class StypeTableDTO extends TableDTOBase {
 
     public void doPercent() { this.percent(stype); }
     public void print() {
-        FileWriter w = null;
+
         try {
-            w = new FileWriter("results.csv");
+            FileWriter w = new FileWriter("results.csv");
             for (StypeRowDTO d : stype) {
                 String str = d.toString();
                 w.write(str);
@@ -28,7 +28,7 @@ public class StypeTableDTO extends TableDTOBase {
             }
             w.close();
         } catch (Exception ex) {
-            return;
+            // ignore
         }
     }
 }

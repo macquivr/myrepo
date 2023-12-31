@@ -7,9 +7,11 @@ import com.example.demo.utils.dvi.Elecdvi;
 import java.time.LocalDate;
 
 public class ElecIDate implements Idate {
-    private Utilities data;
+    private final Utilities data;
 
-    public ElecIDate(Utilities u) { data = u; }
+    public ElecIDate(Utilities u) {
+        this.data = u;
+    }
     public LocalDate getDate() { return data.getDate(); }
     public Dvi getData() { return new Elecdvi(this.data); }
 }

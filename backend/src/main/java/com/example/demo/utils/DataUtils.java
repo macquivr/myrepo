@@ -13,13 +13,15 @@ import com.example.demo.repository.StatementsRepository;
 import java.util.HashMap;
 
 public class DataUtils {
-    private Repos repos = null;
+    private final Repos repos;
 
-    public DataUtils(Repos r) { repos = r; }
+    public DataUtils(Repos r) {
+        this.repos = r;
+    }
 
     public static HashMap<Lenum,Data> makeDmap()
     {
-        HashMap<Lenum, Data> data = new HashMap<Lenum,Data>();
+        HashMap<Lenum, Data> data = new HashMap<>();
         Data dmain = new Data();
         data.put(Lenum.MAIN,dmain);
 
@@ -73,16 +75,16 @@ public class DataUtils {
         Statements stmts = repo.findByStmtdate(dates.getStart());
 
         StatementRepository stmtRepo = repos.getStatementRepository();
-        if (dmain.getLdata().size() > 0)
+        if (!dmain.getLdata().isEmpty())
             dmain.setStatement(stmtRepo.findAllByIdAndLtype(dmain.getLdata().get(dmain.getLdata().size()-1).getStatement().getId(),dmain.getLtype()));
 
-        if (dmortg.getLdata().size() > 0)
+        if (!dmortg.getLdata().isEmpty())
             dmortg.setStatement(stmtRepo.findAllByIdAndLtype(dmortg.getLdata().get(dmortg.getLdata().size()-1).getStatement().getId(),dmortg.getLtype()));
 
-        if (dms.getLdata().size() > 0)
+        if (!dms.getLdata().isEmpty())
             dms.setStatement(stmtRepo.findAllByIdAndLtype(dms.getLdata().get(dms.getLdata().size()-1).getStatement().getId(),dms.getLtype()));
 
-        if (dslush.getLdata().size() > 0)
+        if (!dslush.getLdata().isEmpty())
             dslush.setStatement(stmtRepo.findAllByIdAndLtype(dslush.getLdata().get(dslush.getLdata().size()-1).getStatement().getId(),dslush.getLtype()));
         else {
             if (stmts != null) {
@@ -90,10 +92,10 @@ public class DataUtils {
             }
         }
 
-        if (dannual.getLdata().size() > 0)
+        if (!dannual.getLdata().isEmpty())
             dannual.setStatement(stmtRepo.findAllByIdAndLtype(dannual.getLdata().get(dannual.getLdata().size()-1).getStatement().getId(),dannual.getLtype()));
 
-        if (dml.getLdata().size() > 0)
+        if (!dml.getLdata().isEmpty())
             dml.setStatement(stmtRepo.findAllByIdAndLtype(dml.getLdata().get(dml.getLdata().size()-1).getStatement().getId(),dml.getLtype()));
 
         return data;

@@ -2,15 +2,12 @@ package com.example.demo.services;
 
 import com.example.demo.importer.Repos;
 import com.example.demo.reports.*;
-import com.example.demo.reports.postimport.ocReport;
-import com.example.demo.reports.postimport.balanceReport;
 import com.example.demo.reports.postimport.outReport;
 import com.example.demo.repository.*;
 import com.example.demo.state.Sessions;
 import com.example.demo.domain.*;
 import com.example.demo.bean.*;
 import com.example.demo.utils.mydate.DUtil;
-import com.example.demo.utils.runner.OcMaintenance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +27,7 @@ public class ReportService {
     private static final Logger logger= LoggerFactory.getLogger(ImportService.class);
 
     private SessionDTO session;
-    private HashMap<String,ReportI> map = new HashMap<String,ReportI>();
+    private final HashMap<String,ReportI> map = new HashMap<>();
 
     @Autowired
     private OcRepository ocRepository;
@@ -152,8 +149,6 @@ public class ReportService {
 
         boolean p = session.isPercent();
         if (p) {
-            //ocReport obj = new ocReport(repos,183);
-            //balanceReport obj = new balanceReport(repos,183);
             outReport obj = new outReport(repos,183);
             try {
                 boolean b = obj.go();
@@ -162,18 +157,8 @@ public class ReportService {
                 else
                     ret.setMessage("Fail.");
             } catch (Throwable ex) {
-                ex.printStackTrace();
                 ret.setMessage("Fail " + ex.getMessage());
             }
-            /*
-            OcMaintenance obj = new OcMaintenance(repos, ocRepository);
-            boolean r = obj.go(-1);
-            if (r)
-                ret.setMessage("Ran.");
-            else
-                ret.setMessage("Fail.");
-
-             */
             return ret;
         }
 
@@ -191,7 +176,7 @@ public class ReportService {
             File f = new File("Report.csv");
             f.delete();
 
-            FileWriter w = new FileWriter(new File("Report.csv"));
+            FileWriter w = new FileWriter("Report.csv");
 
             r.go(w, session);
 
@@ -316,16 +301,15 @@ public class ReportService {
     }
 
     private void printStypes(FileWriter w, List<Ledger> bundle) throws Exception {
-        HashMap<Stype,Double> map = new HashMap<Stype,Double>();
+        HashMap<Stype,Double> map = new HashMap<>();
         for (Ledger l : bundle) {
             Stype s = l.getStype();
             Double d = map.get(s);
             if (d == null)
                 map.put(s,l.getAmount());
             else {
-                double dv = d.doubleValue() + l.getAmount().doubleValue();
-                Double ndv = new Double(dv);
-                map.put(s,ndv);
+                double dv = d + l.getAmount();
+                map.put(s,dv);
             }
         }
         Set<Stype> keys = map.keySet();
@@ -389,10 +373,10 @@ public class ReportService {
 
         w.write("\n");
         w.write("By Category\n");
-        HashMap<String, Double> map = new HashMap<String, Double>();
+        HashMap<String, Double> map = new HashMap<>();
 
+        String lstr;
         for (Ledger l : data) {
-            String lstr = null;
             if (l.getChecks() != null) {
                 Checktype ct = l.getChecks().getPayee().getCheckType();
                 if ((ct.getName().equals("Annual")) ||
@@ -413,11 +397,11 @@ public class ReportService {
             if (d == null) {
                 map.put(lstr, l.getAmount());
             } else {
-                d = Utils.convertDouble(d.doubleValue() + l.getAmount().doubleValue());
+                d = Utils.convertDouble(d + l.getAmount());
                 map.put(lstr, d);
             }
         }
-        List<Catsort> sort = new Vector<Catsort>();
+        List<Catsort> sort = new Vector<>();
 
         Set<String> keys = map.keySet();
         for (String key : keys) {
@@ -426,7 +410,7 @@ public class ReportService {
             Double d = map.get(key);
             Catsort c = new Catsort();
             c.setLabel(akey);
-            c.setAmount(d.doubleValue());
+            c.setAmount(d);
             sort.add(c);
         }
         Collections.sort(sort);
@@ -438,12 +422,12 @@ public class ReportService {
     {
         w.write("\n");
         w.write("Stype " + stype + "\n");
-        HashMap<String, Double> map = new HashMap<String, Double>();
+        HashMap<String, Double> map = new HashMap<>();
 
+        String lstr;
         for (Ledger l : bundle) {
             Stype s = l.getStype();
             if (s.getName().equals(stype)) {
-                String lstr = null;
                 if (l.getChecks() != null)
                     lstr = l.getChecks().getPayee().getName();
                 else
@@ -452,7 +436,7 @@ public class ReportService {
                 if (d == null) {
                     map.put(lstr, l.getAmount());
                 } else {
-                    double dv = Utils.convertDouble(d.doubleValue() + l.getAmount().doubleValue());
+                    double dv = Utils.convertDouble(d + l.getAmount());
                     map.put(lstr, dv);
                 }
             }

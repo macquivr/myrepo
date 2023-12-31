@@ -3,11 +3,11 @@ package com.example.demo.state.importer;
 import java.util.HashMap;
 
 public class ImportData {
-    private HashMap<String, String> fdata = null;
+    private final HashMap<String, String> fdata;
 
     public ImportData()
     {
-        fdata = new HashMap<String,String>();
+        this.fdata = new HashMap<>();
     }
 
     public String getData(String fname)

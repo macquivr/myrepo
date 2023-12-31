@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Vector;
 
 public class IMData {
-	private Statement stmt = null;
-	private List<Ledger> ledger = null;
+	private final Statement stmt;
+	private final List<Ledger> ledger;
 
 	public IMData()
 	{
 		stmt = new Statement();
-		ledger = new Vector<Ledger>();
+		ledger = new Vector<>();
 	}
 	
 	public Statement getStatement() { return stmt; }

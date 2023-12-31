@@ -15,7 +15,7 @@ public class CheckTypeService {
 
     public List<Checktype> findAll() {
 
-        return (List<Checktype>) repository.findAll();
+        return repository.findAll();
     }
 
 }

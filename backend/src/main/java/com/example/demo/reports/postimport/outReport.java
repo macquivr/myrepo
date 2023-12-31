@@ -10,7 +10,6 @@ import com.example.demo.importer.Repos;
 import com.example.demo.repository.LedgerRepository;
 import com.example.demo.repository.LtypeRepository;
 import com.example.demo.repository.StatementRepository;
-import com.example.demo.repository.StatementsRepository;
 import com.example.demo.utils.Utils;
 import com.example.demo.utils.rutils.OutUtils;
 
@@ -55,7 +54,7 @@ public class outReport extends basePost {
     }
 
     private List<Ledger> getData() {
-        List<Ledger> ret = new ArrayList<Ledger>();
+        List<Ledger> ret = new ArrayList<>();
         LedgerRepository lerepo = repos.getLedgerRepository();
         StatementRepository srepo = repos.getStatementRepository();
         LtypeRepository lrepo = repos.getLtypeRepository();
@@ -91,10 +90,10 @@ public class outReport extends basePost {
         return ret;
     }
 
-    private void print(FileWriter w, List<Catsort> data, double totalo) throws Exception
+    private void print(FileWriter w, List<Catsort> data, double totalo)
     {
         OutTable ot = new OutTable();
-        List<OBean> ob = new Vector<OBean>();
+        List<OBean> ob = new Vector<>();
 
         for (Catsort c : data) {
             double a = c.getAmount();

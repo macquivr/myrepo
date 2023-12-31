@@ -5,15 +5,15 @@ import java.util.HashMap;
 import com.example.demo.bean.NewLabelData;
 
 public class ImportDR {
-    private ImportData data = null;
-    private ImportDTO dto = null;
-    private NewData ndata = null;
-    private HashMap<String, NewLabelData> nmap;
+    private ImportData data;
+    private ImportDTO dto;
+    private NewData ndata;
+    private final HashMap<String, NewLabelData> nmap;
 
     public ImportDR() {
         data = new ImportData();
         ndata = new NewData();
-        nmap = new HashMap<String,NewLabelData>();
+        nmap = new HashMap<>();
     }
 
     public void setData(ImportData d) { data = d; }

@@ -15,7 +15,6 @@ import com.example.demo.state.importer.ImportDR;
 import com.example.demo.state.importer.NewData;
 import com.example.demo.state.importer.NewDataE;
 import com.example.demo.bean.NewLabelData;
-import java.time.LocalDate;
 
 import com.example.demo.utils.mydate.DUtil;
 import org.slf4j.Logger;
@@ -45,10 +44,10 @@ public class ImportNewLabelUpdate implements IUpdateAction{
     private void persist(Repos r, ImportDR dro, String line) {
         NewData data = dro.getNData();
         NewLabelData nld = dro.getHMapEntry(line);
-        Label lbl = null;
-        Location loc = null;
-        Category cat = null;
-        Names nm = null;
+        Label lbl;
+        Location loc;
+        Category cat;
+        Names nm;
 
         LabelRepository lrepo = r.getLabelRepository();
         NamesRepository nrepo = r.getNamesRepository();

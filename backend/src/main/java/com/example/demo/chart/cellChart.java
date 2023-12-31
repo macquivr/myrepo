@@ -3,11 +3,10 @@ package com.example.demo.chart;
 import com.example.demo.domain.Utilities;
 import com.example.demo.repository.UtilitiesRepository;
 import com.example.demo.utils.idata.CellIData;
-import com.example.demo.utils.idata.ElecIData;
 
 import java.util.List;
 
-public class cellChart extends baseChart implements chartData<Utilities> {
+public class cellChart extends baseChart<Utilities> {
 
     public cellChart(String sessionId, UtilitiesRepository u) {
         this.bidata = new CellIData(sessionId, u);

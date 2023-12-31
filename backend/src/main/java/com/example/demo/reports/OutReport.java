@@ -14,19 +14,10 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class OutReport implements ReportI {
-    private Repos repos = null;
-    private MRBeanl bdata = null;
-    private MRBeanl cdata = null;
+    private final Repos repos;
 
     public OutReport(Repos r) {
-        repos = r;
-        bdata = new MRBeanl();
-        cdata = new MRBeanl();
-    }
-
-    public double pc()
-    {
-        return 0.0;
+        this.repos = r;
     }
 
     public void go(FileWriter w, SessionDTO session) throws Exception
@@ -52,7 +43,7 @@ public class OutReport implements ReportI {
     }
     private void printOut(FileWriter w,List<Ledger> data, Stype transfert) throws Exception
     {
-        HashMap<OutMapKey, Lvd> hmap = new HashMap<OutMapKey, Lvd>();
+        HashMap<OutMapKey, Lvd> hmap = new HashMap<>();
 
         for (Ledger l : data) {
             Stype s = l.getStype();
@@ -87,7 +78,7 @@ public class OutReport implements ReportI {
     private double ptype(FileWriter w,  HashMap<OutMapKey, Lvd> hmap, OutMapKeyType type) throws Exception {
         double total = 0;
         Set<OutMapKey> keys = hmap.keySet();
-        List<Lvd> lst = new ArrayList<Lvd>();
+        List<Lvd> lst = new ArrayList<>();
         for (OutMapKey key : keys) {
             if (key.getType() == type) {
                 Lvd l = hmap.get(key);

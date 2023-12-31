@@ -8,7 +8,7 @@ import java.util.Vector;
 public class CategoriesUIDTO {
     private List<Lvd> categories;
 
-    public CategoriesUIDTO() { categories = new Vector<Lvd>(); }
+    public CategoriesUIDTO() { categories = new Vector<>(); }
     public CategoriesUIDTO(List<Lvd> dt) {
         categories = dt;
     }

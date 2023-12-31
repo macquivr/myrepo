@@ -35,6 +35,6 @@ public class StartDateImpl implements SessionI {
         dt = DUtil.firstOfMonth(dt);
 
         session.setStart(dt);
-        logger.info("Update start date to " + dt.toString());
+        logger.info("Update start date to " + dt);
     }
 }

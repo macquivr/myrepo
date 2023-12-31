@@ -1,7 +1,6 @@
 package com.example.demo.dto;
 
 import com.example.demo.domain.Budget;
-import com.example.demo.domain.Ltype;
 
 import java.time.LocalDate;
 

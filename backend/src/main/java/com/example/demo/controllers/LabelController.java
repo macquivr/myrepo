@@ -23,17 +23,13 @@ public class LabelController {
     public @ResponseBody
     JustNameDTO getImportLabels() {
         List<Label> data = service.findAll();
-        JustNameDTO ret = new JustNameDTO(data);
-
-        return ret;
+        return new JustNameDTO(data);
     }
 
     @GetMapping(value = "/Label", produces = "application/json")
     public @ResponseBody
     LabelDTO getLabel() {
         List<Label> data = service.findAll();
-        LabelDTO ret = new LabelDTO(data);
-
-        return ret;
+        return new LabelDTO(data);
     }
 }

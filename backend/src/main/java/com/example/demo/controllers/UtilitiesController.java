@@ -22,8 +22,6 @@ public class UtilitiesController {
     public @ResponseBody
     UtilitiesDTO getUtilities() {
         List<Utilities> data = service.findAll();
-        UtilitiesDTO ret = new UtilitiesDTO(data);
-
-        return ret;
+        return new UtilitiesDTO(data);
     }
 }

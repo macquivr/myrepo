@@ -42,39 +42,39 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAmz.class);
 			if (s.startsWith("Previous Balance")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1).replaceAll(",", "");
-				stmt.setSbalance(Double.valueOf(str).doubleValue());
+				stmt.setSbalance(Double.parseDouble(str));
 			}
 			if (s.startsWith("New Balance:")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1).replaceAll(",", "");
-				stmt.setFbalance(Double.valueOf(str).doubleValue());
+				stmt.setFbalance(Double.parseDouble(str));
 			}
 			if (s.startsWith("Payment, Credit")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1).replaceAll(",", "");
-				stmt.setIna(Double.valueOf(str).doubleValue());
+				stmt.setIna(Double.parseDouble(str));
 			}
 			if (s.startsWith("Purchases +")) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx+1).replaceAll(",", "");
-				stmt.setOuta(Double.valueOf(str).doubleValue());
+				stmt.setOuta(Double.parseDouble(str));
 			}
 			if ((s.startsWith("Fees Charged")) || (s.startsWith("Interest Charged"))) {
 				int idx = s.indexOf('$');
 				String str = s.substring(idx + 1).replaceAll(",", "");
 				if (stmt.getFee() != null) {
 					double d = stmt.getFee();
-					double ds = Double.valueOf(str).doubleValue();
+					double ds = Double.parseDouble(str);
 					stmt.setFee(Utils.convertDouble(d + ds));
 				} else {
-					stmt.setFee(Double.valueOf(str).doubleValue());
+					stmt.setFee(Double.parseDouble(str));
 				}
 			}
 		}
 		
 	}
 	
-	protected void doTransactions() throws BadDataException
+	protected void doTransactions()
 	{
 		Iterator<String> iter = lines.iterator();
 		while (iter.hasNext()) {

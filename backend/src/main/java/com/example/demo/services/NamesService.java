@@ -15,7 +15,7 @@ public class NamesService {
 
     public List<Names> findAll() {
 
-        return (List<Names>) repository.findAll();
+        return repository.findAll();
     }
 
 }

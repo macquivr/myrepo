@@ -10,9 +10,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class OcUtils {
-    private Repos repos = null;
+    private final Repos repos;
 
-    public OcUtils(Repos repos) {
+    public OcUtils(Repos repos)
+    {
         this.repos = repos;
     }
 

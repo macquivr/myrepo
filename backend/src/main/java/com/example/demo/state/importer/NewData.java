@@ -62,7 +62,6 @@ public class NewData {
 
             category = data;
             state = NewDataE.DONE;
-            return;
         }
     }
 }

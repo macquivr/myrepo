@@ -1,8 +1,6 @@
 package com.example.demo.services;
 
-import com.example.demo.domain.Budget;
 import com.example.demo.domain.Budgetvalues;
-import com.example.demo.repository.BudgetRepository;
 import com.example.demo.repository.BudgetValuesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,7 @@ public class BudgetValueService {
 
     public List<Budgetvalues> findAll() {
 
-        return (List<Budgetvalues>) repository.findAll();
+        return repository.findAll();
     }
 
 }

@@ -8,11 +8,9 @@ import com.example.demo.domain.Label;
 import com.example.demo.domain.Ledger;
 import com.example.demo.domain.Ltype;
 import com.example.demo.domain.Statement;
-import com.example.demo.domain.Statements;
 import com.example.demo.importer.data.IData;
 import com.example.demo.importer.data.IMData;
 import com.example.demo.importer.data.NData;
-import com.example.demo.importer.IBase;
 import com.example.demo.importer.*;
 import com.example.demo.utils.mydate.DUtil;
 import java.util.HashMap;
@@ -21,11 +19,11 @@ import java.util.List;
 
 public class SaveO extends importBase {
 	private static final Logger log = LoggerFactory.getLogger(SaveO.class);
-	private Ltype ltypeo = null;
-	private HashMap<Integer,Checks> cmap = null;
-	protected IMData imdata = null;
-	protected IData data = null;
-	protected List<String> errs;
+	private final Ltype ltypeo;
+	private final HashMap<Integer,Checks> cmap;
+	protected final IMData imdata;
+	protected final IData data;
+	protected final List<String> errs;
 
 	public SaveO(IBase obj,int ltype, IData d, IMData im, List<String> err)
 	{
@@ -33,18 +31,18 @@ public class SaveO extends importBase {
 
 		errs = err;
 		ltypeo = obj.getLtype(ltype);
-		cmap = new HashMap<Integer,Checks>();
+		cmap = new HashMap<>();
 		data = d;
 		imdata = im;
 	}
 	
-	public boolean makeData(Statements stmts) 
+	public boolean makeData()
 	{
 		if (!buildStatement())
 			return false;
 		boolean b = makeChecks();
 		if (!b)
-			return b;
+			return false;
 		return makeLedger();
 	}
 	
@@ -62,7 +60,7 @@ public class SaveO extends importBase {
 	    	c.setLtype(ltypeo);
 	    	c.setPayee(n.getPayee());
 	    	
-	    	cmap.put(new Integer(n.getCheck()), c);
+	    	cmap.put(n.getCheck(), c);
 	    }
 	    return true;
 	}
@@ -111,7 +109,7 @@ public class SaveO extends importBase {
 		}
 
 		stmt.setSbalance(start);
-		stmt.setFbalance(stop);;
+		stmt.setFbalance(stop);
 		stmt.setIna(ina);
 		stmt.setOuta(outa);
 		stmt.setCredit(credit);

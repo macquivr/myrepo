@@ -4,7 +4,7 @@ import com.example.demo.domain.Ledger;
 import java.time.LocalDate;
 
 public class Ldvi implements Dvi {
-    private Ledger data;
+    private final Ledger data;
 
     public Dvi factory(Object obj)
     {

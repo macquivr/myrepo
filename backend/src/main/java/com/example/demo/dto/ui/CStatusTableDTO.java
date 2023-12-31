@@ -7,10 +7,10 @@ import java.util.List;
 
 public class CStatusTableDTO {
     private List<CStatusRowDTO> cstatus;
-    private CStatusRowDTO total;
+    private final CStatusRowDTO total;
 
     public CStatusTableDTO() {
-        this.cstatus = new ArrayList<CStatusRowDTO>();
+        this.cstatus = new ArrayList<>();
         this.total = new CStatusRowDTO();
         this.total.setName("Total");
     }

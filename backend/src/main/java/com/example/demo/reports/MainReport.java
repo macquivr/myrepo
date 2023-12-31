@@ -6,7 +6,6 @@ import com.example.demo.bean.StartStop;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.importer.Repos;
-import com.example.demo.repository.UtilitiesRepository;
 import com.example.demo.state.Consolidate;
 import com.example.demo.utils.LData;
 import com.example.demo.utils.Utils;
@@ -19,23 +18,18 @@ import java.util.List;
 import java.util.Set;
 
 public class MainReport implements ReportI {
-    private Repos repos = null;
-    private MRBeanl bdata = null;
-    private MRBeanl cdata = null;
+    private final Repos repos;
+    private MRBeanl bdata;
+    private MRBeanl cdata;
 
     public MainReport(Repos r) {
-        repos = r;
+        this.repos = r;
         bdata = new MRBeanl();
         cdata = new MRBeanl();
     }
 
-    public double pc()
-    {
-        return 0.0;
-    }
-
     private List<Ledger> getBillsNoUtils(List<Ledger> data) {
-        List<Ledger> r = new ArrayList<Ledger>();
+        List<Ledger> r = new ArrayList<>();
 
         for (Ledger l : data) {
             if ((l.getStype().getName().equals("Bills")) &&
@@ -67,7 +61,6 @@ public class MainReport implements ReportI {
     }
     public void go(FileWriter w, SessionDTO session) throws Exception
     {
-        double tout = 0;
         bdata = new MRBeanl();
         cdata = new MRBeanl();
 
@@ -77,7 +70,7 @@ public class MainReport implements ReportI {
         StartStop dates = ld.getDates();
 
         printPeriod(w,dates);
-        double camt = 0;
+        double camt;
         double slushCredit = 0;
 
         Consolidate c = session.getConsolidate();
@@ -94,7 +87,6 @@ public class MainReport implements ReportI {
             m = 12;
         }
 
-        double utilsBudget = 500 * m;
         double posBudget = 1000 * m;
         double atmBudget = 300 * m;
         double dogBudget = 280 * m;
@@ -103,45 +95,37 @@ public class MainReport implements ReportI {
         double capOneBudget = 1000 * m;
         double amazonBudget = 400 * m;
 
-        double utils = printUtils(w,data,utilsBudget);
-        printStype("POS",w,data, posBudget);
-        printStype("ATM",w,data, atmBudget);
-        double dogAmt = dog(w,data,dogBudget);
-        slushCredit += printCredit(w, data,"Usaa",  11209, usaaBudget);
-        slushCredit += printCredit(w, data,"Aaa",   12933,aaaBudget);
-        slushCredit += printCredit(w, data,"CapitalOne", 10264,  capOneBudget);
-        slushCredit += printCredit(w, data,"Amazon",   10019, amazonBudget);
+        printStype("POS",data, posBudget);
+        printStype("ATM",data, atmBudget);
+        double dogAmt = dog(data,dogBudget);
+        slushCredit += printCredit(data,"Usaa",  11209, usaaBudget);
+        slushCredit += printCredit(data,"Aaa",   12933,aaaBudget);
+        slushCredit += printCredit(data,"CapitalOne", 10264,  capOneBudget);
+        slushCredit += printCredit(data,"Amazon",   10019, amazonBudget);
         bdata.Print(w);
         w.write("\n");
 
-        tout += bdata.getTotal();
         w.write("Credit Overage: " + Utils.convertDouble(slushCredit) + "\n");
-        tout += slushCredit;
 
         double otherBills = 0;
         List<Ledger> obills = getBillsNoUtils(data);
         for (Ledger l : obills) {
             otherBills = Utils.convertDouble(otherBills + l.getAmount());
         }
-        tout += otherBills;
         w.write("OtherBills: " + otherBills + "\n");
 
         double miscNoDog = Utils.convertDouble(getMiscOut(data) + (dogAmt * (-1)));
-        tout += miscNoDog;
         w.write("Misc: " + miscNoDog + "\n");
 
         double annual = getStype(data, "Annual");
-        tout += annual;
+
         w.write("Annual: " + annual + "\n");
 
         camt = allCredit(data);
         camt = Utils.convertDouble(camt);
 
         double otherCredit = Utils.convertDouble(getStype(data, "Credit") + (camt * (-1)));
-        tout += otherCredit;
         w.write("Other Credit: " + otherCredit + "\n");
-
-        tout = Utils.convertDouble(tout);
 
         double totalOut = getTotalOut(data);
         w.write("TotalOut: " + totalOut + "\n");
@@ -163,10 +147,10 @@ public class MainReport implements ReportI {
         w.write("\n");
 
         w.write("Credit spent calendar based.\n");
-        printSpent(w, "Usaa",  session, 1000);
-        printSpent(w, "Aaa",  session, 400);
-        printSpent(w, "CapitalOne",  session, 1000);
-        printSpent(w, "Amazon",  session, 400);
+        printSpent("Usaa",  session, 1000);
+        printSpent( "Aaa",  session, 400);
+        printSpent( "CapitalOne",  session, 1000);
+        printSpent( "Amazon",  session, 400);
         w.write("\n");
         w.write("\n");
         cdata.Print(w);
@@ -184,14 +168,14 @@ public class MainReport implements ReportI {
     private void printOBills(FileWriter w, List<Ledger> data) throws Exception
     {
         w.write("Other Bills...\n");
-        HashMap<String, Double> m = new HashMap<String, Double>();
+        HashMap<String, Double> m = new HashMap<>();
         for (Ledger l : data) {
             if (l.getChecks() != null) {
                 Double d = m.get(l.getChecks().getPayee().getName());
                 if (d == null) {
                     m.put(l.getChecks().getPayee().getName(), l.getAmount());
                 } else {
-                    Double nv = Utils.convertDouble(d.doubleValue() + l.getAmount());
+                    Double nv = Utils.convertDouble(d + l.getAmount());
                     m.put(l.getChecks().getPayee().getName(), nv);
                 }
             } else {
@@ -199,7 +183,7 @@ public class MainReport implements ReportI {
                 if (d == null) {
                     m.put(l.getLabel().getName(),l.getAmount());
                 } else {
-                    Double nv = Utils.convertDouble(d.doubleValue() + l.getAmount());
+                    Double nv = Utils.convertDouble(d + l.getAmount());
                     m.put(l.getLabel().getName(),nv);
                 }
             }
@@ -207,7 +191,7 @@ public class MainReport implements ReportI {
         Set<String> keys = m.keySet();
         for (String key : keys) {
             Double value = m.get(key);
-            if (value.doubleValue() < 0) {
+            if (value < 0) {
                 w.write(key + " " + value + "\n");
             }
         }
@@ -217,7 +201,7 @@ public class MainReport implements ReportI {
     private void printMisc(FileWriter w, List<Ledger> data) throws Exception
     {
         w.write("Misc Entries...\n");
-        HashMap<String, Double> m = new HashMap<String, Double>();
+        HashMap<String, Double> m = new HashMap<>();
         for (Ledger l : data) {
             if (l.getStype().getName().equals("Misc") && !isDog(l)) {
                 if (l.getChecks() != null) {
@@ -225,7 +209,7 @@ public class MainReport implements ReportI {
                     if (d == null) {
                         m.put(l.getChecks().getPayee().getName(), l.getAmount());
                     } else {
-                        Double nv = Utils.convertDouble(d.doubleValue() + l.getAmount());
+                        Double nv = Utils.convertDouble(d + l.getAmount());
                         m.put(l.getChecks().getPayee().getName(),nv);
                     }
                     //w.write(l.getChecks().getPayee().getName() + " " + l.getAmount() + "\n");
@@ -234,7 +218,7 @@ public class MainReport implements ReportI {
                     if (d == null) {
                         m.put(l.getLabel().getName(),l.getAmount());
                     } else {
-                        Double nv = Utils.convertDouble(d.doubleValue() + l.getAmount());
+                        Double nv = Utils.convertDouble(d + l.getAmount());
                         m.put(l.getLabel().getName(),nv);
                     }
                     //w.write(l.getLabel().getName() + " " + l.getAmount() + "\n");
@@ -244,7 +228,7 @@ public class MainReport implements ReportI {
         Set<String> keys = m.keySet();
         for (String key : keys) {
             Double value = m.get(key);
-            if (value.doubleValue() < 0) {
+            if (value < 0) {
                 w.write(key + " " + value + "\n");
             }
         }
@@ -253,7 +237,7 @@ public class MainReport implements ReportI {
         keys = m.keySet();
         for (String key : keys) {
             Double value = m.get(key);
-            if (value.doubleValue() > 0) {
+            if (value > 0) {
                 w.write(key + " " + value + "\n");
             }
         }
@@ -276,29 +260,8 @@ public class MainReport implements ReportI {
         }
         return Utils.convertDouble(ret);
     }
-    private void printStypes(FileWriter w, List<Ledger> bundle) throws Exception {
-        HashMap<Stype,Double> map = new HashMap<Stype,Double>();
-        for (Ledger l : bundle) {
-            Stype s = l.getStype();
-            Double d = map.get(s);
-            if (d == null)
-                map.put(s,l.getAmount());
-            else {
-                double dv = d.doubleValue() + l.getAmount().doubleValue();
-                Double ndv = new Double(dv);
-                map.put(s,ndv);
-            }
-        }
-        Set<Stype> keys = map.keySet();
-        for (Stype key : keys) {
-            if (!key.getName().equals("Transfer")) {
-                double value = Utils.convertDouble(map.get(key));
-                w.write(key.getName() + "\t" + value + "\n");
-            }
-        }
-    }
 
-    private double printCredit(FileWriter w, List<Ledger> data, String label, int lid, double budget) throws Exception {
+    private double printCredit(List<Ledger> data, String label, int lid, double budget) {
         double totalm = 0;
         double totalnm = 0;
 
@@ -322,7 +285,7 @@ public class MainReport implements ReportI {
         return totalnm;
     }
 
-    private double allCredit(List<Ledger> data) throws Exception {
+    private double allCredit(List<Ledger> data)  {
         double camt = 0;
 
         camt += creditAnywhere(data,  11209);
@@ -334,7 +297,7 @@ public class MainReport implements ReportI {
         return camt;
     }
 
-    private double creditAnywhere(List<Ledger> data,int lid) throws Exception {
+    private double creditAnywhere(List<Ledger> data,int lid) {
         double total = 0;
 
         for (Ledger l : data) {
@@ -347,8 +310,7 @@ public class MainReport implements ReportI {
         return total;
     }
 
-    private void printSpent(FileWriter w, String lt, SessionDTO session, double budget) throws Exception {
-        int label = 0;
+    private void printSpent(String lt, SessionDTO session, double budget)  {
         Ltype ltype = repos.getLtypeRepository().findByName(lt);
         LData ld = new LData(repos.getLedgerRepository());
         List<Ledger> data = ld.filterByDate(session, null, ltype);
@@ -367,16 +329,17 @@ public class MainReport implements ReportI {
     }
 
     private boolean isDog(Ledger l) {
+        boolean ret = false;
         if (l.getChecks() != null) {
             Checks c = l.getChecks();
             if (c.getPayee().getName().equals("dog")) {
-                return true;
+                ret = true;
             }
         }
-        return false;
+        return ret;
     }
 
-    private double dog(FileWriter w, List<Ledger> data, double budget) throws Exception {
+    private double dog(List<Ledger> data, double budget)  {
         double total = 0;
 
         for (Ledger l : data) {
@@ -391,24 +354,7 @@ public class MainReport implements ReportI {
         return Utils.convertDouble(total);
     }
 
-    private double printUtils(FileWriter w, List<Ledger> data, double budget) throws Exception
-    {
-        double total = 0;
-
-        for (Ledger l : data) {
-            if (l.getLabel().getId() == 10344) {
-                total += l.getAmount();
-            }
-        }
-
-        double net = Utils.convertDouble((total * (-1)) - budget);
-        MRBean mb = new MRBean("Utils", total, budget, net);
-        bdata.add(mb);
-
-        return total;
-    }
-
-    private double printStype(String stype, FileWriter w, List<Ledger> bundle, double budget) throws Exception {
+    private void printStype(String stype,  List<Ledger> bundle, double budget)  {
         double dvalue = 0;
         for (Ledger l : bundle) {
             Stype s = l.getStype();
@@ -421,8 +367,6 @@ public class MainReport implements ReportI {
         double net = Utils.convertDouble((value * (-1)) - budget);
         MRBean b = new MRBean(stype, value, budget, net);
         bdata.add(b);
-
-        return value;
     }
 
 }

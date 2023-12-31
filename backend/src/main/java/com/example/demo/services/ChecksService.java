@@ -15,7 +15,7 @@ public class ChecksService {
 
     public List<Checks> findAll() {
 
-        return (List<Checks>) repository.findAll();
+        return repository.findAll();
     }
 
 }

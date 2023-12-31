@@ -1,6 +1,5 @@
 package com.example.demo.dto.ui;
 
-import com.example.demo.domain.Budget;
 import com.example.demo.dto.BudgetRowDTO;
 
 import java.util.HashMap;
@@ -9,13 +8,13 @@ import java.util.Vector;
 
 public class BTable {
     protected HashMap<Integer, List<BudgetRowDTO>> makeBlist(List<BudgetRowDTO> data) {
-        HashMap<Integer,List<BudgetRowDTO>> ret = new HashMap<Integer,List<BudgetRowDTO>>();
+        HashMap<Integer,List<BudgetRowDTO>> ret = new HashMap<>();
 
         for (BudgetRowDTO b : data) {
-            Integer stmtsI = new Integer(b.getStmts());
+            Integer stmtsI = b.getStmts();
             List<BudgetRowDTO> bl = ret.get(stmtsI);
             if (bl == null) {
-                bl = new Vector<BudgetRowDTO>();
+                bl = new Vector<>();
                 bl.add(b);
                 ret.put(stmtsI,bl);
             } else {

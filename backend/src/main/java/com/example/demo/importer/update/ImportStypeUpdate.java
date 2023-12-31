@@ -28,6 +28,9 @@ public class ImportStypeUpdate implements IUpdateAction{
 
         StypeRepository srepo = r.getStypeRepository();
         Optional<Stype> opt = srepo.findById(Integer.valueOf(dlabel));
+        if (!opt.isPresent()) {
+            return;
+        }
         Stype stype = opt.get();
 
         LabelRepository lrepo = r.getLabelRepository();

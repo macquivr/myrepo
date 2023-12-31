@@ -186,7 +186,7 @@ public class ImportService {
     public ImportDTO getNextData(String session) {
         ImportDTO dto = Imports.getObj().getImport(session);
 
-        if (dto.getIresults().size() == 0)
+        if (dto.getIresults().isEmpty())
             dto.setMdata("Done.");
         else
             dto.setMdata(dto.getIresults().get(0));
@@ -198,7 +198,7 @@ public class ImportService {
         ImportDTO dto = Imports.getObj().getImport(session);
         ImportDR dr = Imports.getObj().getImportObj(session);
 
-        if (dto.getIresults().size() == 0)
+        if (dto.getIresults().isEmpty())
             dto.setMdata("Done.");
         else {
             NewLabelData nd = dr.getHMapEntry(dto.getIresults().get(0));
@@ -211,8 +211,8 @@ public class ImportService {
     }
 
     public ImportDTO importStatus(String session) {
-        ImportDTO ret = null;
-        UUID u = null;
+        ImportDTO ret;
+        UUID u;
 
         if (repos == null)
             init();
@@ -231,7 +231,7 @@ public class ImportService {
         }
 
         doImport iobj = new doImport(u,repos,ret);
-        List<String> iresults = null;
+        List<String> iresults;
 
         try {
             iresults = iobj.go();
@@ -263,7 +263,7 @@ public class ImportService {
         }
 
         if (ret.getImportState() == ImportState.MISSING_STYPES) {
-            if (iresults.size() > 0) {
+            if (!iresults.isEmpty()) {
                 ret.setIresults(iresults);
                 ret.setMdata(iresults.get(0));
                 return ret;

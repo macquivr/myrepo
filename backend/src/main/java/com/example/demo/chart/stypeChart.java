@@ -7,9 +7,9 @@ import com.example.demo.utils.idata.LedgerIData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class stypeChart extends baseChart implements chartData<Ledger> {
+public class stypeChart extends baseChart<Ledger> {
 
-    private int stype;
+    private final int stype;
 
     public stypeChart(int s, String sessionId, LedgerRepository l)
     {
@@ -19,7 +19,7 @@ public class stypeChart extends baseChart implements chartData<Ledger> {
 
     @Override
     public List<Ledger> getChartData(List<Ledger> base) {
-        List<Ledger> ret = new ArrayList<Ledger>();
+        List<Ledger> ret = new ArrayList<>();
         for (Ledger l : base) {
             if (l.getStype().getId() == this.stype)
                 ret.add(l);

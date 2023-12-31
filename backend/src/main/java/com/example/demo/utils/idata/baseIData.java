@@ -6,14 +6,17 @@ import com.example.demo.utils.idate.Idate;
 
 import java.util.List;
 
-public abstract class baseIData {
+public abstract class baseIData<T> {
     protected List data;
 
     protected StartStop dates;
 
     public abstract Idate factory(Object obj);
-    public abstract boolean initialize(chartData chartI);
+    public abstract boolean initialize(chartData<T> chartI);
 
+    public void setDates(StartStop d) {
+        this.dates = d;
+    }
     public List getData() {
         return this.data;
     }

@@ -11,7 +11,6 @@ import java.util.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.domain.*;
-import com.example.demo.importer.CsbEType;
 
 public abstract class CSBase extends IBase {
 	private static final Logger log = LoggerFactory.getLogger(CSBase.class);
@@ -32,12 +31,8 @@ public abstract class CSBase extends IBase {
 		}
 	
 		List<String> missingTypes = validateTypes();
-		if (missingTypes == null) {
-			ret.add("Could not validate Types.");
-			return false;
-		}
-		
-		if (missingTypes.size() > 0) {
+
+		if (!missingTypes.isEmpty()) {
 			String str = "Missing Types ";
 			for (String s : missingTypes)
 				str = str.concat(s + " ");
@@ -48,11 +43,11 @@ public abstract class CSBase extends IBase {
 		//data.Print();
 		boolean b = updateLabels(ret);
 		if (!b)
-			return b;
+			return false;
 
 		b = doChecks(ret);
 		if (!b)
-			return b;
+			return false;
 
 		data.getStmt().setLtype(getLtype(ltype));
 		data.getStmt().setCredit(credit);
@@ -77,7 +72,7 @@ public abstract class CSBase extends IBase {
 			} else {
 				if (TypeHelper.getObj(getUuid(), repos).getCids().contains(ty.getId())) {
 					try {
-						n.setCheck(Integer.valueOf(nstr));
+						n.setCheck(Integer.parseInt(nstr));
 						n.setLabel(ty.getName());
 						log.info("YYY Setting label " + n.getLabel());
 					} catch (Exception ex) {
@@ -94,9 +89,9 @@ public abstract class CSBase extends IBase {
 	
 	private List<String> validateTypes()
 	{ 
-		List<String> m = new Vector<String>();
+		List<String> m = new Vector<>();
 		List<Csbtype> types = repos.getCsbTypeRepository().findAll();
-		Csbtype type = null;
+		Csbtype type;
 		
 		List<NData> l = data.getData();
 		for (NData n : l) {
@@ -107,7 +102,7 @@ public abstract class CSBase extends IBase {
 				if (label.startsWith(c.getName())) {
 					if (cstr == null) {
 						cstr = c.getName();
-						type = c;;
+						type = c;
 					}
 					else {
 						if (c.getName().length() > cstr.length()) {
@@ -119,7 +114,7 @@ public abstract class CSBase extends IBase {
 			}
 			if (type == null) {
 				System.out.println("TYPE NOT FOUND " + label);
-				if (m.size() == 0) {
+				if (m.isEmpty()) {
 					m.add("Missing Types");
 				}
 				m.add(label);
@@ -144,6 +139,6 @@ public abstract class CSBase extends IBase {
 		}
 		SaveO obj = new SaveO(this, ltype, data, imdata,err);
 	
-		return obj.makeData(stmts);
+		return obj.makeData();
 	}
 }

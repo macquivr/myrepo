@@ -7,9 +7,11 @@ import com.example.demo.utils.dvi.Udvi;
 import java.time.LocalDate;
 
 public class UtilitiesIDate implements Idate {
-    private Utilities data;
+    private final Utilities data;
 
-    public UtilitiesIDate(Utilities u) { data = u; }
+    public UtilitiesIDate(Utilities u) {
+        this.data = u;
+    }
     public LocalDate getDate() { return data.getDate(); }
     public Dvi getData() { return new Udvi(this.data); }
 }
