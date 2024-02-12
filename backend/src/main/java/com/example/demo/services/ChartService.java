@@ -2,10 +2,12 @@ package com.example.demo.services;
 
 import com.example.demo.bean.*;
 import com.example.demo.chart.*;
+import com.example.demo.chart.dataobj.*;
 import com.example.demo.chart.net.*;
 import com.example.demo.chart.bcredit.*;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
+import com.example.demo.dto.ui.DatasourceMsDTO;
 import com.example.demo.repository.LedgerRepository;
 import com.example.demo.repository.StypeRepository;
 import com.example.demo.repository.CategoryRepository;
@@ -20,6 +22,7 @@ import com.example.demo.state.Sessions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,6 +45,11 @@ public class ChartService {
     @Autowired
     private CategoryRepository crepository;
 
+    public DatasourceMsDTO getMsline(String sessionId) {
+        //chartData<Utilities> electric = new electricChart(sessionId, urepository);
+
+        return doMsChart(sessionId, "PercentAnnual", null);
+    }
 
     public DatasourceDTO getChartStypeAtm(String sessionId) {
         return getSpecificStype(sessionId, "ATM");
@@ -428,6 +436,38 @@ public class ChartService {
 
         if (r != null)
             ret.setTrendlines(r);
+
+        return ret;
+    }
+
+    public DatasourceMsDTO doMsChart(String sessionId, String label, chartData chartI) {
+        DatasourceMsDTO ret = new DatasourceMsDTO();
+        if (sessionId == null) {
+            logger.error("No Session.");
+            return ret;
+        }
+        if (sessionId.isEmpty()) {
+            logger.error("Empty Session.");
+            return ret;
+        }
+
+        SessionDTO filter = Sessions.getObj().getSession(sessionId);
+        if (filter == null) {
+            logger.error("COULDN'T find session.");
+            return ret;
+        }
+
+        if (filter.getConsolidate() == Consolidate.NONE) {
+            logger.info("No consolidate set.");
+            return ret;
+        }
+
+        makeMsChart mobj = new makeMsChart(filter, repository,ret);
+
+        mobj.setCname("Out All");
+        mobj.setYname("Percent");
+        mobj.setSuffix("%");
+        mobj.go();
 
         return ret;
     }

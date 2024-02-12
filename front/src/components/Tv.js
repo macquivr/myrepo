@@ -6,6 +6,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import FData from './FData';
 import Graphbase from './Graphbase';
+import GraphMsbase from './GraphMsbase';
 import { categoryColumns } from './tables/CategoryTable';
 import { checksColumns } from './tables/ChecksTable';
 import { checkTypeColumns } from './tables/CheckTypeTable';
@@ -165,6 +166,9 @@ function Tv(props) {
 
       </TreeItem>
       <TreeItem nodeId="74" label="Graphs">
+        <TreeItem nodeId="84" label="Msline">
+          <GraphMsbase usession={props} urlt="msline"/>
+        </TreeItem>
         <TreeItem nodeId="41" label="SType">
           <TreeItem nodeId="82" label="stypeAtm">
             <Graphbase usession={props} urlt="stype/atm"/>

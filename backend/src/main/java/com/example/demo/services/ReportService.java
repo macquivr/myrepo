@@ -2,12 +2,14 @@ package com.example.demo.services;
 
 import com.example.demo.importer.Repos;
 import com.example.demo.reports.*;
+import com.example.demo.reports.postimport.inReport;
 import com.example.demo.reports.postimport.outReport;
 import com.example.demo.repository.*;
 import com.example.demo.state.Sessions;
 import com.example.demo.domain.*;
 import com.example.demo.bean.*;
 import com.example.demo.utils.mydate.DUtil;
+import com.example.demo.utils.runner.BMaintenance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,7 +151,7 @@ public class ReportService {
 
         boolean p = session.isPercent();
         if (p) {
-            outReport obj = new outReport(repos,183);
+            BMaintenance obj = new BMaintenance(repos,session);
             try {
                 boolean b = obj.go();
                 if (b)
@@ -157,6 +159,7 @@ public class ReportService {
                 else
                     ret.setMessage("Fail.");
             } catch (Throwable ex) {
+                ex.printStackTrace();
                 ret.setMessage("Fail " + ex.getMessage());
             }
             return ret;

@@ -11,9 +11,7 @@ import com.example.demo.utils.Utils;
 
 import java.io.FileWriter;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class InReport implements ReportI {
     private final Repos repos;
@@ -62,13 +60,26 @@ public class InReport implements ReportI {
         }
         double total = 0;
 
+        List<Catsort> ina = new ArrayList<Catsort>();
+
         Set<Integer> keys = hmap.keySet();
         for (Integer key : keys) {
             Ledger l = hmap.get(key);
-            w.write(l.getLabel().getName() + " " + l.getAmount());
-            w.write("\n");
+            Catsort cdata = new Catsort();
+            cdata.setLabel(l.getLabel().getName());
+            cdata.setAmount(l.getAmount());
+            //w.write(l.getLabel().getName() + " " + l.getAmount());
+            //w.write("\n");
+            ina.add(cdata);
             total += l.getAmount();
         }
+
+        ina.sort(Collections.reverseOrder());
+        for (Catsort l : ina) {
+            w.write(l.getLabel() + " " + l.getAmount());
+            w.write("\n");
+        }
+
         w.write("TOTAL: " + Utils.convertDouble(total));
         w.write("\n");
     }

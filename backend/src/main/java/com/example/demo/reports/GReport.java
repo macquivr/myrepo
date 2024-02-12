@@ -2,10 +2,12 @@ package com.example.demo.reports;
 
 import com.example.demo.bean.Catsort;
 import com.example.demo.bean.StartStop;
+import com.example.demo.bean.AllP;
 import com.example.demo.domain.Ledger;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.importer.Repos;
 import com.example.demo.reports.utils.*;
+import com.example.demo.repository.LedgerRepository;
 import com.example.demo.utils.LData;
 import com.example.demo.utils.Utils;
 
@@ -16,20 +18,38 @@ import java.util.List;
 import java.util.Vector;
 
 public class GReport implements ReportI {
-    private final Repos repos;
+
+    private LedgerRepository lrepo = null;
+    private AllP allData;
+
+    private int ryear;
 
     public GReport(Repos r) {
-        this.repos = r;
+        this.lrepo = r.getLedgerRepository();
+
+    }
+
+    public GReport(LedgerRepository lrepo) {
+        this.lrepo = lrepo;
+    }
+    public AllP getAllData() {
+        return this.allData;
     }
     public void go(FileWriter w, SessionDTO session) throws Exception {
-        LData ld = new LData(repos.getLedgerRepository());
+        this.allData = new AllP();
+        LData ld = new LData(lrepo);
         List<Ledger> data  = ld.filterByDate(session,null,null);
         ld.filterBundle(data);
         StartStop dates = ld.getDates();
 
+        LocalDate tdate = dates.getStart();
+        this.ryear = tdate.getYear();
+        System.out.println("START: " + session.getStart().toString() + " STOP: " + session.getStop().toString());
+        System.out.println("SSTART: " + dates.getStart().toString() + " SSTOP: " + dates.getStop().toString());
         RMap r = new RMap(data);
-        printPeriod(w,dates);
-
+        if (w != null) {
+            printPeriod(w, dates);
+        }
         List<Catsort> summary = new Vector<>();
 
         List<Catsort> ina = r.apply(new RMapIn());
@@ -64,20 +84,22 @@ public class GReport implements ReportI {
 
         percent(w, summary, out);
 
-        ina.sort(Collections.reverseOrder());
-        p(w,"In",ina,false);
-        w.write("NET: " + net + "\n\n");
+        if (w != null) {
+            ina.sort(Collections.reverseOrder());
+            p(w, "In", ina, false);
+            w.write("NET: " + net + "\n\n");
 
-        p(w,"Atm",atm,true);
-        p(w,"POS",pos,true);
-        p(w,"Utils",util,true);
-        p(w,"Emma",emma,true);
-        p(w,"Dog",dog,true);
-        p(w,"Credit",credit,false);
-        p(w,"Bills", bills,false);
-        p(w,"Sears",sears,true);
-        p(w,"Annual",annual,false);
-        pMisc(w, misc,miscChecks);
+            p(w, "Atm", atm, true);
+            p(w, "POS", pos, true);
+            p(w, "Utils", util, true);
+            p(w, "Emma", emma, true);
+            p(w, "Dog", dog, true);
+            p(w, "Credit", credit, false);
+            p(w, "Bills", bills, false);
+            p(w, "Sears", sears, true);
+            p(w, "Annual", annual, false);
+            pMisc(w, misc, miscChecks);
+        }
         //p(w,"Misc Checks", miscChecks,false);
     }
 
@@ -142,20 +164,60 @@ public class GReport implements ReportI {
         }
     }
 
+    private void setAllP(Catsort c, double a, double p, double t) {
+        String key = c.getLabel();
+
+        System.out.println("RYEAR: " + this.ryear + " " + c.getLabel() + " " + p + " " + a + " " + t);
+        if (key.equals("Atm")) {
+            this.allData.setAtm(p);
+        }
+        if (key.equals("POS")) {
+            this.allData.setPos(p);
+        }
+        if (key.equals("Util")) {
+            this.allData.setUtils(p);
+        }
+        if (key.equals("Credit")) {
+            this.allData.setCredit(p);
+        }
+        if (key.equals("Bills")) {
+            this.allData.setBills(p);
+        }
+        if (key.equals("Sears")) {
+            this.allData.setSears(p);
+        }
+        if (key.equals("Misc")) {
+            this.allData.setMisc(p);
+        }
+        if (key.equals("MiscC")) {
+            this.allData.setMiscC(p);
+        }
+        if (key.equals("Annual")) {
+            this.allData.setAnnual(p);
+        }
+    }
     private void percent(FileWriter w, List<Catsort> data, double totalo) throws Exception
     {
-        w.write("Amount and Percent\n");
+        if (w != null) {
+            w.write("Amount and Percent\n");
+        }
         double tp = 0;
 
         for (Catsort c : data) {
             double a = c.getAmount();
             double p = a/totalo;
             double percent = Utils.convertDouble(p * 100);
-            w.write(c.getLabel() + ":\t" + a + "\t" + percent + "\n");
+            if (w != null) {
+                w.write(c.getLabel() + ":\t" + a + "\t" + percent + " " + totalo + "\n");
+            }
+            setAllP(c,a,percent,totalo);
+
             tp += percent;
         }
         tp = Utils.convertDouble(tp);
-        w.write("TP: " + tp + "\n\n");
+        if (w != null) {
+            w.write("TP: " + tp + "\n\n");
+        }
     }
 
     private double doTotal(List<Catsort> data)

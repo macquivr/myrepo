@@ -1,27 +1,25 @@
 package com.example.demo.reports.postimport;
 
 import com.example.demo.bean.Catsort;
-import com.example.demo.bean.OBean;
-import com.example.demo.bean.tables.OutTable;
 import com.example.demo.domain.Ledger;
 import com.example.demo.domain.Ltype;
 import com.example.demo.domain.Statement;
+import com.example.demo.domain.Stype;
 import com.example.demo.importer.Repos;
 import com.example.demo.repository.LedgerRepository;
 import com.example.demo.repository.LtypeRepository;
 import com.example.demo.repository.StatementRepository;
+import com.example.demo.repository.StypeRepository;
 import com.example.demo.utils.Utils;
-import com.example.demo.utils.rutils.OutUtils;
+import com.example.demo.utils.rutils.InUtils;
 
 import java.io.FileWriter;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
-public class outReport extends basePost {
+public class inReport extends basePost {
 
-    public outReport(Repos repos, int sid) {
+    public inReport(Repos repos, int sid) {
         super(repos, sid);
     }
 
@@ -32,16 +30,17 @@ public class outReport extends basePost {
         }
 
         LocalDate dt = stmts.getStmtdate();
-        makeWriter(dt,"Out");
+        makeWriter(dt,"In");
         if (!this.ok) {
             System.out.println("Could not make writer....");
             return false;
         }
-        OutUtils obj = new OutUtils(repos);
+        InUtils obj = new InUtils();
         List<Ledger> ldata = getData();
         obj.go(ldata);
 
         List<Catsort> data = obj.getData();
+        data.sort(Collections.reverseOrder());
         double totalo = obj.getTotalo();
 
         printPeriod();
@@ -50,11 +49,36 @@ public class outReport extends basePost {
         w.write("\n");
 
         close();
-        System.out.println("Here...");
         return true;
     }
 
     private List<Ledger> getData() {
+        List<Ledger> ret = new ArrayList<>();
+        StypeRepository sr = repos.getStypeRepository();
+        Stype transfert = sr.findByName("Transfer");
+
+        HashMap<Integer, Ledger> hmap = new HashMap<>();
+        List<Ledger> data = getLData();
+
+        for (Ledger l : data) {
+            Stype s = l.getStype();
+            if (s.getId() == transfert.getId())
+                continue;
+            if (l.getAmount() < 0)
+                continue;
+            Ledger m = hmap.get(l.getLabel().getId());
+            if (m == null) {
+                ret.add(l);
+                hmap.put(l.getLabel().getId(), l);
+            } else {
+                m.setAmount(Utils.convertDouble(m.getAmount() + l.getAmount()));
+            }
+        }
+
+        return ret;
+    }
+
+    private List<Ledger> getLData() {
         List<Ledger> ret = new ArrayList<>();
         LedgerRepository lerepo = repos.getLedgerRepository();
         StatementRepository srepo = repos.getStatementRepository();
@@ -90,25 +114,16 @@ public class outReport extends basePost {
 
         return ret;
     }
-
-    private void print(FileWriter w, List<Catsort> data, double totalo)
+    private void print(FileWriter w, List<Catsort> data, double totalo) throws Exception
     {
-        OutTable ot = new OutTable();
-        List<OBean> ob = new Vector<>();
-
         for (Catsort c : data) {
             double a = c.getAmount();
-            double p = a/totalo;
-            double percent = Utils.convertDouble(p * 100);
-            OBean obj = new OBean();
-            obj.setLabel(c.getLabel());
-            obj.setAmount(a);
-            obj.setPercent(percent);
-            ob.add(obj);
+            String l = c.getLabel();
+            w.write(l + " " + a);
+            w.write("\n");
         }
-        ot.populateTable(ob);
-
-        ot.Print(w);
+        w.write("TOTAL: " + Utils.convertDouble(totalo));
+        w.write("\n");
     }
 
 }

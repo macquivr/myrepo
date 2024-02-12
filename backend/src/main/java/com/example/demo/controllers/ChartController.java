@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dto.ui.DatasourceMsDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,12 @@ public class ChartController {
 
     @Autowired
     private ChartService service;
+
+    @GetMapping(value = "/chart/msline/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceMsDTO getMsline(@PathVariable String sessionId) {
+        return service.getMsline(sessionId);
+    }
 
     @GetMapping(value = "/chart/electric/{sessionId}", produces = "application/json")
     public @ResponseBody

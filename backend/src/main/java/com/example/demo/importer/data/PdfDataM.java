@@ -24,6 +24,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 	private double stop = 0;
 	private double target = 0;
 	private int transl = 0;
+	private int transm = 0;
 	private int year = 0;
 	private final IData idata;
 	private List<String> mlines;
@@ -72,7 +73,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			
 			net = Utils.dvAdd(net, n.getCredit());
 			net = Utils.dvSub(net, n.getDebit());
-			log.info("MLAMT: " + n.getCredit() + " " + n.getDebit() + " " + tin + " " + tout + " " + net);
+			log.info("MLAMT: " + n.getDate() + " " + n.getCredit() + " " + n.getDebit() + " " + tin + " " + tout + " " + net);
 		}
 		idata.getStmt().setIna(tin);
 		idata.getStmt().setOuta(tout);
@@ -85,7 +86,9 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		double net = getNet(nl);
 		if (net == target) 
 			return;
-		
+
+		NData n = new NData();
+		n.setDate("01/25/24");
 		throw new BadDataException("Target mismatch " + target + " " + net);
 	}
 	
@@ -475,7 +478,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				lidx++;
 				continue;
 			}
-			if (!on && !s.startsWith("CHECKS WRITTEN")) { 
+			if (lidx > transm)  {
+				return;
+			}
+			if (!on && !s.startsWith("CHECKS WRITTEN")) {
 				lidx++;
 				continue;
 			}
@@ -483,9 +489,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			if (s.startsWith("NET TOTAL")) 
 				return;
 			String str = trim(s);
-			if (str != null)
-				addNData(str,true,true);
-		}		
+			if (str != null) {
+				addNData(str, true, true);
+			}
+		}
 	}
 	
 	private void doStartStop() throws BadDataException
@@ -502,13 +509,17 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 			log.info("DLINE: " + s);
 			if (s.startsWith("YOUR CMA TRANSACTIONS") && (transl == -1)) 
 				transl = lidx;
+			if (s.contains("INVESTMENT ACCOUNT") && (transm == -1)) {
+				this.transm = lidx;
+			}
 			if ((s.startsWith("YOUR MERRILL LYNCH REPORT") || 
 			    (s.startsWith("WEALTH MANAGEMENT REPORT")))) {
 				int didx = s.indexOf(',');
 				String str = s.substring(didx+2);
-                didx = str.indexOf(' ');
-                str = str.substring(0,didx);
+				didx = str.indexOf(',');
+				str = str.substring(didx+2);
                 year = Integer.parseInt(str);
+				log.info("MLYEAR: " + year);
 			}
 			if (on) {
 				try {
