@@ -19,7 +19,7 @@ public class ImportCheckUpdate implements IUpdateAction{
         String num = line.substring(idx+1);
         String payee = data.getData();
 
-        checkUtil.getObj().updateCheck(num,payee);
+        checkUtil.getObj(false).updateCheck(num,payee);
 
         ir.remove(0);
     }

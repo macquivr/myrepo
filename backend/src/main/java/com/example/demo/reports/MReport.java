@@ -13,6 +13,7 @@ import com.example.demo.utils.Utils;
 
 import java.io.FileWriter;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -20,7 +21,6 @@ import java.util.Vector;
 public class MReport implements ReportI {
 
     private LedgerRepository lrepo = null;
-    private AllP allData;
 
     private int ryear;
 
@@ -32,17 +32,19 @@ public class MReport implements ReportI {
     public MReport(LedgerRepository lrepo) {
         this.lrepo = lrepo;
     }
-    public AllP getAllData() {
-        return this.allData;
-    }
+
     public void go(FileWriter w, SessionDTO session) throws Exception {
-        this.allData = new AllP();
         LData ld = new LData(lrepo);
         List<Ledger> data  = ld.filterByDate(session,null,null);
         ld.filterBundle(data);
         StartStop dates = ld.getDates();
 
         LocalDate tdate = dates.getStart();
+        List<Ledger> death = new ArrayList<Ledger>();
+        for (Ledger l : data) {
+
+        }
+        /*
         this.ryear = tdate.getYear();
         System.out.println("START: " + session.getStart().toString() + " STOP: " + session.getStop().toString());
         System.out.println("SSTART: " + dates.getStart().toString() + " SSTOP: " + dates.getStop().toString());
@@ -101,6 +103,7 @@ public class MReport implements ReportI {
             pMisc(w, misc, miscChecks);
         }
         //p(w,"Misc Checks", miscChecks,false);
+        */
     }
 
     private List<Catsort> getData(RMap r, String label, RMapI ri, List<Catsort> s) {
@@ -167,6 +170,7 @@ public class MReport implements ReportI {
     private void setAllP(Catsort c, double a, double p, double t) {
         String key = c.getLabel();
 
+        /*
         System.out.println("RYEAR: " + this.ryear + " " + c.getLabel() + " " + p + " " + a + " " + t);
         if (key.equals("Atm")) {
             this.allData.setAtm(p);
@@ -195,6 +199,8 @@ public class MReport implements ReportI {
         if (key.equals("Annual")) {
             this.allData.setAnnual(p);
         }
+
+         */
     }
     private void percent(FileWriter w, List<Catsort> data, double totalo) throws Exception
     {

@@ -22,10 +22,15 @@ public class Repos {
     private final CsbTypeRepository csbTypeRepository;
     private final MltypeRepository mltypeRepository;
     private final LedgerRepository ledgerRepository;
+    private final TLedgerRepository tledgerRepository;
     private final ChecksRepository checkRepository;
     private final UtilitiesRepository utilRepository;
 
     private final OcRepository ocRepository;
+
+    private PayperiodRepository payperiodRepository;
+    private WdatamapRepository wdatamapRepository;
+    private KvpRepository kvpRepository;
 
     public Repos(PayeeRepository p,
                  LabelRepository l,
@@ -41,6 +46,7 @@ public class Repos {
                  CategoryRepository cat,
                  LocationRepository loc,
                  LedgerRepository led,
+                 TLedgerRepository tled,
                  ChecksRepository cs,
                  UtilitiesRepository u,
                  BudgetRepository b,
@@ -62,6 +68,7 @@ public class Repos {
         categoryRepository = cat;
         locationRepository = loc;
         ledgerRepository = led;
+        tledgerRepository = tled;
         checkRepository = cs;
         utilRepository = u;
         budgetRepository = b;
@@ -88,8 +95,17 @@ public class Repos {
     public CategoryRepository getCategoryRepository() { return categoryRepository; }
     public LocationRepository getLocationRepository() { return locationRepository; }
     public LedgerRepository getLedgerRepository() { return ledgerRepository; }
+    public TLedgerRepository getTLedgerRepository() { return tledgerRepository; }
     public ChecksRepository getChecksRepository() { return checkRepository; }
     public UtilitiesRepository getUtilitiesRepository() { return utilRepository; }
 
     public OcRepository getOcRepository() { return ocRepository; }
+
+    public PayperiodRepository getPayPeriod() { return this.payperiodRepository; }
+    public WdatamapRepository getPayWdatamap() { return this.wdatamapRepository; }
+    public KvpRepository getKvp() { return this.kvpRepository; }
+
+    public void setPayPeriod(PayperiodRepository p) { this.payperiodRepository = p; }
+    public void setWdatamap(WdatamapRepository w) { this.wdatamapRepository = w; }
+    public void setKvp(KvpRepository k) { this.kvpRepository = k; }
 }

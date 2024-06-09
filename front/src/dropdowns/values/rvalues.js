@@ -10,7 +10,8 @@ const Rvalues = [
   { value: 'BREPORT', label: 'BReport' },
   { value: 'CREPORT', label: 'CReport' },
   { value: 'OTHER', label: 'Other' },
-  { value: 'GREPORT', label: 'Greport' }
+  { value: 'GREPORT', label: 'Greport' },
+  { value: 'PAYPERIOD', label: 'Payperiod' }
 ];
 
 export default Rvalues;

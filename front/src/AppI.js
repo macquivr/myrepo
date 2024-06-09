@@ -29,6 +29,11 @@ function AppI() {
      window.location.href="http://localhost:3000/home/" + appState.session;
   }
 
+  const importWButton = () =>
+  {
+     window.location.href="http://localhost:3000/importw/" + appState.session;
+  }
+
   const msession = () => {
     fetch('/SpringBootRepository/msession')
       .then((res) => res.json())
@@ -56,8 +61,9 @@ function AppI() {
         <Toolbar>
           <ButtonGroup>
             <Button onClick={importButton}>Import</Button>
+            <Button onClick={importWButton}>ImportW</Button>
             <Button onClick={msession}>NS</Button>
-            <Button onClick={() => { alert(appState.session) }}>Show Session</Button>
+            <Button onClick={() => { alert(appState.session) }}>Session</Button>
           </ButtonGroup>
           <Datep label="start" session={appState.session} ctype="START_DATE"/>
           <Datep label="stop" session={appState.session} ctype="END_DATE"/>

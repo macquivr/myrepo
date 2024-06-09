@@ -21,7 +21,7 @@ public class MerrilLynch extends IBase {
 	
 	public boolean validateFile(List<String> ret) { 
 		try {
-			new PdfDataM(this,data,checkUtil.getObj().getDir()).go();
+			new PdfDataM(this,data,checkUtil.getObj(false).getDir()).go();
 		} catch (BadDataException ex) {
 			ret.add("Bad Data " + ex.getMessage());
 			return false;

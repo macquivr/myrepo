@@ -12,6 +12,9 @@ public class MLImpl extends Base {
         super(d);
         this.fname = "ml.csv";
     }
+    public boolean doIn() {
+        return doInCsv();
+    }
     public void doTransform() {
         int idx = 0;
         int cnt = 0;

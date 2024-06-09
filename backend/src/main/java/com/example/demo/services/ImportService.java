@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
 
@@ -85,14 +87,86 @@ public class ImportService {
     private LedgerRepository ledgerRepository;
 
     @Autowired
+    private TLedgerRepository tledgerRepository;
+
+    @Autowired
     private ChecksRepository checkRepository;
 
     @Autowired
     private UtilitiesRepository utilRepository;
 
+    /* main etnry poin t*/
+    public ImportDTO importStatus(String session) {
+        ImportDTO ret;
+        UUID u;
+
+        if (repos == null)
+            init();
+
+        if (!Imports.getObj().findImport(session))
+            ret = Imports.getObj().makeNewImport(session);
+        else
+            ret = Imports.getObj().getImport(session);
+
+        try {
+            u = UUID.fromString(session);
+        } catch (Exception ex) {
+            ret.setError(true);
+            ret.setErrMessage("Invalid I session " + session);
+            return ret;
+        }
+
+        doImport iobj = new doImport(u,repos,ret);
+        List<String> iresults;
+
+        try {
+            iresults = iobj.go();
+        } catch(Exception ex) {
+            logger.error("ERROR",ex);
+            ret.setError(true);
+            ret.setErrMessage((ex.getMessage() == null) ? ex.toString() : ex.getMessage());
+            return ret;
+        }
+
+        if (ret.getImportState() == ImportState.MISSING_CHECKS) {
+            ret.setIresults(iresults);
+            ret.setMdata(iresults.get(0));
+            return ret;
+        }
+
+        if (ret.getImportState() == ImportState.MISSING_LABELS) {
+            ret.setIresults(iresults);
+            String line = iresults.get(0);
+            ImportDR dr = Imports.getObj().getImportObj(session);
+            if (dr == null) {
+                ret.setError(true);
+                ret.setErrMessage("Invalid dr obj " + session);
+                return ret;
+            }
+            NewLabelData nd = dr.getHMapEntry(line);
+            ret.setMdata(nd.getLabel());
+            return ret;
+        }
+
+        if (ret.getImportState() == ImportState.MISSING_STYPES) {
+            if (!iresults.isEmpty()) {
+                ret.setIresults(iresults);
+                ret.setMdata(iresults.get(0));
+                return ret;
+            }
+        }
+
+        if (iresults.size() == 1) {
+            ret.setError(true);
+            ret.setErrMessage(iresults.get(0));
+        }
+
+        return ret;
+    }
+
     private void init()
     {
-        logger.info("INITIALIZING REPO....");
+        logger.info("INITIALIZING I REPO....");
         repos = new Repos(payeeRepository,
                 labelRepository,
                 dupsRepository,
@@ -107,6 +181,7 @@ public class ImportService {
                 categoryRepository,
                 locationRepository,
                 ledgerRepository,
+                tledgerRepository,
                 checkRepository,
                 utilRepository,
                 budgetRepository,
@@ -126,6 +201,9 @@ public class ImportService {
         ImportDR dr = Imports.getObj().getImportObj(sessionId);
         NewData nd = dr.getNData();
         String state = nd.getState().toString();
+
+        if (repos == null)
+            init();
 
         List<Names> names = repos.getNamesRepository().findAll();
         List<Location> locations = repos.getLocationRepository().findAll();
@@ -210,73 +288,7 @@ public class ImportService {
         return dto;
     }
 
-    public ImportDTO importStatus(String session) {
-        ImportDTO ret;
-        UUID u;
 
-        if (repos == null)
-            init();
-        
-        if (!Imports.getObj().findImport(session))
-            ret = Imports.getObj().makeNewImport(session);
-        else
-            ret = Imports.getObj().getImport(session);
-
-        try {
-            u = UUID.fromString(session);
-        } catch (Exception ex) {
-            ret.setError(true);
-            ret.setErrMessage("Invalid session " + session);
-            return ret;
-        }
-
-        doImport iobj = new doImport(u,repos,ret);
-        List<String> iresults;
-
-        try {
-            iresults = iobj.go();
-        } catch(Exception ex) {
-            logger.error("ERROR",ex);
-            ret.setError(true);
-            ret.setErrMessage((ex.getMessage() == null) ? ex.toString() : ex.getMessage());
-            return ret;
-        }
-
-        if (ret.getImportState() == ImportState.MISSING_CHECKS) {
-            ret.setIresults(iresults);
-            ret.setMdata(iresults.get(0));
-            return ret;
-        }
-
-        if (ret.getImportState() == ImportState.MISSING_LABELS) {
-            ret.setIresults(iresults);
-            String line = iresults.get(0);
-            ImportDR dr = Imports.getObj().getImportObj(session);
-            if (dr == null) {
-                ret.setError(true);
-                ret.setErrMessage("Invalid dr obj " + session);
-                return ret;
-            }
-            NewLabelData nd = dr.getHMapEntry(line);
-            ret.setMdata(nd.getLabel());
-            return ret;
-        }
-
-        if (ret.getImportState() == ImportState.MISSING_STYPES) {
-            if (!iresults.isEmpty()) {
-                ret.setIresults(iresults);
-                ret.setMdata(iresults.get(0));
-                return ret;
-            }
-        }
-
-        if (iresults.size() == 1) {
-            ret.setError(true);
-            ret.setErrMessage(iresults.get(0));
-        }
-
-        return ret;
-    }
 
     @Transactional
     public StatusDTO finalizeImport(String session) {

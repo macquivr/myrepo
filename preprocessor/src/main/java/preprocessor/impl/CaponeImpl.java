@@ -9,6 +9,9 @@ public class CaponeImpl extends Base {
         super(d);
         this.fname = "capone.csv";
     }
+    public boolean doIn() {
+        return doInCsv();
+    }
     public void doTransform() {
         String first = ilines.get(0);
         ilines.remove(first);

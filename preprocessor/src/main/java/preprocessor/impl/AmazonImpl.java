@@ -9,6 +9,9 @@ public class AmazonImpl extends Base {
         super(d);
         this.fname = "amazon.csv";
     }
+    public boolean doIn() {
+        return doInCsv();
+    }
     public void doTransform() {
         String first = ilines.get(0);
         ilines.remove(first);

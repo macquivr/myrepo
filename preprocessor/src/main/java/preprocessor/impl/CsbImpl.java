@@ -12,6 +12,9 @@ public class CsbImpl extends Base {
     public CsbImpl(StartStop d) {
         super(d);
     }
+    public boolean doIn() {
+        return doInCsv();
+    }
     public void doTransform() {
         int idx = 0;
         int cnt = 0;

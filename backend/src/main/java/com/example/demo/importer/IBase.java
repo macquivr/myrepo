@@ -80,7 +80,7 @@ public abstract class IBase extends importBase implements Iimport {
 	}
 	
 	protected boolean initChecks() {
-		p = checkUtil.getObj().readChecks(); 
+		p = checkUtil.getObj(false).readChecks();
 		return (p != null);
 	}
 	
@@ -129,7 +129,7 @@ public abstract class IBase extends importBase implements Iimport {
 	
 	public boolean verifyFile(List<String> err)
 	{
-		String dir = checkUtil.getObj().getDir();
+		String dir = checkUtil.getObj(false).getDir();
 		File f = new File(dir + "/" + fname);
 		boolean ret = f.exists();
 		
@@ -277,7 +277,7 @@ public abstract class IBase extends importBase implements Iimport {
 	    PDFTextStripper pdfStripper;
 	    
 	    String parsedText;
-	    File file = new File(checkUtil.getObj().getDir() + "/" + fname);
+	    File file = new File(checkUtil.getObj(false).getDir() + "/" + fname);
 
 	    if (!file.exists()) {
 	    	ilog.error("NO FILE " + file.getPath());

@@ -38,6 +38,10 @@ import { utilsColumns } from './tables/UtilsTable';
 import { creditpaidColumns } from './tables/CreditPaidTable';
 import { categoriesColumns } from './tables/CategoriesTable';
 import { cstatusColumns } from './tables/CStatusTable';
+import { tledgerColumns } from './tables/TledgerTable';
+import { payperiodColumns } from './tables/PayperiodTable';
+import { kvpColumns } from './tables/KvpTable';
+import { wdatamapColumns } from './tables/WdatamapTable';
 
 function Tv(props) {
   return (
@@ -108,6 +112,18 @@ function Tv(props) {
         </TreeItem>
         <TreeItem nodeId="84" label="Budgets">
           <FData session={props} columns={budgetColumns} title="Budgets" urlt="budgetstable" jsonp="budgets"/>
+        </TreeItem>
+        <TreeItem nodeId="86" label="Tledger">
+          <FData session={props} columns={tledgerColumns} title="Tledger" urlt="tledgertable" jsonp="tledger"/>
+        </TreeItem>
+        <TreeItem nodeId="87" label="Payperiod">
+          <FData session={props} columns={payperiodColumns} title="Payperiod" urlt="Payperiod" jsonp="payperiod"/>
+        </TreeItem>
+        <TreeItem nodeId="88" label="Kvp">
+          <FData session={props} columns={kvpColumns} title="Kvp" urlt="Kvp" jsonp="kvp"/>
+        </TreeItem>
+        <TreeItem nodeId="89" label="Wdatamap">
+          <FData session={props} columns={wdatamapColumns} title="Wdatamap" urlt="wdatamaptable" jsonp="wdatamap"/>
         </TreeItem>
       </TreeItem>
       <TreeItem nodeId="3" label="Data">

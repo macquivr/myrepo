@@ -49,13 +49,9 @@ public class BMaintenance {
     public boolean  go()
     {
         boolean b = doBudgetS();
-        return b;
-        /*
         if (!b)
             return b;
         return doBudget();
-
-         */
     }
 
     private boolean doBudget() {

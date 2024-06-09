@@ -89,6 +89,9 @@ public class TableDataService {
     private LedgerRepository ledgerRepository;
 
     @Autowired
+    private TLedgerRepository tledgerRepository;
+
+    @Autowired
     private ChecksRepository checkRepository;
 
     @Autowired
@@ -110,6 +113,7 @@ public class TableDataService {
                 categoryRepository,
                 locationRepository,
                 ledgerRepository,
+                tledgerRepository,
                 checkRepository,
                 utilRepository,
                 budgetRepository,

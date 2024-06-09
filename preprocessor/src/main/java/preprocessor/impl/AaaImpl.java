@@ -13,6 +13,11 @@ public class AaaImpl extends Base {
         super(d);
         this.fname = "aaa.csv";
     }
+
+    public boolean doIn() {
+        return doInCsv();
+    }
+
     public void doTransform() {
         String first = ilines.get(0);
         ilines.remove(first);

@@ -2,8 +2,6 @@ package com.example.demo.services;
 
 import com.example.demo.importer.Repos;
 import com.example.demo.reports.*;
-import com.example.demo.reports.postimport.inReport;
-import com.example.demo.reports.postimport.outReport;
 import com.example.demo.repository.*;
 import com.example.demo.state.Sessions;
 import com.example.demo.domain.*;
@@ -91,7 +89,19 @@ public class ReportService {
     private LedgerRepository ledgerRepository;
 
     @Autowired
+    private TLedgerRepository tledgerRepository;
+
+    @Autowired
     private ChecksRepository checkRepository;
+
+    @Autowired
+    private PayperiodRepository payperiodRepository;
+
+    @Autowired
+    private WdatamapRepository wdatamapRepository;
+
+    @Autowired
+    private KvpRepository kvpRepository;
 
     private void init()
     {
@@ -109,12 +119,17 @@ public class ReportService {
                 categoryRepository,
                 locationRepository,
                 ledgerRepository,
+                tledgerRepository,
                 checkRepository,
                 utilRepository,
                 budgetRepository,
                 budgetsRepository,
                 budgetvaluesRepository,
                 ocRepository);
+
+        this.repos.setPayPeriod(this.payperiodRepository);
+        this.repos.setWdatamap(this.wdatamapRepository);
+        this.repos.setKvp(this.kvpRepository);
 
         registerReports();
     }
@@ -133,6 +148,7 @@ public class ReportService {
         map.put("CREPORT",new CReport(repos));
         map.put("OTHER",new OtherReport(repos));
         map.put("GREPORT",new GReport(repos));
+        map.put("PAYPERIOD",new PayPeriodReport(repos));
     }
 
     public StatusDTO genReport(String sessionId) {

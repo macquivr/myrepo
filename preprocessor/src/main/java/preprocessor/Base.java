@@ -15,6 +15,7 @@ public abstract class Base {
     protected List<String> olines = null;
 
     public abstract void doTransform();
+    public abstract boolean doIn();
 
     public Base(StartStop d) {
         this.dates = d;
@@ -113,19 +114,24 @@ public abstract class Base {
         return ret;
     }
 
-    private boolean doIn() throws Exception {
-        String fileName = System.getenv("WS_DATA_DIR")  + "/" + fname;
-        String str = new String(Files.readAllBytes(Paths.get(fileName)));
-        StringTokenizer st = new StringTokenizer(str,"\n");
-        while (st.hasMoreTokens()) {
-            String l = st.nextToken();
-            if (l.equals("EMPTY")) {
-                olines.add("EMPTY");
-                return false;
+    protected boolean doInCsv()  {
+        try {
+            String fileName = System.getenv("WS_DATA_DIR") + "/" + fname;
+            String str = new String(Files.readAllBytes(Paths.get(fileName)));
+            StringTokenizer st = new StringTokenizer(str, "\n");
+            while (st.hasMoreTokens()) {
+                String l = st.nextToken();
+                if (l.equals("EMPTY")) {
+                    olines.add("EMPTY");
+                    return false;
+                }
+                ilines.add(sanitize(l));
             }
-            ilines.add(sanitize(l));
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
         }
-        return true;
     }
 
 }

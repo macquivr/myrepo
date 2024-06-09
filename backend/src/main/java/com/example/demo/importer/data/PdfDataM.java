@@ -23,8 +23,8 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 	private double start = 0;
 	private double stop = 0;
 	private double target = 0;
-	private int transl = 0;
-	private int transm = 0;
+	private int transl = -1;
+	private int transm = -1;
 	private int year = 0;
 	private final IData idata;
 	private List<String> mlines;
@@ -474,6 +474,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		int lidx = 0;
 		boolean on = false;
 		for (String s : lines) {
+			log.info("ZZZ l: "  + transl + " m: " + transm + " " + s);
 			if (lidx < transl) {
 				lidx++;
 				continue;
@@ -485,11 +486,13 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				lidx++;
 				continue;
 			}
+			log.info("ZZZX: " + s);
 			on = true;
 			if (s.startsWith("NET TOTAL")) 
 				return;
 			String str = trim(s);
 			if (str != null) {
+				log.info("ZZZY CHECK " + str);
 				addNData(str, true, true);
 			}
 		}
@@ -506,11 +509,14 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		log.info("MLINES: " + lines.size());
 		boolean on = false;
 		for (String s : lines) {
-			log.info("DLINE: " + s);
-			if (s.startsWith("YOUR CMA TRANSACTIONS") && (transl == -1)) 
+			log.info("ZZZ " + lidx + " DLINE: " + s);
+			if (s.startsWith("YOUR CMA TRANSACTIONS") && (transl == -1)) {
 				transl = lidx;
-			if (s.contains("INVESTMENT ACCOUNT") && (transm == -1)) {
+				log.info("ZZZ transl: " + transl);
+			}
+			if (s.contains("INVESTMENT ACCOUNT") && (transl != -1) && (transm == -1)) {
 				this.transm = lidx;
+				log.info("ZZZ transm: " + transm);
 			}
 			if ((s.startsWith("YOUR MERRILL LYNCH REPORT") || 
 			    (s.startsWith("WEALTH MANAGEMENT REPORT")))) {
@@ -582,6 +588,9 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		if (year == 0) {
 			throw new BadDataException("Could not find year.");
 		}
+		if ((this.transl == -1) || (this.transm == -1)) {
+			throw new BadDataException("Transl/Transml issue");
+		}
 	}
-	
+
 }

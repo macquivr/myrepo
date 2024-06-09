@@ -12,6 +12,7 @@ public class DUtil {
     public static final String MMMYYYY = "MMM yyyy";
     public static final String MMDDYYYY = "MM/dd/yyyy";
     public static final String MMDDYY = "MM/dd/yy";
+    public static final String CSV_FMT = "yyyy-MM-dd";
     private static DateTimeFormatter getDFmt(String fmt) { return DateTimeFormatter.ofPattern(fmt); }
 
     public static boolean isValidDate(String dstr, String fmt) {
@@ -26,8 +27,10 @@ public class DUtil {
     }
 
     public static LocalDate getDate(String dstr, String fmt) {
-        if (!isValidDate(dstr,fmt))
+        if (!isValidDate(dstr.trim(),fmt)) {
+            System.out.println("NOT VALID DATE " + dstr + " " + fmt);
             return null;
+        }
 
         return LocalDate.parse(dstr,getDFmt(fmt));
     }
@@ -65,6 +68,10 @@ public class DUtil {
 
     public static boolean isEqualToOrAfter(LocalDate src, LocalDate target) {
         return (src.isAfter(target) || src.isEqual(target));
+    }
+
+    public static String getCsvDate(String dstr) {
+        return translate(dstr, CSV_FMT, MMDDYYYY);
     }
 
     public static LocalDate getStdDate(String dstr) { return getDate(dstr,MMDDYYYY); }
