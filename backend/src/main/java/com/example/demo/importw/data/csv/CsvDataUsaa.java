@@ -47,9 +47,9 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataUsaa.class);
 			return null;
 		}
 
-		if (tokens[3].equals("Credit Card Payment")) {
-			return null;
-		}
+		//if (tokens[3].equals("Credit Card Payment")) {
+		//	return null;
+		//}
 		NData ret = new NData();
 
 		ret.setDate(dstr);

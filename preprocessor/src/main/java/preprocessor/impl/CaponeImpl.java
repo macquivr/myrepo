@@ -18,7 +18,7 @@ public class CaponeImpl extends Base {
 
         int idx = 0;
         for (idx = ilines.size()-1;idx>=0;idx--) {
-            if (checkRange(ilines.get(idx),0)) {
+            if (checkRange(ilines.get(idx),1)) {
                 olines.add(ilines.get(idx));
             }
         }

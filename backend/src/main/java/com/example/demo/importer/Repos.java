@@ -31,6 +31,10 @@ public class Repos {
     private PayperiodRepository payperiodRepository;
     private WdatamapRepository wdatamapRepository;
     private KvpRepository kvpRepository;
+    private GscatRepository gscatRepository;
+    private LmapRepository lmapRepository;
+    private CmapRepository cmapRepository;
+    private InmapRepository inmapRepository;
 
     public Repos(PayeeRepository p,
                  LabelRepository l,
@@ -105,7 +109,26 @@ public class Repos {
     public WdatamapRepository getPayWdatamap() { return this.wdatamapRepository; }
     public KvpRepository getKvp() { return this.kvpRepository; }
 
+    public GscatRepository getGscat() { return this.gscatRepository; }
+    public LmapRepository getLmap() { return this.lmapRepository; }
+    public CmapRepository getCmap() { return this.cmapRepository; }
+    public InmapRepository getInmap() { return this.inmapRepository; }
+
+
     public void setPayPeriod(PayperiodRepository p) { this.payperiodRepository = p; }
     public void setWdatamap(WdatamapRepository w) { this.wdatamapRepository = w; }
     public void setKvp(KvpRepository k) { this.kvpRepository = k; }
+
+    public void setGscat(GscatRepository r) {
+        this.gscatRepository = r;
+    }
+    public void setLmap(LmapRepository r) {
+        this.lmapRepository = r;
+    }
+    public void setCmap(CmapRepository r) {
+        this.cmapRepository = r;
+    }
+    public void setInmap(InmapRepository r) {
+        this.inmapRepository = r;
+    }
 }

@@ -1,9 +1,13 @@
 package com.example.demo.bean;
 
 public class Catsort implements Comparable<Catsort> {
+    private int dir = 1;
     private String label;
     private Double amount;
 
+    public void reverse() {
+        this.dir = -1;
+    }
     public void setLabel(String l) { this.label = l; }
     public void setAmount(double d) { this.amount = d; }
 
@@ -11,5 +15,12 @@ public class Catsort implements Comparable<Catsort> {
     public double getAmount() { return this.amount; }
 
     @Override
-    public int compareTo(Catsort o) { return this.amount.compareTo(o.getAmount()); }
+    public int compareTo(Catsort o) {
+        int ret = this.amount.compareTo(o.getAmount());
+
+        ret = ret * this.dir;
+
+        return ret;
+    }
+
 }

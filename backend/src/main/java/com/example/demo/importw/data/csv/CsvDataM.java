@@ -49,8 +49,8 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataM.class);
 	{
 	/*
 	"Trade Date" ,"Settlement Date" ,"Account" ,"Description" ,"Type" ,"Symbol/ CUSIP" ,"Quantity" ,"Price" ,"Amount" ," "
-	0 - tdate
-	1 - fnord
+	0 - fnord
+	1 - pdate
 	2 - fnord
 	3 - label
     4 - fnord
@@ -59,7 +59,7 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataM.class);
     7 - fnord
     8 - amount
 		 */
-		LocalDate ds = DUtil.getStdDate(tokens[0].trim());
+		LocalDate ds = DUtil.getStdDate(tokens[1].trim());
 		if (ds == null) {
 			System.out.println("EEK DS ML!");
 			return null;

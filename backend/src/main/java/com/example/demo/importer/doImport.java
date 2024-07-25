@@ -177,7 +177,6 @@ public class doImport extends importBase {
 				doOut();
 			}
 		}
-		
 		return ret;
 	}
 

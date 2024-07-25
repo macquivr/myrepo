@@ -57,8 +57,8 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataCapOne.class);
 	public NData ledgerLine(String[] tokens)  throws BadDataException
 	{
 		/* Transaction Date,Posted Date,Card No.,Description,Category,Debit,Credit
-		0 - tdate
-		1 - fnord
+		0 - fnord
+		1 - pdate
 		2 - fnord
 		3 - label
 		4 - fnord
@@ -66,10 +66,10 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataCapOne.class);
 		6 - credit
 		 */
 
-		String dstr = DUtil.getCsvDate(tokens[0]);
-		if (tokens[3].contains("PYMT")) {
-			return null;
-		}
+		String dstr = DUtil.getCsvDate(tokens[1]);
+		//if (tokens[3].contains("PYMT")) {
+		//	return null;
+		//}
 
 		LocalDate ds = DUtil.getStdDate(dstr);
 		if ((ds.isBefore(this.dates.getStart())) ||

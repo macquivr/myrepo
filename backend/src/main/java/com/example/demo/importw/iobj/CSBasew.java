@@ -18,12 +18,14 @@ import org.slf4j.LoggerFactory;
 import com.example.demo.domain.*;
 
 public abstract class CSBasew extends IBasew {
+	private Payperiod pp = null;
 	private static final Logger log = LoggerFactory.getLogger(CSBasew.class);
 	protected CsbEType etype = null;
 
-	public CSBasew(UUID uuid, Repos r, ImportDTO dto)
+	public CSBasew(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
 	{
 		super(uuid,r, dto);
+		this.pp = pp;
 	}
 	
 	public boolean validateFile(List<String> ret)
@@ -119,7 +121,7 @@ public abstract class CSBasew extends IBasew {
 
 	public boolean makeData(List<String> err)
 	{
-		SaveO obj = new SaveO(this, ltype, data, imdata,err, repos.getChecksRepository());
+		SaveO obj = new SaveO(this, ltype, data, imdata,err, repos.getChecksRepository(), this.pp);
 	
 		return obj.makeData();
 	}

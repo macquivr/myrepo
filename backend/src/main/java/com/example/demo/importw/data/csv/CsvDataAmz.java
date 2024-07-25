@@ -46,9 +46,9 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataAmz.class);
 
 		NData ret = new NData();
 
-		if (tokens[4].equals("Payment")) {
-			return null;
-		}
+		//if (tokens[4].equals("Payment")) {
+		//	return null;
+		//}
 
 		ret.setDate(tokens[0]);
 		ret.setLabel(tokens[2]);

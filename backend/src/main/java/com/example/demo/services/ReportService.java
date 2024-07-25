@@ -103,6 +103,18 @@ public class ReportService {
     @Autowired
     private KvpRepository kvpRepository;
 
+    @Autowired
+    private GscatRepository gscatRepository;
+
+    @Autowired
+    private LmapRepository lmapRepository;
+
+    @Autowired
+    private CmapRepository cmapRepository;
+
+    @Autowired
+    private InmapRepository inmapRepository;
+
     private void init()
     {
         repos = new Repos(payeeRepository,
@@ -131,6 +143,11 @@ public class ReportService {
         this.repos.setWdatamap(this.wdatamapRepository);
         this.repos.setKvp(this.kvpRepository);
 
+        this.repos.setGscat(this.gscatRepository);
+        this.repos.setLmap(this.lmapRepository);
+        this.repos.setCmap(this.cmapRepository);
+        this.repos.setInmap(this.inmapRepository);
+
         registerReports();
     }
 
@@ -149,6 +166,7 @@ public class ReportService {
         map.put("OTHER",new OtherReport(repos));
         map.put("GREPORT",new GReport(repos));
         map.put("PAYPERIOD",new PayPeriodReport(repos));
+        map.put("SUMMARY",new SummaryReport(repos));
     }
 
     public StatusDTO genReport(String sessionId) {

@@ -1,6 +1,6 @@
 package com.example.demo.importw.iobj;
 
-
+import com.example.demo.domain.Payperiod;
 import com.example.demo.dto.ImportDTO;
 import com.example.demo.importer.Repos;
 import com.example.demo.importw.data.csv.CsvDataCapOne;
@@ -11,9 +11,9 @@ import java.util.UUID;
 
 public class CapitalOne extends CBasew {
 	
-	public CapitalOne(UUID uuid, Repos r, ImportDTO dto)
+	public CapitalOne(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
 	{	
-		super(uuid,r,dto);
+		super(uuid,r,dto,pp);
 		
 		fname = "capone.csv";
 		ltype = 7;

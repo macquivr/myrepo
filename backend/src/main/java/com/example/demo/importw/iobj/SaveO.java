@@ -23,11 +23,13 @@ public class SaveO extends importBase {
 	protected final IData data;
 	protected final List<String> errs;
 	private ChecksRepository repo;
+	private Payperiod pp = null;
 
-	public SaveO(IBasew obj, int ltype, IData d, IMData im, List<String> err, ChecksRepository r)
+	public SaveO(IBasew obj, int ltype, IData d, IMData im, List<String> err, ChecksRepository r, Payperiod pp)
 	{
 		super(obj.getUuid());
 
+		this.pp = pp;
 		this.repo = r;
 		errs = err;
 		ltypeo = obj.getLtype(ltype);
@@ -73,7 +75,7 @@ public class SaveO extends importBase {
 
 	    for (NData n : ndata) {
 	    	TLedger l = new TLedger();
-	    		    
+			l.setPayperiod(this.pp);
 	    	String date = n.getDate().trim();
 
 	    	Label label = n.getLbl();

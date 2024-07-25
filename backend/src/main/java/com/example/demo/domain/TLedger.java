@@ -24,6 +24,10 @@ public class TLedger {
     @JoinColumn(name = "ltype")
     private Ltype ltype;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "wid")
+    private Payperiod wid;
+
     public int getId() { return id; }
 
     public Double getAmount() { return amount; }
@@ -31,10 +35,12 @@ public class TLedger {
     public Ltype getLtype() { return ltype; }
     public Label getLabel() { return label; }
     public Checks getChecks() { return checks; }
+    public Payperiod getPayperiod() { return wid; }
 
     public void setAmount(Double d) { amount = d; }
     public void setTdate(LocalDate d) { tdate = d; }
     public void setLtype(Ltype l) { ltype = l; }
     public void setLabel(Label l) { label = l; }
     public void setChecks(Checks c) { checks = c; }
+    public void setPayperiod(Payperiod p) { wid = p; }
 }

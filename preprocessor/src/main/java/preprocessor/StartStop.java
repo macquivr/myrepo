@@ -34,6 +34,18 @@ public class StartStop {
         return (!before && !after);
     }
 
+    public String getStart() {
+        DateTimeFormatter dfmt = DateTimeFormatter.ofPattern(DFMT1);
+
+        return start.format(dfmt);
+    }
+
+    public String getStop() {
+        DateTimeFormatter dfmt = DateTimeFormatter.ofPattern(DFMT1);
+
+        return stop.format(dfmt);
+    }
+
     private LocalDate makeDate(String dstr, String fmt) {
        DateTimeFormatter dfmt = DateTimeFormatter.ofPattern(fmt);
 

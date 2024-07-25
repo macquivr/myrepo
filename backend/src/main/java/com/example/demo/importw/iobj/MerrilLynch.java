@@ -1,5 +1,6 @@
 package com.example.demo.importw.iobj;
 
+import com.example.demo.domain.Payperiod;
 import com.example.demo.domain.Statement;
 import com.example.demo.domain.Statements;
 import com.example.demo.dto.ImportDTO;
@@ -11,11 +12,13 @@ import java.util.UUID;
 import java.util.List;
 
 public class MerrilLynch extends IBasew {
-	
-	public MerrilLynch(UUID uuid, Repos r, ImportDTO dto)
+	private Payperiod pp = null;
+
+	public MerrilLynch(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
 	{	
 		super(uuid,r,dto);
-		
+
+		this.pp = pp;
 		fname = "ml.csv";
 		ltype = 11;
 		credit = false;
@@ -33,7 +36,7 @@ public class MerrilLynch extends IBasew {
 	
 	public boolean makeData(List<String> err)
 	{
-		SaveO obj = new SaveO(this, ltype, data, imdata,err, repos.getChecksRepository());
+		SaveO obj = new SaveO(this, ltype, data, imdata,err, repos.getChecksRepository(), this.pp);
 	
 		return obj.makeData();
 	}

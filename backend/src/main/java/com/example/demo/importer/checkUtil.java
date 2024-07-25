@@ -74,7 +74,7 @@ public class checkUtil {
 		
 		File f = new File(dir,cpath);
 		if (!f.exists()) {
-			log.info("No Checks....");
+			log.info("No Checks...." + dir + " " + cpath);
 			return null;
 		}
 		try {

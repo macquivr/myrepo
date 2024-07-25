@@ -34,9 +34,9 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataAaa.class);
 			4 - amount
 		 */
 
-		if (tokens[3].equals("Payment")) {
-			return null;
-		}
+		//if (tokens[3].equals("Payment")) {
+		//	return null;
+		//}
 
 		LocalDate ds = DUtil.getStdDate(tokens[0]);
 		if ((ds.isBefore(this.dates.getStart())) ||

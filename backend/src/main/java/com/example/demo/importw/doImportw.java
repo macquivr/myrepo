@@ -1,16 +1,25 @@
 package com.example.demo.importw;
 
+import com.example.demo.bean.StartStop;
 import com.example.demo.dto.ImportDTO;
 import com.example.demo.importer.Iimport;
 import com.example.demo.importer.Repos;
+import com.example.demo.importer.checkUtil;
 import com.example.demo.importer.importBase;
 import com.example.demo.importw.iobj.*;
+import com.example.demo.repository.PayperiodRepository;
 import com.example.demo.repository.StatementsRepository;
 import com.example.demo.state.importer.ImportState;
+import com.example.demo.utils.mydate.DUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.domain.*;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -20,29 +29,56 @@ public class doImportw extends importBase {
 	private Statements stmts = null;
 	private final Repos repos;
 	private final ImportDTO idto;
+	private Payperiod pp = null;
 
 	public doImportw(UUID uuid,Repos r, ImportDTO dto)
 	{
 		super(uuid);
 
-		this.idto = dto;
 		this.repos = r;
+		this.pp = getPayperiod();
+		this.idto = dto;
+
 		data = new Vector<>();
-		data.add(new MainAcct(uuid,repos,idto));
-		data.add(new Slush(uuid,repos,idto));
-		data.add(new Annual(uuid,repos,idto));
-		data.add(new MerrilLynch(uuid,repos,idto));
-		data.add(new Amazon(uuid,repos,idto));
-		data.add(new Aaa(uuid,repos,idto));
-		data.add(new Usaa(uuid,repos,idto));
-		data.add(new CapitalOne(uuid,repos,idto));
+		data.add(new MainAcct(uuid,repos,idto,this.pp));
+		data.add(new Slush(uuid,repos,idto,this.pp));
+		data.add(new Annual(uuid,repos,idto,this.pp));
+		data.add(new MerrilLynch(uuid,repos,idto,this.pp));
+		data.add(new Amazon(uuid,repos,idto,this.pp));
+		data.add(new Aaa(uuid,repos,idto,this.pp));
+		data.add(new Usaa(uuid,repos,idto,this.pp));
+		data.add(new CapitalOne(uuid,repos,idto,this.pp));
 	}
-	
+
+	private Payperiod getPayperiod() {
+		StartStop dates = initStartStop();
+		LocalDate start = dates.getStart();
+		LocalDate stop = dates.getStop();
+		PayperiodRepository r = repos.getPayPeriod();
+		List<Payperiod> p = r.findAllByStartBetweenOrderByStartAsc(start,stop);
+		Payperiod pobj = null;
+		if (p != null) {
+			if (p.isEmpty()) {
+				Payperiod np = new Payperiod();
+				np.setStart(start);
+				np.setStop(stop);
+				r.save(np);
+				pobj = np;
+			} else {
+				pobj = p.get(0);
+			}
+		}
+		return pobj;
+	}
 	public List<String> go()
 	{
 		List<String> ret = new Vector<>();
-		process(ret);
-		return ret;		
+		if (this.pp == null) {
+			ret.add("Couldn't get dates.");
+		} else {
+			process(ret);
+		}
+		return ret;
 	}
 	
 	public void process(List<String> ret) {
@@ -166,6 +202,51 @@ public class doImportw extends importBase {
 		
 		return true;
 	}
+	protected StartStop initStartStop() {
+		StartStop ret = new StartStop();
+		try {
+			String fileName = checkUtil.getObj(true).getDir() + "/" + "dates.txt";
+			String ds = new String(Files.readAllBytes(Paths.get(fileName)));
 
+			List<String> dsl = new Vector<>();
+			StringTokenizer st = new StringTokenizer(ds,"\n");
+			while (st.hasMoreTokens()) {
+				String l = st.nextToken();
+				dsl.add(sanitize(l));
+			}
+			System.out.println("** START " +  dsl.get(0) + " **");
+			System.out.println("** STOP " +  dsl.get(1) + " **");
+			ret.setStart(DUtil.getStdDate(dsl.get(0)));
+			ret.setStop(DUtil.getStdDate(dsl.get(1)));
+
+			if (ret.getStart() == null) {
+				System.out.println("*** COULD NOT SET START DATE!!!");
+				return null;
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return ret;
+	}
+	private String sanitize(String str) {
+		String ret = "";
+		boolean on = false;
+		int len = str.length();
+		int i = 0;
+		for (i=0;i<len;i++) {
+			char c = str.charAt(i);
+			if (c == '"') {
+				on = !on;
+			} else {
+				if (!on || (c != ',')) {
+					ret = ret.concat(String.valueOf(c));
+				}
+			}
+		}
+
+		return ret;
+	}
 }
 

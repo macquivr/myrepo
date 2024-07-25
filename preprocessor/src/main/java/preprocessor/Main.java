@@ -2,6 +2,8 @@ package preprocessor;
 
 import preprocessor.impl.*;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,32 @@ public class Main {
         for (Base b : objs) {
             if (!b.go())
                 return;
+        }
+        makeDatesFile(d);
+    }
+
+    private void makeDatesFile(StartStop d) {
+        String fileName = System.getenv("W_DATA_DIR") + "/dates.txt";
+        File f = new File(fileName);
+        FileWriter w = null;
+        try {
+            w = new FileWriter(f);
+            String startStr = d.getStart() + "\n";
+            String stopStr = d.getStop() + "\n";
+            w.write(startStr);
+            w.write(stopStr);
+            w.flush();
+
+        } catch (Exception ex) {
+            // ignore
+        } finally {
+            if (w != null) {
+                try {
+                    w.close();
+                } catch (Exception ex) {
+                    // ignore
+                }
+            }
         }
     }
 

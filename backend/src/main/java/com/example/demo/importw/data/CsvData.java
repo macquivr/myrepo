@@ -53,6 +53,7 @@ public class CsvData extends PLines {
 
 	private String changeLabelToTransfer(String data)
 	{
+		String estr = etype.toString().charAt(0) + etype.toString().substring(1).toLowerCase();
 		String str = data.replace("Internet Transfer ", "");
 		int idx = str.indexOf(' ');
 		String dw = str.substring(0,idx);
@@ -61,14 +62,14 @@ public class CsvData extends PLines {
 		String tof = rest.substring(0,idx);
 		rest = rest.substring(idx+1);
 		idx = rest.indexOf(' ');
-		String tgt = rest.substring(idx+1,idx+5);
+
+		String tgt = rest.substring(1,5);
 
 		String target = map.get(tgt);
 		if (target == null) {
 			log.info("TAG: bad target " + data + " TGT: #" + tgt + "#");
 			target = "BAD";
 		}
-		String estr = etype.toString().charAt(0) + etype.toString().substring(1).toLowerCase();
 
 		return dw + " " + estr + " " + tof + " " + target;
 	}

@@ -94,6 +94,9 @@ public class ImportwService {
     @Autowired
     private UtilitiesRepository utilRepository;
 
+    @Autowired
+    private PayperiodRepository payperiodRepository;
+
     /* main entry point */
     public ImportDTO importStatus(String session) {
         ImportDTO ret;
@@ -187,6 +190,7 @@ public class ImportwService {
                 budgetsRepository,
                 budgetvaluesRepository,
                 ocRepository);
+        repos.setPayPeriod(payperiodRepository);
 
         CsbTypeRepository test = repos.getCsbTypeRepository();
         if (test == null) {
