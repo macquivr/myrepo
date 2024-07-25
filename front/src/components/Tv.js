@@ -42,6 +42,9 @@ import { tledgerColumns } from './tables/TledgerTable';
 import { payperiodColumns } from './tables/PayperiodTable';
 import { kvpColumns } from './tables/KvpTable';
 import { wdatamapColumns } from './tables/WdatamapTable';
+import { gscatColumns } from './tables/GscatTable';
+import { lmapColumns } from './tables/LmapTable';
+import { cmapColumns } from './tables/CmapTable';
 
 function Tv(props) {
   return (
@@ -124,6 +127,15 @@ function Tv(props) {
         </TreeItem>
         <TreeItem nodeId="89" label="Wdatamap">
           <FData session={props} columns={wdatamapColumns} title="Wdatamap" urlt="wdatamaptable" jsonp="wdatamap"/>
+        </TreeItem>
+        <TreeItem nodeId="90" label="Gscat">
+          <FData session={props} columns={gscatColumns} title="Gscat" urlt="Gscat" jsonp="gscat"/>
+        </TreeItem>
+        <TreeItem nodeId="91" label="Lmap">
+          <FData session={props} columns={lmapColumns} title="Lmap" urlt="Lmap" jsonp="lmap"/>
+        </TreeItem>
+        <TreeItem nodeId="92" label="Cmap">
+          <FData session={props} columns={cmapColumns} title="Cmap" urlt="Cmap" jsonp="cmap"/>
         </TreeItem>
       </TreeItem>
       <TreeItem nodeId="3" label="Data">
