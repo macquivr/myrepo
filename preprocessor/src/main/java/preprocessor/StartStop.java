@@ -12,8 +12,8 @@ public class StartStop {
     private final LocalDate stop;
 
     public StartStop(String d1, String d2) {
-        this.start = makeDate(d1,DFMT1);
-        this.stop = makeDate(d2,DFMT1);
+        this.start = makeDate(d1);
+        this.stop = makeDate(d2);
     }
 
     public boolean isValid() {
@@ -21,14 +21,12 @@ public class StartStop {
     }
 
     public boolean inRange(String dstr) {
-        LocalDate d = makeDate(dstr.trim(), DFMT1);
+        LocalDate d = makeDate(dstr.trim());
         if (d == null) {
-            d = makeDate(dstr.trim(), DFMT2);
-            if (d == null) {
-                System.out.println("NOT VALID DATE " + dstr);
-                return false;
-            }
+            System.out.println("NOT VALID DATE " + dstr);
+            return false;
         }
+
         boolean before = d.isBefore(this.start);
         boolean after = d.isAfter(this.stop);
         return (!before && !after);
@@ -46,16 +44,24 @@ public class StartStop {
         return stop.format(dfmt);
     }
 
-    private LocalDate makeDate(String dstr, String fmt) {
-       DateTimeFormatter dfmt = DateTimeFormatter.ofPattern(fmt);
+    private LocalDate makeDate(String dstr) {
+       DateTimeFormatter dfmt = DateTimeFormatter.ofPattern(DFMT1);
+       DateTimeFormatter dfmt2 = DateTimeFormatter.ofPattern(DFMT2);
+       DateTimeFormatter dfmtr = null;
 
-       try {
+        try {
            dfmt.parse(dstr);
+           dfmtr = dfmt;
        } catch (Exception ex) {
-
-            return null;
+           try {
+               dfmt2.parse(dstr);
+               dfmtr = dfmt2;
+           } catch (Exception ex2) {
+               System.out.println("Date issue " + dstr);
+               return null;
+           }
         }
 
-        return LocalDate.parse(dstr,dfmt);
+        return LocalDate.parse(dstr,dfmtr);
    }
 }

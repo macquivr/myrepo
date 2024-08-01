@@ -35,6 +35,8 @@ public class Repos {
     private LmapRepository lmapRepository;
     private CmapRepository cmapRepository;
     private InmapRepository inmapRepository;
+    private IntableRepository intableRepository;
+    private OuttableRepository outtableRepository;
 
     public Repos(PayeeRepository p,
                  LabelRepository l,
@@ -113,6 +115,8 @@ public class Repos {
     public LmapRepository getLmap() { return this.lmapRepository; }
     public CmapRepository getCmap() { return this.cmapRepository; }
     public InmapRepository getInmap() { return this.inmapRepository; }
+    public IntableRepository getIntable() { return this.intableRepository; }
+    public OuttableRepository getOuttable() { return this.outtableRepository; }
 
 
     public void setPayPeriod(PayperiodRepository p) { this.payperiodRepository = p; }
@@ -128,7 +132,11 @@ public class Repos {
     public void setCmap(CmapRepository r) {
         this.cmapRepository = r;
     }
-    public void setInmap(InmapRepository r) {
-        this.inmapRepository = r;
+    public void setInmap(InmapRepository r) {this.inmapRepository = r;}
+    public void setIntable(IntableRepository r) {
+        this.intableRepository = r;
+    }
+    public void setOuttable(OuttableRepository r) {
+        this.outtableRepository = r;
     }
 }

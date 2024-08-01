@@ -6,6 +6,7 @@ import com.example.demo.bean.StartStop;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.importer.Repos;
+import com.example.demo.reports.utils.InUtilsR;
 import com.example.demo.repository.*;
 import com.example.demo.utils.LData;
 import com.example.demo.utils.Utils;
@@ -14,6 +15,7 @@ import java.io.FileWriter;
 import java.util.*;
 
 public class SummaryReport implements ReportI {
+    private InUtilsR inu;
     private HashMap<Integer, Integer> lmap = null;
     private HashMap<Integer, Integer> cmap = null;
     private HashMap<Integer, Integer> inmap = null;
@@ -35,6 +37,7 @@ public class SummaryReport implements ReportI {
         this.lmapr = r.getLmap();
         this.cmapr = r.getCmap();
         this.inmapr = r.getInmap();
+        this.inu = new InUtilsR(this.grepo);
         initMaps();
     }
 
@@ -68,8 +71,7 @@ public class SummaryReport implements ReportI {
         StartStop dates = ld.getDates();
 
         w.write("Start : " + dates.getStart().toString() + " Stop: " + dates.getStop().toString() + "\n");
-        HashMap<String, Catsort> inmm = doInm(w, session, data,dates);
-        HashMap<String, Catsort> inm = doIn(w, session, data,dates);
+        HashMap<String, Catsort> inm = doIn(inmap, data);
 
         List<HashMap<String, Catsort>> outm = doOut(w, session,data, dates);
         HashMap<String, Catsort> outp = new HashMap<String, Catsort>();
@@ -123,12 +125,11 @@ public class SummaryReport implements ReportI {
         p("Percent",w,outp);
     }
 
-
-    private HashMap<String, Catsort> doIn(FileWriter w, SessionDTO session, List<Ledger> data, StartStop dates) throws Exception {
+    private HashMap<String, Catsort> doIn(HashMap<Integer,Integer> inmap, List<Ledger> data) throws Exception {
         List<Ledger> inl = new ArrayList<Ledger>();
 
         for (Ledger l : data) {
-            if ((l.getAmount() > 0) && (l.getStype().getId() != 8))
+            if (l.getAmount() > 0)
                 inl.add(l);
         }
         HashMap<String, Catsort> inm = new HashMap<String, Catsort>();
@@ -137,46 +138,26 @@ public class SummaryReport implements ReportI {
 
             Integer I = inmap.get(l.getLabel().getId());
             if (I != null) {
-                Optional<Gscat> m = grepo.findById(I);
-                if (m.isPresent()) {
-                    Gscat g = m.get();
-                    n = g.getName();
+                if (grepo == null) {
+                    System.out.println("NO GREPO!");
+                } else {
+                    Optional<Gscat> m = grepo.findById(I);
+                    if (m.isPresent()) {
+                        Gscat g = m.get();
+                        n = g.getName();
+                    }
                 }
             }
             if (n == null) {
                 n = "MiscIn";
             }
-            Catsort r = put(inm,n,l);
+            Catsort r = inu.putm(inm,n,l.getAmount());
             r.reverse();
         }
         return inm;
     }
 
-    private HashMap<String, Catsort> doInm(FileWriter w, SessionDTO session, List<Ledger> data, StartStop dates) throws Exception {
-        List<Ledger> inl = new ArrayList<Ledger>();
 
-        for (Ledger l : data) {
-            if ((l.getAmount() > 0) && (l.getStype().getId() != 8))
-                inl.add(l);
-        }
-        HashMap<String, Catsort> ret = new HashMap<String, Catsort>();
-        for (Ledger l : inl) {
-            String n = null;
-
-            Integer I = inmap.get(l.getLabel().getId());
-            if (I != null) {
-                Optional<Gscat> m = grepo.findById(I);
-                if (m.isPresent()) {
-                    Gscat g = m.get();
-                    if (g.getId() == 28) {
-                        Catsort r = put(ret,l.getLabel().getName(),l);
-                        r.reverse();
-                    }
-                }
-            }
-        }
-        return ret;
-    }
     private  List<HashMap<String, Catsort>> doOut(FileWriter w, SessionDTO session, List<Ledger> data, StartStop dates) throws Exception {
         List<HashMap<String, Catsort>> ret = new ArrayList<HashMap<String,Catsort>>();
         List<Ledger> out = new ArrayList<Ledger>();
@@ -215,11 +196,11 @@ public class SummaryReport implements ReportI {
 
             if (n == null) {
                 n = "Misc";
-                put(miscm,l.getLabel().getName(),l);
+                inu.putm(miscm,l.getLabel().getName(),l.getAmount());
             } else {
                 death.add(l);
             }
-            put(outm,n,l);
+            inu.putm(outm,n,l.getAmount());
         }
         out.removeAll(death);
 
@@ -241,11 +222,11 @@ public class SummaryReport implements ReportI {
                         n = g.getName();
                     }
                 } else {
-                    put(checksm, l.getChecks().getPayee().getName(), l);
+                    inu.putm(checksm, l.getChecks().getPayee().getName(), l.getAmount());
                     n = "Checks";
                 }
             }
-            put(outm,n, l);
+            inu.putm(outm,n, l.getAmount());
         }
         ret.add(outm);
         ret.add(checksm);
@@ -267,18 +248,6 @@ public class SummaryReport implements ReportI {
             w.write(c.getLabel() + " " + c.getAmount() + "\n");
         }
     }
-    private Catsort put(HashMap<String, Catsort> map,String key, Ledger l) {
-        Catsort d = map.get(key);
-        if (d == null) {
-            d = new Catsort();
-            d.setLabel(key);
-            d.setAmount(l.getAmount());
-            map.put(key, d);
-        } else {
-            double amt = l.getAmount();
-            d.setAmount(Utils.convertDouble(d.getAmount() + amt));
-        }
-        return d;
-    }
+
 
 }

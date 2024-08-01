@@ -21,6 +21,52 @@ public class AaaImpl extends Base {
     public void doTransform() {
         String first = ilines.get(0);
         ilines.remove(first);
+
+        List<String> nlines = new ArrayList<String>();
+        Iterator<String> iter = ilines.iterator();
+        while (iter.hasNext()) {
+            String line = iter.next();
+            String[] data = line.split(",");
+
+            String dstr = makeDstr(data[0]);
+
+            nlines.add(dstr + "," + data[3] + ",X," + data[1] + "," + data[2]);
+        }
+
+        int idx = 0;
+        for (idx = nlines.size()-1;idx>=0;idx--) {
+            if (checkRange(nlines.get(idx),0)) {
+                olines.add(nlines.get(idx));
+            }
+        }
+    }
+
+    private String makeDstr(String ds) {
+        String ret = "";
+        String[] data = ds.split("/");
+
+        Integer m = Integer.valueOf(data[0]);
+        Integer d = Integer.valueOf(data[1]);
+        String mstr = "";
+        String dstr = "";
+        if (m < 10) {
+            mstr = "0" + m;
+        } else {
+            mstr = String.valueOf(m);
+        }
+
+        if (d < 10) {
+            dstr = "0" + m;
+        } else {
+            dstr = String.valueOf(d);
+        }
+
+        ret = mstr + "/" + dstr + "/" + data[2];
+        return ret;
+    }
+    public void doTransform2() {
+        String first = ilines.get(0);
+        ilines.remove(first);
         List<String> nlines = new ArrayList<String>();
         boolean on = false;
         String tmp = null;

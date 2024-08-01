@@ -24,6 +24,7 @@ public class Main {
             System.out.println("Invalid dates " + args[0] + " " + args[1]);
             return;
         }
+
         populate(objs,d);
         for (Base b : objs) {
             if (!b.go())

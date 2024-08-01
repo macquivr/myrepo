@@ -1,5 +1,7 @@
 package com.example.demo.importw;
 
+import com.example.demo.actions.InAction;
+import com.example.demo.actions.OutAction;
 import com.example.demo.bean.StartStop;
 import com.example.demo.dto.ImportDTO;
 import com.example.demo.importer.Iimport;
@@ -7,6 +9,8 @@ import com.example.demo.importer.Repos;
 import com.example.demo.importer.checkUtil;
 import com.example.demo.importer.importBase;
 import com.example.demo.importw.iobj.*;
+import com.example.demo.repository.IntableRepository;
+import com.example.demo.repository.OuttableRepository;
 import com.example.demo.repository.PayperiodRepository;
 import com.example.demo.repository.StatementsRepository;
 import com.example.demo.state.importer.ImportState;
@@ -62,6 +66,25 @@ public class doImportw extends importBase {
 				Payperiod np = new Payperiod();
 				np.setStart(start);
 				np.setStop(stop);
+
+				Intable inobj = new Intable();
+				try {
+					IntableRepository inr = repos.getIntable();
+					inr.saveAndFlush(inobj);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				np.setIna(inobj);
+
+				Outtable oobj = new Outtable();
+				try {
+					OuttableRepository outr = repos.getOuttable();
+					outr.saveAndFlush(oobj);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				np.setOuta(oobj);
+
 				r.save(np);
 				pobj = np;
 			} else {
@@ -193,13 +216,25 @@ public class doImportw extends importBase {
 		return ret;
 	}
 
+	private void updatePp() {
+		InAction ina = new InAction(repos);
+		OutAction outa = new OutAction(repos);
+
+		System.out.println("Updating in and out...");
+		ina.performAction(this.pp);
+		outa.performAction(this.pp);
+	}
+
 	private boolean importData(boolean doSave, List<String> err)
 	{
 		for (Iimport I : data) {
 			if (!I.importData(stmts,doSave,err))
 				return false;
 		}
-		
+
+		if (doSave) {
+			updatePp();
+		}
 		return true;
 	}
 	protected StartStop initStartStop() {

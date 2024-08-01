@@ -1,5 +1,6 @@
 package com.example.demo.state.impl;
 
+import com.example.demo.controllers.ReportController;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.dto.SessionUpdateDTO;
 import com.example.demo.state.SessionI;
@@ -33,6 +34,7 @@ public class PercentImpl implements SessionI {
             return;
         }
 
+        ReportController.flipAction();
         logger.info("percent updated to " + c);
         session.setPercent(c);
     }

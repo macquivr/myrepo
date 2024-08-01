@@ -1,5 +1,7 @@
 package com.example.demo.services;
 
+import com.example.demo.actions.*;
+import com.example.demo.controllers.ReportController;
 import com.example.demo.importer.Repos;
 import com.example.demo.reports.*;
 import com.example.demo.repository.*;
@@ -7,7 +9,6 @@ import com.example.demo.state.Sessions;
 import com.example.demo.domain.*;
 import com.example.demo.bean.*;
 import com.example.demo.utils.mydate.DUtil;
-import com.example.demo.utils.runner.BMaintenance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class ReportService {
 
     private SessionDTO session;
     private final HashMap<String,ReportI> map = new HashMap<>();
+    private final HashMap<String, ActionI> amap = new HashMap<>();
 
     @Autowired
     private OcRepository ocRepository;
@@ -115,6 +117,12 @@ public class ReportService {
     @Autowired
     private InmapRepository inmapRepository;
 
+    @Autowired
+    private IntableRepository intableRepository;
+
+    @Autowired
+    private OuttableRepository outtableRepository;
+
     private void init()
     {
         repos = new Repos(payeeRepository,
@@ -147,8 +155,15 @@ public class ReportService {
         this.repos.setLmap(this.lmapRepository);
         this.repos.setCmap(this.cmapRepository);
         this.repos.setInmap(this.inmapRepository);
+        this.repos.setIntable(this.intableRepository);
+        this.repos.setOuttable(this.outtableRepository);
 
         registerReports();
+        registerActions();
+    }
+
+    private void registerActions() {
+        amap.put("PSTUFF",new Pstuff(repos));
     }
 
     private void registerReports()
@@ -183,8 +198,31 @@ public class ReportService {
         }
         ret.setStatus(true);
 
-        boolean p = session.isPercent();
+        boolean p = ReportController.isAction();
         if (p) {
+            String type = session.getReportType();
+            if (type == null) {
+                ret.setMessage("No Action type.");
+                return ret;
+            }
+            ActionI r = amap.get(type);
+            if (r == null) {
+                ret.setStatus(false);
+                ret.setMessage("Invalid action type.");
+                return ret;
+            }
+            try {
+              boolean b = r.go(session);
+              if (!b) {
+                  ret.setMessage("Failed to run action.");
+              } else {
+                  ret.setMessage("Ok.");
+              }
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+                ret.setMessage("Fail " + ex.getMessage());
+            }
+            /*
             BMaintenance obj = new BMaintenance(repos,session);
             try {
                 boolean b = obj.go();
@@ -196,6 +234,8 @@ public class ReportService {
                 ex.printStackTrace();
                 ret.setMessage("Fail " + ex.getMessage());
             }
+
+             */
             return ret;
         }
 

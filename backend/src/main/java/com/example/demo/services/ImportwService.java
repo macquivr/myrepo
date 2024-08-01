@@ -12,7 +12,6 @@ import com.example.demo.importw.doImportw;
 import com.example.demo.repository.*;
 import com.example.demo.state.importer.Imports;
 import com.example.demo.state.importer.ImportState;
-import com.example.demo.importer.doImport;
 import com.example.demo.dto.SessionUpdateDTO;
 import com.example.demo.state.importer.NewData;
 import org.slf4j.Logger;
@@ -96,6 +95,18 @@ public class ImportwService {
 
     @Autowired
     private PayperiodRepository payperiodRepository;
+
+    @Autowired
+    private InmapRepository inmapRepository;
+
+    @Autowired
+    private IntableRepository intableRepository;
+
+    @Autowired
+    private OuttableRepository outtableRepository;
+
+    @Autowired
+    private GscatRepository gscatRepository;
 
     /* main entry point */
     public ImportDTO importStatus(String session) {
@@ -191,6 +202,11 @@ public class ImportwService {
                 budgetvaluesRepository,
                 ocRepository);
         repos.setPayPeriod(payperiodRepository);
+
+        this.repos.setInmap(this.inmapRepository);
+        this.repos.setIntable(this.intableRepository);
+        this.repos.setOuttable(this.outtableRepository);
+        this.repos.setGscat(this.gscatRepository);
 
         CsbTypeRepository test = repos.getCsbTypeRepository();
         if (test == null) {
