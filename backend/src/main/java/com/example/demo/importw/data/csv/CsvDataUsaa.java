@@ -58,7 +58,7 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataUsaa.class);
 		String amount = tokens[4];
 		char t = amount.charAt(0);
 
-		if (t != '-') {
+		if (t == '-') {
 			ret.setCredit(Double.parseDouble(amount));
 		} else {
 			ret.setDebit(Double.parseDouble(amount));

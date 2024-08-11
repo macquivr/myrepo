@@ -88,24 +88,7 @@ public class OutAction extends BaseAction implements ActionI {
         return Utils.convertDouble(ret);
     }
 
-    public double getCFree(StartStop dates) {
-        List<TLedger> data = repos.getTLedgerRepository().findAllByTdateBetweenOrderByTdateAsc(dates.getStart(), dates.getStop());
-        double ret = 0;
-        for (TLedger l : data) {
-            if ((l.getLtype().getId() == 7) ||
-                    (l.getLtype().getId() == 8) ||
-                    (l.getLtype().getId() == 9) ||
-                    (l.getLtype().getId() == 10)) {
-                if ((l.getLabel().getId() == 10288) ||
-                        (l.getLabel().getId() == 10428) ||
-                        (l.getLabel().getId() == 13149)) {
-                    ret += l.getAmount();
-                }
-            }
 
-        }
-        return Utils.convertDouble(ret);
-    }
 
     public void performAction(Payperiod p) {
         StartStop dates = new StartStop();
@@ -114,7 +97,7 @@ public class OutAction extends BaseAction implements ActionI {
 
         double outr  = getFilterData(dates);
         double outc  = getCreditData(dates);
-        double cfree = getCFree(dates);
+
         try {
             Outtable oobj;
             if (this.isNew) {
@@ -131,7 +114,7 @@ public class OutAction extends BaseAction implements ActionI {
                 oobj = p.getOuta();
             }
 
-            setOut(oobj, outr, outc, cfree);
+            setOut(oobj, outr, outc);
             if (!isNew) {
                 PayperiodRepository rp = repos.getPayPeriod();
                 rp.saveAndFlush(p);
@@ -141,10 +124,9 @@ public class OutAction extends BaseAction implements ActionI {
         }
     }
 
-    private void setOut(Outtable obj, double outr, double outc, double cfree) {
+    private void setOut(Outtable obj, double outr, double outc) {
         obj.setOutr(outr);
         obj.setOutc(outc);
-        obj.setInfree(cfree);
 
         try {
             OuttableRepository r = repos.getOuttable();

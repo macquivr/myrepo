@@ -90,12 +90,13 @@ public class SaveO extends importBase {
 				}
 			}
 	    	if (amt == 0) {
-	    		String str = "Bad Amount " + date + " " + label.getName();
+	    		String str = "Bad Amount " + date + " " + label.getName() + " " + label.getId();
 	    		log.error(str);
-	    		System.out.println(str);
+	    		n.P();
+				System.out.println(str);
 	    		return false;
 	    	}
-			System.out.println("DSTR: " + date + " AMT: " + amt + " Credit: " + n.getCredit() + " Debit: " + n.getDebit());
+
 	    	l.setTdate(DUtil.getStdDate(date));
 	    	l.setLtype(ltypeo);
 	    	l.setLabel(label);

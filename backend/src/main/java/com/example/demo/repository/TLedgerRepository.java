@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 public interface TLedgerRepository extends JpaRepository<TLedger, Integer> {
 
+    List<TLedger> findAllByWid(Payperiod p);
     List<TLedger> findAllByLabelOrderByTdateAsc(Label label);
     List<TLedger> findAllByTdateBetweenOrderByTdateAsc(LocalDate start, LocalDate stop);
     List<TLedger> findAllByTdateBetweenAndLtypeOrderByTdateAsc(LocalDate start, LocalDate stop, Ltype ltype);

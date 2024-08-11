@@ -59,6 +59,7 @@ public class ReportController {
 
     private void actions(List<RValue> r) {
         add("PSTUFF", "Pstuff", r);
+        add("PPTLM", "Pptlm", r);
     }
 
     private void reports(List<RValue> r) {

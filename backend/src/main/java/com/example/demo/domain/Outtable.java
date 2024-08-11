@@ -13,17 +13,11 @@ public class Outtable {
 
     private double outr;
     private double outc;
-    private double infree;
 
     public int getId() { return id; }
     public double getOutr() { return this.outr; }
     public double getOutc() { return this.outc; }
-    public double getInfree()
-    {
-        return this.infree;
-    }
 
     public void setOutr(double w) { this.outr = w; }
     public void setOutc(double m) { this.outc = m; }
-    public void setInfree(double m) { this.infree = m; }
 }

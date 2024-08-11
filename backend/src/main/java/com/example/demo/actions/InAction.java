@@ -165,4 +165,22 @@ public class InAction extends BaseAction implements ActionI{
             inmap.put(c.getLid(), c.getGid());
         }
     }
+    public double getCFree(StartStop dates) {
+        List<TLedger> data = repos.getTLedgerRepository().findAllByTdateBetweenOrderByTdateAsc(dates.getStart(), dates.getStop());
+        double ret = 0;
+        for (TLedger l : data) {
+            if ((l.getLtype().getId() == 7) ||
+                    (l.getLtype().getId() == 8) ||
+                    (l.getLtype().getId() == 9) ||
+                    (l.getLtype().getId() == 10)) {
+                if ((l.getLabel().getId() == 10288) ||
+                        (l.getLabel().getId() == 10428) ||
+                        (l.getLabel().getId() == 13149)) {
+                    ret += l.getAmount();
+                }
+            }
+
+        }
+        return Utils.convertDouble(ret);
+    }
 }

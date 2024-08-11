@@ -157,6 +157,10 @@ public class ImportwService {
                 return ret;
             }
             NewLabelData nd = dr.getHMapEntry(line);
+            if (nd == null) {
+                System.out.println("BAD LABEL DATA! " + line);
+                return ret;
+            }
             ret.setMdata(nd.getLabel());
             return ret;
         }

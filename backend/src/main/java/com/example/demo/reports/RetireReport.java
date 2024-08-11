@@ -18,7 +18,7 @@ public class RetireReport implements ReportI {
         repos = r;
     }
 
-    public void go(FileWriter w, SessionDTO session) throws Exception
+    public String go(FileWriter w, SessionDTO session) throws Exception
     {
         LData ld = new LData(repos.getLedgerRepository());
         LtypeRepository lt = repos.getLtypeRepository();
@@ -42,6 +42,8 @@ public class RetireReport implements ReportI {
 
         w.write("TOTAL:            " + amt);
         w.write("\n");
+
+        return null;
     }
 
     private double p(FileWriter w, SessionDTO session, LData ld,  LtypeRepository lt, String name, String str) throws Exception

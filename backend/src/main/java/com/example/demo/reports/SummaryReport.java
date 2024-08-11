@@ -62,7 +62,7 @@ public class SummaryReport implements ReportI {
     public AllP getAllData() {
         return this.allData;
     }
-    public void go(FileWriter w, SessionDTO session) throws Exception {
+    public String go(FileWriter w, SessionDTO session) throws Exception {
 
         this.allData = new AllP();
         LData ld = new LData(lrepo);
@@ -123,6 +123,8 @@ public class SummaryReport implements ReportI {
         p("Misc",w,outm.get(2));
 
         p("Percent",w,outp);
+
+        return null;
     }
 
     private HashMap<String, Catsort> doIn(HashMap<Integer,Integer> inmap, List<Ledger> data) throws Exception {

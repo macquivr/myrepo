@@ -20,6 +20,7 @@ public class Intable {
     private double interest;
     private double refund;
     private double total;
+    private double creditfree;
 
     public int getId() { return id; }
     public double getWork()
@@ -41,9 +42,15 @@ public class Intable {
     {
         return this.interest;
     }
-    public double getRefund() { return this.refund; }
+    public double getRefund()
+    {
+        return this.refund;
+    }
     public double getTotal() { return this.total; }
-
+    public double getCreditfree()
+    {
+        return this.creditfree;
+    }
 
     public void setWork(double w) { this.work = w; }
     public void setMlsale(double m) { this.mlsale = m; }
@@ -52,6 +59,7 @@ public class Intable {
     public void setArizona(double a) { this.arizona = a; }
     public void setMiscin(double m) { this.miscin = m; }
     public void setInterest(double i) { this.interest = i; }
-    public void setRefund(double r) { this.refund = r; }
+    public void setRefund(double i) { this.refund = i; }
     public void setTotal(double t) { this.total = t; }
+    public void setCreditfree(double i) { this.creditfree = i; }
 }

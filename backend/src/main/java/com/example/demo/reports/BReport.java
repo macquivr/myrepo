@@ -38,7 +38,7 @@ public class BReport implements ReportI {
     }
     
 
-    public void go(FileWriter w, SessionDTO session) throws Exception {
+    public String go(FileWriter w, SessionDTO session) throws Exception {
         LData ld = new LData(repos.getLedgerRepository());
         List<Ledger> data = ld.filterByDate(session, null, null);
         ld.filterBundle(data);
@@ -58,23 +58,19 @@ public class BReport implements ReportI {
 
         System.out.println("RLV: " + rlvalues.size());
         if (rlvalues.size() != 2) {
-            w.write("Bad rvalue count.\n");
-            return;
+            return "Bad rvalue count.";
         }
 
         if (rlsvalues.size() != 2) {
-            w.write("Bad rsvalue count.\n");
-            return;
+            return "Bad rsvalue count.";
         }
 
         if (rlnet.size() != 2) {
-            w.write("Bad rnet count.\n");
-            return;
+            return "Bad rnet count.";
         }
 
         if (rlsnet.size() != 2) {
-            w.write("Bad rsnet count.\n");
-            return;
+            return "Bad rsnet count.";
         }
 
         Consolidate c = session.getConsolidate();
@@ -96,41 +92,39 @@ public class BReport implements ReportI {
 
         MRBean pos = validatePos(w, m, vmap.get("Pos"), rlvalues.get(0).getPos(), rlsvalues.get(0).getPos(), rlnet.get(0).getPos(), rlsnet.get(0).getPos(), data);
         if (pos == null)
-            return;
+            return "Bad Pos.";
 
         MRBean atm = validateAtm(w, m, vmap.get("Atm"), rlvalues.get(0).getAtm(), rlsvalues.get(0).getAtm(), rlnet.get(0).getAtm(), rlsnet.get(0).getAtm(), data);
         if (atm == null)
-            return;
+            return "Bad Atm.";
 
         MRBean utils = validateStuff(w, 10344, m, "Utils", vmap, rlvalues.get(0).getUtils(), rlnet.get(0).getUtils(), data);
         if (utils == null)
-            return;
+            return "Bad Utils";
 
         MRBean usaa = validateStuff(w, 11209, m, "Usaa", vmap, rlvalues.get(0).getUsaa(), rlnet.get(0).getUsaa(), data);
         if (usaa == null)
-            return;
+            return "Bad Usaa";
 
         MRBean capone = validateStuff(w, 10264, m, "Capone", vmap, rlvalues.get(0).getCapone(), rlnet.get(0).getCapone(), data);
         if (capone == null)
-            return;
+            return "Bad Capone";
 
         MRBean aaa = validateStuff(w, 12933, m, "Aaa", vmap, rlvalues.get(0).getAaa(), rlnet.get(0).getAaa(), data);
         if (aaa == null)
-            return;
+            return "Bad Aaa";
 
         MRBean amazon = validateStuff(w, 10019, m, "Amazon", vmap, rlvalues.get(0).getAmazon(), rlnet.get(0).getAmazon(), data);
         if (amazon == null)
-            return;
+            return "Bad Amazon";
 
         MRBean emma = validateStuff(w, 10612, m, "Emma", vmap, rlvalues.get(0).getEmma(), rlnet.get(0).getEmma(), data);
         if (emma == null)
-            return;
+            return "Bad emma";
 
         MRBean dog = validateDog(w, m, vmap, rlvalues.get(0).getDog(), rlnet.get(0).getDog(), data);
         if (dog == null)
-            return;
-
-
+            return "Bad Dog";
 
         MRBeanl budgetl = new MRBeanl();
         budgetl.add(utils);
@@ -167,6 +161,7 @@ public class BReport implements ReportI {
         w.write("\n");
 
         pSpent(w,vmap, m, rlsvalues.get(0),rlsnet.get(0));
+        return null;
     }
 
     private double mult(HashMap<String, Double> vmap, String tag, int m)

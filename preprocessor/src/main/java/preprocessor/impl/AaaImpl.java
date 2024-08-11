@@ -56,12 +56,13 @@ public class AaaImpl extends Base {
         }
 
         if (d < 10) {
-            dstr = "0" + m;
+            dstr = "0" + d;
         } else {
             dstr = String.valueOf(d);
         }
 
         ret = mstr + "/" + dstr + "/" + data[2];
+        System.out.println("M: " + m + " D: " + d + " MSTR: " + mstr + " DSTR: " + dstr + " RET: " + ret);
         return ret;
     }
     public void doTransform2() {

@@ -21,7 +21,7 @@ public class DefaultReport implements ReportI {
 
         this.repos = r;
     }
-    public void go(FileWriter w, SessionDTO session) throws Exception
+    public String go(FileWriter w, SessionDTO session) throws Exception
     {
         CategoryRepository cr = repos.getCategoryRepository();
         Category transferc = cr.findByName("Transfer");
@@ -54,6 +54,8 @@ public class DefaultReport implements ReportI {
         printStype("Misc",w,data);
         printSpent(w, session);
         printCategories(w,session);
+
+        return null;
     }
 
     private void printPeriod(FileWriter w,StartStop dates) throws Exception {

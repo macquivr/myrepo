@@ -20,7 +20,7 @@ public class OutReport implements ReportI {
         this.repos = r;
     }
 
-    public void go(FileWriter w, SessionDTO session) throws Exception
+    public String go(FileWriter w, SessionDTO session) throws Exception
     {
         StypeRepository sr = repos.getStypeRepository();
         Stype transfert = sr.findByName("Transfer");
@@ -33,6 +33,8 @@ public class OutReport implements ReportI {
         printPeriod(w,dates);
 
         printOut(w,data,transfert);
+
+        return null;
     }
     private void printPeriod(FileWriter w,StartStop dates) throws Exception {
 

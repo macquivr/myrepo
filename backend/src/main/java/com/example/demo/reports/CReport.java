@@ -24,7 +24,7 @@ public class CReport implements ReportI {
         repos = r;
     }
 
-    public void go(FileWriter w, SessionDTO session) throws Exception {
+    public String go(FileWriter w, SessionDTO session) throws Exception {
         LtypeRepository lrepo = repos.getLtypeRepository();
         Ltype ltypeUsaa = lrepo.findByName("Usaa");
         Ltype ltypeCapone = lrepo.findByName("CapitalOne");
@@ -69,6 +69,8 @@ public class CReport implements ReportI {
         w.write("\n");
         printCategories(w,"Aamzon",camazon);
         w.write("\n");
+
+        return null;
     }
 
     private void doStmt( Statements s, Ltype ltype, CRBean bean, int pd, Integer[] fa,HashMap<String, Double> map) {

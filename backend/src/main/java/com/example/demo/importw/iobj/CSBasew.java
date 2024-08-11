@@ -18,14 +18,12 @@ import org.slf4j.LoggerFactory;
 import com.example.demo.domain.*;
 
 public abstract class CSBasew extends IBasew {
-	private Payperiod pp = null;
 	private static final Logger log = LoggerFactory.getLogger(CSBasew.class);
 	protected CsbEType etype = null;
 
-	public CSBasew(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public CSBasew(UUID uuid, Repos r, ImportDTO dto)
 	{
 		super(uuid,r, dto);
-		this.pp = pp;
 	}
 	
 	public boolean validateFile(List<String> ret)

@@ -54,7 +54,14 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataAaa.class);
 		if (category.equals("Charge"))  {
 			ret.setDebit(Double.parseDouble(amount));
 		} else {
-			ret.setCredit(Double.parseDouble(amount));
+			Double d = Double.parseDouble(amount);
+			double a = 0;
+			if (amount.charAt(0) == '-') {
+				a = d * (-1);
+			} else {
+				a = d.doubleValue();
+			}
+			ret.setCredit(a);
 		}
 
 		return ret;

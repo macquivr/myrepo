@@ -11,9 +11,9 @@ import com.example.demo.importw.data.csv.PBase;
 
 public class Amazon extends CBasew {
 	
-	public Amazon(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public Amazon(UUID uuid, Repos r, ImportDTO dto)
 	{	
-		super(uuid,r,dto, pp);
+		super(uuid,r,dto);
 		
 		fname = "amazon.csv";
 		ltype = 9;

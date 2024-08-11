@@ -21,7 +21,7 @@ public class MiscReport implements ReportI {
     }
 
 
-    public void go(FileWriter w, SessionDTO session) throws Exception
+    public String go(FileWriter w, SessionDTO session) throws Exception
     {
         StypeRepository sr = repos.getStypeRepository();
         Stype misc = sr.findByName("Misc");
@@ -40,6 +40,8 @@ public class MiscReport implements ReportI {
         data.removeAll(death);
         consolidateMisc(data);
         print(w,data);
+
+        return null;
     }
     private boolean isDog(Ledger l) {
         if (l.getChecks() != null) {

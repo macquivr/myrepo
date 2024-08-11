@@ -12,9 +12,9 @@ import java.util.UUID;
 
 public class Aaa extends CBasew {
 	
-	public Aaa(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public Aaa(UUID uuid, Repos r, ImportDTO dto)
 	{	
-		super(uuid,r,dto,pp);
+		super(uuid,r,dto);
 		
 		fname = "aaa.csv";
 		ltype = 10;

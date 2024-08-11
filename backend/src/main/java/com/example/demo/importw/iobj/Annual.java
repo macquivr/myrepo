@@ -11,9 +11,9 @@ import java.util.UUID;
 
 public class Annual extends CSBasew {
 
-	public Annual(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public Annual(UUID uuid, Repos r, ImportDTO dto)
 	{	
-		super(uuid, r, dto, pp);
+		super(uuid, r, dto);
 
 		etype = CsbEType.ANNUAL;
 		fname = "Annual.csv";

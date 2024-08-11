@@ -59,7 +59,7 @@ public class MainReport implements ReportI {
         }
         return Utils.convertDouble(ret);
     }
-    public void go(FileWriter w, SessionDTO session) throws Exception
+    public String go(FileWriter w, SessionDTO session) throws Exception
     {
         bdata = new MRBeanl();
         cdata = new MRBeanl();
@@ -155,6 +155,7 @@ public class MainReport implements ReportI {
         w.write("\n");
         cdata.Print(w);
 
+        return null;
     }
 
     private void printPeriod(FileWriter w,StartStop dates) throws Exception {

@@ -3,8 +3,11 @@ package com.example.demo.bean;
 public class Catsort implements Comparable<Catsort> {
     private int dir = 1;
     private String label;
-    private Double amount;
+    protected Double amount;
 
+    public Catsort() {
+        this.amount = Double.valueOf(0);
+    }
     public void reverse() {
         this.dir = -1;
     }

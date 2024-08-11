@@ -33,7 +33,7 @@ public class MReport implements ReportI {
         this.lrepo = lrepo;
     }
 
-    public void go(FileWriter w, SessionDTO session) throws Exception {
+    public String go(FileWriter w, SessionDTO session) throws Exception {
         LData ld = new LData(lrepo);
         List<Ledger> data  = ld.filterByDate(session,null,null);
         ld.filterBundle(data);
@@ -104,6 +104,8 @@ public class MReport implements ReportI {
         }
         //p(w,"Misc Checks", miscChecks,false);
         */
+
+        return null;
     }
 
     private List<Catsort> getData(RMap r, String label, RMapI ri, List<Catsort> s) {

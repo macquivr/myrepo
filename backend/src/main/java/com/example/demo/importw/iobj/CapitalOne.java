@@ -11,9 +11,9 @@ import java.util.UUID;
 
 public class CapitalOne extends CBasew {
 	
-	public CapitalOne(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public CapitalOne(UUID uuid, Repos r, ImportDTO dto)
 	{	
-		super(uuid,r,dto,pp);
+		super(uuid,r,dto);
 		
 		fname = "capone.csv";
 		ltype = 7;

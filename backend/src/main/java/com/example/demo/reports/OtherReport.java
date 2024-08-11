@@ -20,9 +20,7 @@ public class OtherReport implements ReportI {
         this.repos = r;
     }
 
-    public void go(FileWriter w, SessionDTO session) throws Exception {
-
-
+    public String go(FileWriter w, SessionDTO session) throws Exception {
         LtypeRepository lrepo = repos.getLtypeRepository();
         Ltype ltypeMs = lrepo.findByName("Main Savings");
         Ltype ltypeSlush = lrepo.findByName("SlushFund");
@@ -47,6 +45,8 @@ public class OtherReport implements ReportI {
         P(w,mortg,"Mortgage");
         P(w,ml,"Merrill Lynch");
         P(w,annual,"Annual");
+
+        return null;
     }
 
     private void printPeriod(FileWriter w,StartStop dates) throws Exception {

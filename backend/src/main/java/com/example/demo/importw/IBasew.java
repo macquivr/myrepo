@@ -38,6 +38,7 @@ public abstract class IBasew extends importBase implements Iimport {
 	protected Properties p = null;
 	protected final Repos repos;
 	protected final ImportDTO idto;
+	protected Payperiod pp;
 
 	public IBasew(UUID uuid,Repos r, ImportDTO dto)
 	{
@@ -49,6 +50,9 @@ public abstract class IBasew extends importBase implements Iimport {
 		data = new IData();
 	}
 
+	public void setPayperiod(Payperiod pp) {
+		this.pp = pp;
+	}
 	public Repos getRepos() { return repos; }
 	public abstract boolean validateFile(List<String> err);
 

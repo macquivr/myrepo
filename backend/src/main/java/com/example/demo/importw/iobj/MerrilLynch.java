@@ -14,11 +14,10 @@ import java.util.List;
 public class MerrilLynch extends IBasew {
 	private Payperiod pp = null;
 
-	public MerrilLynch(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public MerrilLynch(UUID uuid, Repos r, ImportDTO dto)
 	{	
 		super(uuid,r,dto);
 
-		this.pp = pp;
 		fname = "ml.csv";
 		ltype = 11;
 		credit = false;

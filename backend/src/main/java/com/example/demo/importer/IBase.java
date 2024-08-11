@@ -53,6 +53,7 @@ public abstract class IBase extends importBase implements Iimport {
 		data = new IData();
 	}
 
+	public void setPayperiod(Payperiod pp) { /* nop */ }
 	public Repos getRepos() { return repos; }
 	public abstract boolean validateFile(List<String> err);
 	public abstract void attachStatement(Statements stmts,Statement stmt);
@@ -70,7 +71,10 @@ public abstract class IBase extends importBase implements Iimport {
 		for (Ledger l : ls) {
 			Checks c = l.getChecks();
 			if (c != null) {
-				cr.save(c);
+				Checks e = cr.findByLtypeAndCheckNum(l.getLtype(), c.getCheckNum());
+				if (e == null) {
+					cr.save(c);
+				}
 			}
 			lr.save(l);
 			l.setStatement(stmt);

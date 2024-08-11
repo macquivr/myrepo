@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface WdatamapRepository extends JpaRepository<Wdatamap, Integer> {
     List<Wdatamap> findAllByWidOrderByWho(Payperiod pp);
+
 }

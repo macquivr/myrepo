@@ -22,10 +22,14 @@ public class CreditReport implements ReportI {
         this.repos = r;
     }
 
-    public void go(FileWriter w, SessionDTO session) throws Exception
+    public String go(FileWriter w, SessionDTO session) throws Exception
     {
         LData ld = new LData(repos.getLedgerRepository());
         List<Ledger> data  = ld.filterByDate(session,null,null);
+
+        if (data.isEmpty()) {
+            return "No Data.";
+        }
         StartStop dates = ld.getDates();
 
         printPeriod(w,dates);
@@ -34,6 +38,8 @@ public class CreditReport implements ReportI {
         printCapOne(w,data);
         printAmazon(w,data);
         printAaa(w,data);
+
+        return null;
     }
 
     private List<Ledger> getL(List<Ledger> data,int ltype) {

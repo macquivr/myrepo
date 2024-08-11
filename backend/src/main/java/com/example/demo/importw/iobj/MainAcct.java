@@ -10,9 +10,9 @@ import java.util.UUID;
 
 public class MainAcct extends CSBasew {
 	
-	public MainAcct(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public MainAcct(UUID uuid, Repos r, ImportDTO dto)
 	{	
-		super(uuid,r,dto,pp);
+		super(uuid,r,dto);
 
 		etype = CsbEType.MAIN;
 		fname = "Main.csv";

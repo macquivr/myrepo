@@ -9,4 +9,5 @@ public interface Iimport {
 	public List<String> validateLabels(String session);
 	public boolean importData(Statements stmts,boolean doSave, List<String> err);
 	public void setStype(List<String> ret);
+	public void setPayperiod(Payperiod pp);
 }

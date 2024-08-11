@@ -17,14 +17,16 @@ public class Pstuff extends BaseAction implements ActionI {
     public Pstuff(Repos r) {
         super(r);
 
-        try {
-            this.w = new FileWriter("Report.csv");
-        } catch (Exception ex) {
-            // ignore
-        }
     }
 
     public boolean go(SessionDTO session) throws Exception {
+        try {
+            this.w = new FileWriter("Report.csv");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+
         LocalDate start = session.getStart();
         LocalDate stop = session.getStop();
 

@@ -9,10 +9,7 @@ import com.example.demo.importer.Repos;
 import com.example.demo.importer.checkUtil;
 import com.example.demo.importer.importBase;
 import com.example.demo.importw.iobj.*;
-import com.example.demo.repository.IntableRepository;
-import com.example.demo.repository.OuttableRepository;
-import com.example.demo.repository.PayperiodRepository;
-import com.example.demo.repository.StatementsRepository;
+import com.example.demo.repository.*;
 import com.example.demo.state.importer.ImportState;
 import com.example.demo.utils.mydate.DUtil;
 import org.slf4j.Logger;
@@ -22,10 +19,7 @@ import com.example.demo.domain.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.UUID;
-import java.util.Vector;
+import java.util.*;
 
 public class doImportw extends importBase {
 	private static final Logger log = LoggerFactory.getLogger(doImportw.class);
@@ -34,71 +28,77 @@ public class doImportw extends importBase {
 	private final Repos repos;
 	private final ImportDTO idto;
 	private Payperiod pp = null;
+	private StartStop pdates = null;
 
 	public doImportw(UUID uuid,Repos r, ImportDTO dto)
 	{
 		super(uuid);
 
 		this.repos = r;
-		this.pp = getPayperiod();
+
 		this.idto = dto;
 
 		data = new Vector<>();
-		data.add(new MainAcct(uuid,repos,idto,this.pp));
-		data.add(new Slush(uuid,repos,idto,this.pp));
-		data.add(new Annual(uuid,repos,idto,this.pp));
-		data.add(new MerrilLynch(uuid,repos,idto,this.pp));
-		data.add(new Amazon(uuid,repos,idto,this.pp));
-		data.add(new Aaa(uuid,repos,idto,this.pp));
-		data.add(new Usaa(uuid,repos,idto,this.pp));
-		data.add(new CapitalOne(uuid,repos,idto,this.pp));
+		data.add(new MainAcct(uuid,repos,idto));
+		data.add(new Slush(uuid,repos,idto));
+		data.add(new Annual(uuid,repos,idto));
+		data.add(new MerrilLynch(uuid,repos,idto));
+		data.add(new Amazon(uuid,repos,idto));
+		data.add(new Aaa(uuid,repos,idto));
+		data.add(new Usaa(uuid,repos,idto));
+		data.add(new CapitalOne(uuid,repos,idto));
 	}
 
-	private Payperiod getPayperiod() {
-		StartStop dates = initStartStop();
-		LocalDate start = dates.getStart();
-		LocalDate stop = dates.getStop();
+	private void getPayperiod(List<String> errs) {
+		initStartStop(errs);
+		LocalDate start = this.pdates.getStart();
+		LocalDate stop = this.pdates.getStop();
 		PayperiodRepository r = repos.getPayPeriod();
-		List<Payperiod> p = r.findAllByStartBetweenOrderByStartAsc(start,stop);
-		Payperiod pobj = null;
-		if (p != null) {
-			if (p.isEmpty()) {
-				Payperiod np = new Payperiod();
-				np.setStart(start);
-				np.setStop(stop);
-
-				Intable inobj = new Intable();
-				try {
-					IntableRepository inr = repos.getIntable();
-					inr.saveAndFlush(inobj);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				np.setIna(inobj);
-
-				Outtable oobj = new Outtable();
-				try {
-					OuttableRepository outr = repos.getOuttable();
-					outr.saveAndFlush(oobj);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				np.setOuta(oobj);
-
-				r.save(np);
-				pobj = np;
-			} else {
-				pobj = p.get(0);
+		Optional<Payperiod> p = r.findByStartAndStop(start,stop);
+		if (p.isPresent()) {
+			Payperiod ap = p.get();
+			TLedgerRepository trepo = repos.getTLedgerRepository();
+			List<TLedger> objs = trepo.findAllByWid(ap);
+			if (!objs.isEmpty()) {
+				errs.add("Already have this.");
 			}
+			this.pp = ap;
+			return;
 		}
-		return pobj;
+
+		Payperiod np = new Payperiod();
+		np.setStart(start);
+		np.setStop(stop);
+
+		Intable inobj = new Intable();
+		try {
+			IntableRepository inr = repos.getIntable();
+			inr.saveAndFlush(inobj);
+		} catch (Exception ex) {
+			errs.add((ex.getMessage() != null) ? ex.getMessage() : ex.toString());
+			return;
+		}
+		np.setIna(inobj);
+
+		Outtable oobj = new Outtable();
+		try {
+			OuttableRepository outr = repos.getOuttable();
+			outr.saveAndFlush(oobj);
+		} catch (Exception ex) {
+			errs.add((ex.getMessage() != null) ? ex.getMessage() : ex.toString());
+			return;
+		}
+		np.setOuta(oobj);
+
+		r.save(np);
+
+		this.pp =  np;
 	}
 	public List<String> go()
 	{
 		List<String> ret = new Vector<>();
-		if (this.pp == null) {
-			ret.add("Couldn't get dates.");
-		} else {
+		getPayperiod(ret);
+		if (ret.isEmpty()) {
 			process(ret);
 		}
 		return ret;
@@ -212,7 +212,6 @@ public class doImportw extends importBase {
 		if (ret) {
 			ret = importData(true, err);
 		}
-		
 		return ret;
 	}
 
@@ -228,6 +227,7 @@ public class doImportw extends importBase {
 	private boolean importData(boolean doSave, List<String> err)
 	{
 		for (Iimport I : data) {
+			I.setPayperiod(this.pp);
 			if (!I.importData(stmts,doSave,err))
 				return false;
 		}
@@ -235,9 +235,10 @@ public class doImportw extends importBase {
 		if (doSave) {
 			updatePp();
 		}
+
 		return true;
 	}
-	protected StartStop initStartStop() {
+	private void initStartStop(List<String> errs) {
 		StartStop ret = new StartStop();
 		try {
 			String fileName = checkUtil.getObj(true).getDir() + "/" + "dates.txt";
@@ -255,15 +256,13 @@ public class doImportw extends importBase {
 			ret.setStop(DUtil.getStdDate(dsl.get(1)));
 
 			if (ret.getStart() == null) {
-				System.out.println("*** COULD NOT SET START DATE!!!");
-				return null;
+				errs.add("*** COULD NOT SET START DATE!!!");
 			}
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
+			errs.add((ex.getMessage() != null) ? ex.getMessage() : ex.toString());
 		}
-		return ret;
+		this.pdates = ret;
 	}
 	private String sanitize(String str) {
 		String ret = "";

@@ -123,6 +123,9 @@ public class ReportService {
     @Autowired
     private OuttableRepository outtableRepository;
 
+    @Autowired
+    private PptlmRepository pptlmRepository;
+
     private void init()
     {
         repos = new Repos(payeeRepository,
@@ -157,6 +160,7 @@ public class ReportService {
         this.repos.setInmap(this.inmapRepository);
         this.repos.setIntable(this.intableRepository);
         this.repos.setOuttable(this.outtableRepository);
+        this.repos.setPptlm(this.pptlmRepository);
 
         registerReports();
         registerActions();
@@ -164,6 +168,7 @@ public class ReportService {
 
     private void registerActions() {
         amap.put("PSTUFF",new Pstuff(repos));
+        amap.put("PPTLM",new PmapAction(repos));
     }
 
     private void registerReports()
@@ -249,23 +254,29 @@ public class ReportService {
             return ret;
         }
 
+        String err = null;
         try {
             File f = new File("Report.csv");
             f.delete();
 
             FileWriter w = new FileWriter("Report.csv");
 
-            r.go(w, session);
+            err = r.go(w, session);
 
             w.flush();
             w.close();
+
         } catch (Exception ex) {
             ret.setStatus(false);
             logger.error("Exception",ex);
             ret.setMessage(ex.getMessage() == null ? ex.toString() : ex.getMessage());
             return ret;
         }
-        ret.setMessage("Ok.");
+        if (err == null) {
+            ret.setMessage("Ok.");
+        } else {
+            ret.setMessage(err);
+        }
         return ret;
     }
 

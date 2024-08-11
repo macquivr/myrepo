@@ -4,10 +4,8 @@ import com.example.demo.repository.*;
 
 public class Repos {
     private final BudgetRepository budgetRepository;
-
     private final BudgetsRepository budgetsRepository;
     private final BudgetValuesRepository budgetValuesRepository;
-
     private final NamesRepository namesRepository;
     private final PayeeRepository payeeRepository;
     private final LabelRepository labelRepository;
@@ -25,9 +23,7 @@ public class Repos {
     private final TLedgerRepository tledgerRepository;
     private final ChecksRepository checkRepository;
     private final UtilitiesRepository utilRepository;
-
     private final OcRepository ocRepository;
-
     private PayperiodRepository payperiodRepository;
     private WdatamapRepository wdatamapRepository;
     private KvpRepository kvpRepository;
@@ -37,6 +33,7 @@ public class Repos {
     private InmapRepository inmapRepository;
     private IntableRepository intableRepository;
     private OuttableRepository outtableRepository;
+    private PptlmRepository pptlmRepository;
 
     public Repos(PayeeRepository p,
                  LabelRepository l,
@@ -117,7 +114,7 @@ public class Repos {
     public InmapRepository getInmap() { return this.inmapRepository; }
     public IntableRepository getIntable() { return this.intableRepository; }
     public OuttableRepository getOuttable() { return this.outtableRepository; }
-
+    public PptlmRepository getPptlmRepository() { return this.pptlmRepository; }
 
     public void setPayPeriod(PayperiodRepository p) { this.payperiodRepository = p; }
     public void setWdatamap(WdatamapRepository w) { this.wdatamapRepository = w; }
@@ -129,9 +126,7 @@ public class Repos {
     public void setLmap(LmapRepository r) {
         this.lmapRepository = r;
     }
-    public void setCmap(CmapRepository r) {
-        this.cmapRepository = r;
-    }
+    public void setCmap(CmapRepository r) {this.cmapRepository = r;}
     public void setInmap(InmapRepository r) {this.inmapRepository = r;}
     public void setIntable(IntableRepository r) {
         this.intableRepository = r;
@@ -139,4 +134,5 @@ public class Repos {
     public void setOuttable(OuttableRepository r) {
         this.outtableRepository = r;
     }
+    public void setPptlm(PptlmRepository r) { this.pptlmRepository = r; }
 }

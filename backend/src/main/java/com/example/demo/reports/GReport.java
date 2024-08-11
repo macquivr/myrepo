@@ -35,7 +35,7 @@ public class GReport implements ReportI {
     public AllP getAllData() {
         return this.allData;
     }
-    public void go(FileWriter w, SessionDTO session) throws Exception {
+    public String go(FileWriter w, SessionDTO session) throws Exception {
         this.allData = new AllP();
         LData ld = new LData(lrepo);
         List<Ledger> data  = ld.filterByDate(session,null,null);
@@ -101,6 +101,8 @@ public class GReport implements ReportI {
             pMisc(w, misc, miscChecks);
         }
         //p(w,"Misc Checks", miscChecks,false);
+
+        return null;
     }
 
     private List<Catsort> getData(RMap r, String label, RMapI ri, List<Catsort> s) {

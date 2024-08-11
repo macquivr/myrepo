@@ -13,13 +13,11 @@ import java.util.UUID;
 import java.util.List;
 
 public abstract class CBasew extends IBasew {
-	private Payperiod pp = null;
 
 	public abstract PBase makePBase() throws BadDataException;
-	public CBasew(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public CBasew(UUID uuid, Repos r, ImportDTO dto)
 	{
 		super(uuid,r, dto);
-		this.pp = pp;
 	}
 
 	public boolean validateFile(List<String> ret) { 

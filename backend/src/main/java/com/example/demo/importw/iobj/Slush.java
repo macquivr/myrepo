@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public class Slush extends CSBasew {
 
-	public Slush(UUID uuid, Repos r, ImportDTO dto, Payperiod pp)
+	public Slush(UUID uuid, Repos r, ImportDTO dto)
 	{	
-		super(uuid,r,dto,pp);
+		super(uuid,r,dto);
 
 		etype = CsbEType.SLUSH;
 		fname = "Slush.csv";
