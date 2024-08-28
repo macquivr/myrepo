@@ -12,7 +12,12 @@ public interface LedgerRepository extends JpaRepository<Ledger, Integer> {
     List<Ledger> findAllByStatementAndTransdateBetweenOrderByTransdateAsc(Statement s, LocalDate start, LocalDate stop);
     List<Ledger> findAllByLabelOrderByTransdateAsc(Label label);
     List<Ledger> findAllByTransdateBetweenOrderByTransdateAsc(LocalDate start, LocalDate stop);
+    List<Ledger> findAllByTransdateBetweenAndAmountLessThanOrderByTransdateAsc(LocalDate start, LocalDate stop, double amt);
+    List<Ledger> findAllByTransdateBetweenAndAmountGreaterThanOrderByTransdateAsc(LocalDate start, LocalDate stop, double amt);
+    List<Ledger> findAllByTransdateBetweenAndLabelOrderByTransdateAsc(LocalDate start, LocalDate stop, Label lbl);
     List<Ledger> findAllByTransdateBetweenAndLtypeOrderByTransdateAsc(LocalDate start, LocalDate stop, Ltype ltype);
     List<Ledger> findAllByTransdateBetweenAndStypeOrderByTransdateAsc(LocalDate start, LocalDate stop, Stype stype);
     List<Ledger> findAllByTransdateBetweenAndLtypeAndStypeOrderByTransdateAsc(LocalDate start, LocalDate stop, Ltype ltype, Stype stype);
+    List<Ledger> findAllByLabelOrderByTransdateDesc(Label lbl);
+    List<Ledger> findAllByTransdateBeforeOrderByTransdateDesc(LocalDate start);
 }

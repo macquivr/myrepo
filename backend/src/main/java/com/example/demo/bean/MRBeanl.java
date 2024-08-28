@@ -20,13 +20,15 @@ public class MRBeanl {
     public List<MRBean> getData() { return data; }
     public MRBeant getTabs() { return tabs; }
 
-    public void Print(FileWriter w) {
+    public double Print(FileWriter w) {
         for (MRBean d : data) {
             d.Print(w,tabs);
         }
         total.Print(w,tabs);
+        return total.getAmount();
     }
     public double getTotal() { return total.getAmount(); }
+    public double getTotalB() { return total.getBudget(); }
     public void add(MRBean b) {
         data.add(b);
         tabs.update(b);

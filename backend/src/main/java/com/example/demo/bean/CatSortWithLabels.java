@@ -9,10 +9,10 @@ import java.util.List;
 
 public class CatSortWithLabels extends Catsort{
     private final List<Ledger> data;
-    private boolean isOther;
+    private final boolean isOther;
 
     public CatSortWithLabels(Label l, double a,boolean other) {
-        data = new ArrayList<Ledger>();
+        data = new ArrayList<>();
         addData(l,a);
         this.isOther = other;
     }

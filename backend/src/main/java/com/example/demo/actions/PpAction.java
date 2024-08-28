@@ -1,24 +1,17 @@
 package com.example.demo.actions;
 
-import com.example.demo.bean.StartStop;
 import com.example.demo.domain.Intable;
-import com.example.demo.domain.Ledger;
 import com.example.demo.domain.Outtable;
 import com.example.demo.domain.Payperiod;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.importer.Repos;
-import com.example.demo.repository.OuttableRepository;
 import com.example.demo.repository.PayperiodRepository;
 import com.example.demo.state.Consolidate;
-import com.example.demo.utils.Utils;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 
 public class PpAction extends BaseAction implements ActionI{
-    private HashMap<Integer,Integer> inmap = null;
-
     public PpAction(Repos r) {
         super(r);
     }
@@ -36,7 +29,7 @@ public class PpAction extends BaseAction implements ActionI{
         Consolidate c = session.getConsolidate();
         boolean h = ((c != null) && (c.equals(Consolidate.HALF)));
 
-        Payperiod p = null;
+        Payperiod p;
         if (!h) {
             p = pps.get(0);
         } else {

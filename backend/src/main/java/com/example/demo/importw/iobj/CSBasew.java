@@ -64,15 +64,28 @@ public abstract class CSBasew extends IBasew {
 			String label = n.getLabel();
 			Csbtype ty = n.getType();
 
-			if (TypeHelper.getObj(getUuid(), repos).getEids().contains(ty.getId()))
-				n.setLabel(ty.getName());
-			else {
-				if (TypeHelper.getObj(getUuid(), repos).getCids().contains(ty.getId())) {
+			if (label.equals(ty.getName()))
+				continue;
+
+			String nstr = label.substring(ty.getName().length() + 1).trim();
+			if (nstr.isEmpty()) {
+				if (TypeHelper.getObj(getUuid(), repos).getEids().contains(ty.getId()))
 					n.setLabel(ty.getName());
-				} else {
-					String nstr = label.substring(ty.getName().length() + 1).trim();
+				else
+					log.error("Bad Type? " + label);
+			} else {
+				if (TypeHelper.getObj(getUuid(), repos).getCids().contains(ty.getId())) {
+					try {
+						n.setCheck(Integer.parseInt(nstr));
+						n.setLabel(ty.getName());
+						log.info("YYY Setting label " + n.getLabel());
+					} catch (Exception ex) {
+						ret.add("Bad Check " + n.getLabel());
+						log.error("Bad check " + n.getLabel());
+						return false;
+					}
+				} else
 					n.setLabel(nstr);
-				}
 			}
 		}
 		return true;

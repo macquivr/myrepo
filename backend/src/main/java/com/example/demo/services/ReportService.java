@@ -169,10 +169,13 @@ public class ReportService {
     private void registerActions() {
         amap.put("PSTUFF",new Pstuff(repos));
         amap.put("PPTLM",new PmapAction(repos));
+        amap.put("UPDATELABEL",new UpdateLastUsed(repos));
+        amap.put("BUDGETSET", new BudgetSetAction(repos));
     }
 
     private void registerReports()
     {
+        map.put("NEWBUDGET", new NewBudgetReport(repos));
         map.put("DEFAULT",new DefaultReport(repos));
         map.put("MAIN",new MainReport(repos));
         map.put("RETIRE",new RetireReport(repos));

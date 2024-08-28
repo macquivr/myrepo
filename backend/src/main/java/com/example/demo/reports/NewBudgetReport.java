@@ -1,11 +1,13 @@
 package com.example.demo.reports;
 
+import com.example.demo.actions.BudgetSetAction;
 import com.example.demo.bean.MRBean;
 import com.example.demo.bean.MRBeanl;
 import com.example.demo.bean.StartStop;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.importer.Repos;
+import com.example.demo.repository.LedgerRepository;
 import com.example.demo.state.Consolidate;
 import com.example.demo.utils.LData;
 import com.example.demo.utils.Utils;
@@ -17,16 +19,187 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-public class MainReport implements ReportI {
+public class NewBudgetReport implements ReportI {
     private final Repos repos;
     private MRBeanl bdata;
     private MRBeanl cdata;
 
-    public MainReport(Repos r) {
+    public NewBudgetReport(Repos r) {
         this.repos = r;
         bdata = new MRBeanl();
         cdata = new MRBeanl();
     }
+
+    public String go(FileWriter w, SessionDTO session) throws Exception {
+        bdata = new MRBeanl();
+        cdata = new MRBeanl();
+
+        List<Statements> stmts = repos.getStatementsRepository().findAllByStmtdateBetween(session.getStart(), session.getStop());
+        if (stmts.size() != 1) {
+            return "Bad stmts.";
+        }
+        Statements s = stmts.get(0);
+        List<Budgets> bobjs = repos.getBudgetsRepository().findAllByStmts(s);
+        for (Budgets bo : bobjs) {
+            if (!bo.getBid().getName().equals("Total")) {
+                MRBean b = new MRBean(bo.getBid().getName(), bo.getValue(), bo.getBid().getValue(), bo.getNet());
+                bdata.add(b);
+            }
+        }
+        bdata.Print(w);
+
+        StartStop ds = new StartStop(session.getStart(), session.getStop());
+        rest(w, s, ds, bdata.getTotalB());
+        return null;
+    }
+
+    private List<Ledger> filter(List<Ledger> data) {
+        List<Ledger> ret = new ArrayList<Ledger>();
+        for (Ledger l : data) {
+            if ((l.getLtype().getId() == 3) ||
+                    (l.getLtype().getId() == 5) ||
+                    (l.getLtype().getId() == 6) ||
+                    (l.getLtype().getId() == 11) ||
+                    (l.getLtype().getId() == 12) ||
+                    (l.getLtype().getId() == 14)) {
+                ret.add(l);
+            }
+        }
+        return ret;
+    }
+    private void rest(FileWriter w, Statements s, StartStop ds, double totalb) throws Exception {
+        double workIn = 0;
+        double nonWorkIn = 0;
+        double totalOut = 0;
+
+        LedgerRepository lrepo = repos.getLedgerRepository();
+        List<Ledger> credita = lrepo.findAllByTransdateBetweenAndAmountGreaterThanOrderByTransdateAsc(ds.getStart(), ds.getStop(), 0);
+        List<Ledger> debta = lrepo.findAllByTransdateBetweenAndAmountLessThanOrderByTransdateAsc(ds.getStart(), ds.getStop(), 0);
+        List<Ledger> credit = filter(credita);
+        List<Ledger> debt = filter(debta);
+
+        for (Ledger l : debt) {
+            totalOut += l.getAmount();
+        }
+        totalOut = Utils.convertDouble(totalOut);
+
+        for (Ledger l : credit) {
+            if (l.getLabel().getId() == 12448)
+                workIn += l.getAmount();
+            else {
+                nonWorkIn += l.getAmount();
+            }
+        }
+
+        BudgetSetAction bsa = new BudgetSetAction(repos);
+        bsa.doBudgets(s, ds);
+
+        List<List<Ledger>> ldata = bsa.getLdata();
+        for (List<Ledger> lst : ldata) {
+            debt.removeAll(lst);
+        }
+
+        double tin = Utils.convertDouble(workIn + nonWorkIn);
+        double bt = Utils.convertDouble(totalb);
+        w.write("Actual In: " + tin + "\n");
+        double adjustment = Utils.convertDouble(tin - bt);
+        w.write("Adjustment: " + adjustment + "\n");
+        w.write("  Work: " + workIn + "\n");
+        w.write("  OtherIn: " + nonWorkIn + "\n");
+
+        w.write("\n");
+        w.write("Total Out: " + totalOut + "\n");
+        w.write("Actual Net: " + Utils.convertDouble(tin + totalOut) + "\n");
+
+        double bills = 0;
+        double other = 0;
+        double annual = 0;
+
+        if (!debt.isEmpty()) {
+            w.write("\n");
+            annual = doAnnual(w, debt);
+            w.write("\n");
+        }
+
+        if (!debt.isEmpty()) {
+            w.write("\n");
+            bills = doBills(w, debt);
+            w.write("\n");
+        }
+
+        if (!debt.isEmpty()) {
+            w.write("Misc unbudgeted:");
+            other = pOut(w,debt);
+        }
+
+    }
+
+    private double doBills(FileWriter w, List<Ledger> debt) throws Exception {
+        List<Ledger> ad = new ArrayList<Ledger>();
+        double bills = 0;
+        for (Ledger a : debt) {
+            if (a.getStype().getId() == 2) {
+                ad.add(a);
+                bills += a.getAmount();
+            }
+        }
+        if (!ad.isEmpty()) {
+            debt.removeAll(ad);
+            w.write("Other Bills: " + Utils.convertDouble(bills) + "\n");
+        }
+        return bills;
+    }
+
+    private double doAnnual(FileWriter w, List<Ledger> debt) throws Exception {
+        List<Ledger> ad = new ArrayList<Ledger>();
+        double annual = 0;
+        for (Ledger a : debt) {
+            if (a.getStype().getId() == 6) {
+                ad.add(a);
+                annual += a.getAmount();
+            }
+        }
+        debt.removeAll(ad);
+        w.write("Annual: " + Utils.convertDouble(annual) + "\n");
+        return annual;
+    }
+
+    private void pIn(List<Ledger> credit) {
+        for (Ledger l : credit) {
+            System.out.println(l.getTransdate().toString() + " " + l.getLabel().getName() + " " + l.getAmount());
+        }
+    }
+
+    private double pOut(FileWriter w, List<Ledger> debt) throws Exception {
+        double ret = 0;
+        for (Ledger l : debt) {
+            w.write(l.getLtype().getId() + " " + l.getTransdate().toString() + " " + l.getLabel().getName() + " " + l.getAmount() + "\n");
+            ret += l.getAmount();
+        }
+        return Utils.convertDouble(ret);
+    }
+    private String doBudgetObject(FileWriter w, Statements stmt, String name) {
+        String label = "";
+        double value = 0;
+        double budget = 0;
+        double net = 0;
+
+        Budgetvalues vb = repos.getBudgetValuesRepository().findByName(name);
+        if (vb == null) {
+            return "No Vb.";
+        }
+        Budgets bobj = repos.getBudgetsRepository().findByStmtsAndBid(stmt, vb);
+        if (bobj == null) {
+            return "No budget object.";
+        }
+
+        MRBean b = new MRBean(vb.getName(), bobj.getValue(), vb.getValue(), bobj.getNet());
+        bdata.add(b);
+
+        return null;
+    }
+
+    /*******************************************/
 
     private List<Ledger> getBillsNoUtils(List<Ledger> data) {
         List<Ledger> r = new ArrayList<>();
@@ -60,7 +233,9 @@ public class MainReport implements ReportI {
         }
         return Utils.convertDouble(ret);
     }
-    public String go(FileWriter w, SessionDTO session) throws Exception
+
+
+    public String go2(FileWriter w, SessionDTO session) throws Exception
     {
         bdata = new MRBeanl();
         cdata = new MRBeanl();

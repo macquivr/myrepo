@@ -47,4 +47,28 @@ public class Ledger {
     public void setStype(Stype s) { stype = s; }
     public void setChecks(Checks c) { checks = c; }
     public void setStatement(Statement s) { statement = s; }
+    public boolean match(Ledger l) {
+        if (!l.getAmount().equals(getAmount()))
+            return false;
+        if (l.getTransdate().toString().equals(getTransdate().toString()))
+            return false;
+        if (l.getLtype().getId() != getLtype().getId())
+            return false;
+        if (l.getLabel().getId() != getLabel().getId())
+            return false;
+        if (l.getStype().getId() != getStype().getId())
+            return false;
+        if (getChecks() != null) {
+            if (l.getChecks() == null)
+                return false;
+            if (l.getChecks().getId() != getChecks().getId())
+                return false;
+        } else {
+            if (l.getChecks() != null)
+                return false;
+        }
+        if (l.getStatement().getId() != getStatement().getId())
+            return false;
+        return true;
+    }
 }

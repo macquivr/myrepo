@@ -39,7 +39,7 @@ public class Pstuff extends BaseAction implements ActionI {
         Consolidate c = session.getConsolidate();
         boolean h = ((c != null) && (c.equals(Consolidate.HALF)));
 
-        Payperiod p = null;
+        Payperiod p;
         if (!h) {
             p = pps.get(0);
         } else {

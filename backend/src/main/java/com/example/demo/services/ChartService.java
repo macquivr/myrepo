@@ -8,11 +8,8 @@ import com.example.demo.chart.bcredit.*;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.dto.ui.DatasourceMsDTO;
-import com.example.demo.repository.LedgerRepository;
-import com.example.demo.repository.StypeRepository;
-import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.*;
 import com.example.demo.dto.ui.DatasourceDTO;
-import com.example.demo.repository.UtilitiesRepository;
 import com.example.demo.state.Consolidate;
 import com.example.demo.utils.ConsolidateUtils;
 import com.example.demo.utils.LData;
@@ -44,6 +41,9 @@ public class ChartService {
 
     @Autowired
     private CategoryRepository crepository;
+
+    @Autowired
+    private CsbtRepository csbtRepository;
 
     public DatasourceMsDTO getMsline(String sessionId) {
         //chartData<Utilities> electric = new electricChart(sessionId, urepository);
@@ -341,6 +341,11 @@ public class ChartService {
     public DatasourceDTO getAaaOff(String sessionId) {
         chartData<Ledger> u = new aaaOffChart(sessionId, repository);
         return doChart(sessionId, "Aaa", u,null );
+    }
+
+    public DatasourceDTO getCsbt(String sessionId) {
+        chartData<Csbt> obj = new csbtChart(sessionId, csbtRepository);
+        return doChart(sessionId, "Csbt", obj,null );
     }
 
     public DatasourceDTO doChart(String sessionId, String label, chartData chartI, List<TrendLine> r) {

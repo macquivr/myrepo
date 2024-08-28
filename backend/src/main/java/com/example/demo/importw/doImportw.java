@@ -23,8 +23,7 @@ import java.util.*;
 
 public class doImportw extends importBase {
 	private static final Logger log = LoggerFactory.getLogger(doImportw.class);
-	private List<Iimport> data = null;
-	private Statements stmts = null;
+	private final List<Iimport> data;
 	private final Repos repos;
 	private final ImportDTO idto;
 	private Payperiod pp = null;
@@ -228,7 +227,7 @@ public class doImportw extends importBase {
 	{
 		for (Iimport I : data) {
 			I.setPayperiod(this.pp);
-			if (!I.importData(stmts,doSave,err))
+			if (!I.importData(null,doSave,err))
 				return false;
 		}
 
@@ -268,7 +267,7 @@ public class doImportw extends importBase {
 		String ret = "";
 		boolean on = false;
 		int len = str.length();
-		int i = 0;
+		int i;
 		for (i=0;i<len;i++) {
 			char c = str.charAt(i);
 			if (c == '"') {

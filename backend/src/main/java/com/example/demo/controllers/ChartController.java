@@ -17,6 +17,12 @@ public class ChartController {
     @Autowired
     private ChartService service;
 
+    @GetMapping(value = "/chart/csbt/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getCsbt(@PathVariable String sessionId) {
+        return service.getCsbt(sessionId);
+    }
+
     @GetMapping(value = "/chart/msline/{sessionId}", produces = "application/json")
     public @ResponseBody
     DatasourceMsDTO getMsline(@PathVariable String sessionId) {

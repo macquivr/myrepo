@@ -60,9 +60,12 @@ public class ReportController {
     private void actions(List<RValue> r) {
         add("PSTUFF", "Pstuff", r);
         add("PPTLM", "Pptlm", r);
+        add("UPDATELABEL", "UpdateLastUsed", r);
+        add("BUDGETSET", "BudgetSet", r);
     }
 
     private void reports(List<RValue> r) {
+        add("NEWBUDGET", "NewBudget", r);
         add("DEFAULT", "DEFAULT", r);
         add("MAIN",  "MainOnly" , r);
         add("RETIRE",  "Retire" , r);

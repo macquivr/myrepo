@@ -58,7 +58,6 @@ public class OutAction extends BaseAction implements ActionI {
         for (TLedger l : data) {
             if ((l.getLtype().getId() == 3) ||
                     (l.getLtype().getId() == 5) ||
-                    (l.getLtype().getId() == 6) ||
                     (l.getLtype().getId() == 11) ||
                     (l.getLtype().getId() == 12) ||
                     (l.getLtype().getId() == 14)) {

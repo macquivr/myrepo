@@ -31,6 +31,9 @@ public class InUtilsR {
 
             Integer I = inmap.get(l.getLabel().getId());
             if (I != null) {
+                if (l.getAmount() == 300) {
+                    System.out.println("Label: " + l.getLabel().getId() + " " + I);
+                }
                 if (grepo == null) {
                     System.out.println("NO GREPO!");
                 } else {
@@ -42,6 +45,7 @@ public class InUtilsR {
                 }
             }
             if (n == null) {
+                System.out.println("NOT FOUND " + l.getLabel().getName());
                 n = "MiscIn";
             }
             Catsort r = putm(inm,n,l.getAmount());

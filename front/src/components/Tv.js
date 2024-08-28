@@ -45,6 +45,7 @@ import { wdatamapColumns } from './tables/WdatamapTable';
 import { gscatColumns } from './tables/GscatTable';
 import { lmapColumns } from './tables/LmapTable';
 import { cmapColumns } from './tables/CmapTable';
+import { csbtColumns } from './tables/CsbtTable';
 
 function Tv(props) {
   return (
@@ -137,6 +138,9 @@ function Tv(props) {
         <TreeItem nodeId="92" label="Cmap">
           <FData session={props} columns={cmapColumns} title="Cmap" urlt="Cmap" jsonp="cmap"/>
         </TreeItem>
+        <TreeItem nodeId="93" label="Csbts">
+          <FData session={props} columns={csbtColumns} title="Csbt" urlt="csbttable" jsonp="csbt"/>
+        </TreeItem>
       </TreeItem>
       <TreeItem nodeId="3" label="Data">
         <TreeItem nodeId="4" label="Main">
@@ -222,6 +226,9 @@ function Tv(props) {
         </TreeItem>
         <TreeItem nodeId="33" label="Category Debit">
            <Graphbase usession={props} urlt="category/debit"/>
+        </TreeItem>
+        <TreeItem nodeId="94" label="CSB Balance">
+          <Graphbase usession={props} urlt="csbt"/>
         </TreeItem>
         <TreeItem nodeId="34" label="electric">
            <Graphbase usession={props} urlt="electric"/>

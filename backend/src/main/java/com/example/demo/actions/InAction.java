@@ -19,7 +19,7 @@ import java.util.List;
 
 public class InAction extends BaseAction implements ActionI{
     private HashMap<Integer,Integer> inmap = null;
-    private InmapRepository inmapr = null;
+    private final InmapRepository inmapr;
     private boolean isNew;
 
     public InAction(Repos r) {
@@ -35,7 +35,6 @@ public class InAction extends BaseAction implements ActionI{
         this.isNew = true;
         LocalDate start = session.getStart();
         LocalDate stop = session.getStop();
-        StartStop dates = new StartStop(start,stop);
 
         PayperiodRepository prepo = repos.getPayPeriod();
         List<Payperiod> pps = prepo.findAllByStartBetweenOrderByStartAsc(start,stop);
@@ -46,7 +45,7 @@ public class InAction extends BaseAction implements ActionI{
         Consolidate c = session.getConsolidate();
         boolean h = ((c != null) && (c.equals(Consolidate.HALF)));
 
-        Payperiod p = null;
+        Payperiod p;
         if (!h) {
             p = pps.get(0);
         } else {
@@ -62,11 +61,9 @@ public class InAction extends BaseAction implements ActionI{
 
     public List<TLedger> getData(StartStop dates) {
         List<TLedger> data = repos.getTLedgerRepository().findAllByTdateBetweenOrderByTdateAsc(dates.getStart(), dates.getStop());
-        List<TLedger> ret = new ArrayList<TLedger>();
+        List<TLedger> ret = new ArrayList<>();
         for (TLedger l : data) {
             if ((l.getLtype().getId() == 3) ||
-                    (l.getLtype().getId() == 5) ||
-                    (l.getLtype().getId() == 6) ||
                     (l.getLtype().getId() == 11) ||
                     (l.getLtype().getId() == 12) ||
                     (l.getLtype().getId() == 14)) {
@@ -87,12 +84,12 @@ public class InAction extends BaseAction implements ActionI{
         InUtilsR obj = new InUtilsR(repos.getGscat());
 
         List<TLedger> data = getData(dates);
-        double total = 0;
+        double total;
         try {
             HashMap<String, Catsort> m = obj.doIn(inmap, data);
             System.out.println("SIZE: " + m.size());
             total = p(m);
-            Intable iobj = null;
+            Intable iobj;
             if (this.isNew) {
                 iobj = new Intable();
                 try {
@@ -113,7 +110,6 @@ public class InAction extends BaseAction implements ActionI{
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            return;
         }
 
     }
@@ -143,13 +139,13 @@ public class InAction extends BaseAction implements ActionI{
         }
     }
 
-    private double p(HashMap<String, Catsort> map)  throws Exception {
+    private double p(HashMap<String, Catsort> map)  {
         double total = 0;
         for (Catsort c : map.values()) {
             total += c.getAmount();
         }
         total = Utils.convertDouble(total);
-        List<Catsort> lc = new ArrayList<Catsort>(map.values());
+        List<Catsort> lc = new ArrayList<>(map.values());
 
         Collections.sort(lc);
         for (Catsort c : lc) {
@@ -160,27 +156,9 @@ public class InAction extends BaseAction implements ActionI{
 
     private void initMaps() {
         List<Inmap> inm = inmapr.findAll();
-        inmap = new HashMap<Integer,Integer>();
+        inmap = new HashMap<>();
         for (Inmap c : inm) {
             inmap.put(c.getLid(), c.getGid());
         }
-    }
-    public double getCFree(StartStop dates) {
-        List<TLedger> data = repos.getTLedgerRepository().findAllByTdateBetweenOrderByTdateAsc(dates.getStart(), dates.getStop());
-        double ret = 0;
-        for (TLedger l : data) {
-            if ((l.getLtype().getId() == 7) ||
-                    (l.getLtype().getId() == 8) ||
-                    (l.getLtype().getId() == 9) ||
-                    (l.getLtype().getId() == 10)) {
-                if ((l.getLabel().getId() == 10288) ||
-                        (l.getLabel().getId() == 10428) ||
-                        (l.getLabel().getId() == 13149)) {
-                    ret += l.getAmount();
-                }
-            }
-
-        }
-        return Utils.convertDouble(ret);
     }
 }

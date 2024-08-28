@@ -32,7 +32,7 @@ public class PmapAction extends BaseAction implements ActionI {
         Consolidate c = session.getConsolidate();
         boolean h = ((c != null) && (c.equals(Consolidate.HALF)));
 
-        Payperiod p = null;
+        Payperiod p;
         if (!h) {
             p = pps.get(0);
         } else {
@@ -62,7 +62,7 @@ public class PmapAction extends BaseAction implements ActionI {
     private boolean verify(Payperiod p) throws Exception {
         List<TLedger> tdata = repos.getTLedgerRepository().findAllByTdateBetweenOrderByTdateAsc(p.getStart(), p.getStop());
         List<Ledger> ldata = repos.getLedgerRepository().findAllByTransdateBetweenOrderByTransdateAsc(p.getStart(), p.getStop());
-        PptlmRepository r = repos.getPptlmRepository();
+
         for (TLedger t : tdata) {
             LocalDate dt = t.getTdate();
             double amount = t.getAmount();
@@ -112,7 +112,6 @@ public class PmapAction extends BaseAction implements ActionI {
     }
 
     public boolean performActionC(Payperiod p, List<Ledger> ldata, List<TLedger> tdata) throws Exception {
-        PptlmRepository r = repos.getPptlmRepository();
         for (Ledger t : ldata) {
             if ((t.getLtype().getId() == 4) ||
                     (t.getLtype().getId() == 5) ||
