@@ -1,11 +1,9 @@
-package com.example.demo.utils;
+package com.example.demo.chart.data;
 
 import com.example.demo.bean.StartStop;
 import com.example.demo.domain.Csbt;
-import com.example.demo.domain.Utilities;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.repository.CsbtRepository;
-import com.example.demo.repository.UtilitiesRepository;
 import com.example.demo.services.CsbtService;
 import com.example.demo.state.WhichDate;
 import com.example.demo.utils.mydate.DUtil;
@@ -17,19 +15,20 @@ import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
-public class CsbtData {
-    private static final Logger logger= LoggerFactory.getLogger(CsbtService.class);
-    private final CsbtRepository repository;
+public abstract class BaseData<T> {
+    private static final Logger logger= LoggerFactory.getLogger(BaseData.class);
     private final StartStop dates;
 
-    public CsbtData(CsbtRepository l)
+    public BaseData()
     {
-        this.repository = l;
         this.dates = new StartStop();
     }
 
+    public abstract List<T> getData(StartStop dates);
+    public abstract List<T> monthFilter(List<T> data, int month);
+
     public StartStop getDates() { return dates; }
-    public List<Csbt> filterByDate(SessionDTO filter)
+    public List<T> filterByDate(SessionDTO filter)
     {
         WhichDate w = filter.getWhichDate();
 
@@ -76,38 +75,39 @@ public class CsbtData {
         return new Vector<>();
     }
 
-    private List<Csbt> doFilter(LocalDate start, LocalDate stop) {
+    private List<T> doFilter(LocalDate start, LocalDate stop) {
         dates.setStart(start);
         dates.setStop(stop);
-       
-        return repository.findAllByDtBetweenOrderByDtAsc(start, stop);
+
+        return getData(dates);
     }
-    private List<Csbt> findByQH(LocalDate d,int m,int inc) {
+
+    private List<T> findByQH(LocalDate d,int m,int inc) {
         LocalDate stop = DUtil.setMonth(d,m).plusMonths(inc);
 
         return doFilter(d,stop);
     }
 
-    private List<Csbt> findSpecific(LocalDate d) {
+    private List<T> findSpecific(LocalDate d) {
         LocalDate start = DUtil.firstOfMonth(d);
         LocalDate stop = DUtil.lastOfMonth(d);
 
         return doFilter(start,stop);
     }
 
-    private List<Csbt> findByYear(LocalDate d) {
+    private List<T> findByYear(LocalDate d) {
         LocalDate start = DUtil.firstOfYear(d);
         LocalDate stop = DUtil.lastOfYear(d);
 
         return doFilter(start,stop);
     }
 
-    private List<Csbt> findByMonth(LocalDate d) {
+    private List<T> findByMonth(LocalDate d) {
         int month = d.getMonth().getValue();
         LocalDate start = DUtil.first();
         LocalDate stop = DUtil.stopNow();
-        List<Csbt> data = doFilter(start,stop);
+        List<T> data = doFilter(start,stop);
 
-        return data.stream().filter(it -> (it.getDt().getMonth().getValue() == month)).collect(Collectors.toList());
+        return monthFilter(data, month);
     }
 }

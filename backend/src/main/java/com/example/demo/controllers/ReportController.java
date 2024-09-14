@@ -62,6 +62,7 @@ public class ReportController {
         add("PPTLM", "Pptlm", r);
         add("UPDATELABEL", "UpdateLastUsed", r);
         add("BUDGETSET", "BudgetSet", r);
+        add("MLBALANCES", "MlBalances", r);
     }
 
     private void reports(List<RValue> r) {

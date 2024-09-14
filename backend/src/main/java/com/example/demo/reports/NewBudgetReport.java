@@ -46,10 +46,10 @@ public class NewBudgetReport implements ReportI {
                 bdata.add(b);
             }
         }
-        bdata.Print(w);
+        double bto = bdata.Print(w);
 
         StartStop ds = new StartStop(session.getStart(), session.getStop());
-        rest(w, s, ds, bdata.getTotalB());
+        rest(w, s, ds, bdata.getTotalB(), bto);
         return null;
     }
 
@@ -67,7 +67,7 @@ public class NewBudgetReport implements ReportI {
         }
         return ret;
     }
-    private void rest(FileWriter w, Statements s, StartStop ds, double totalb) throws Exception {
+    private void rest(FileWriter w, Statements s, StartStop ds, double totalb, double bto) throws Exception {
         double workIn = 0;
         double nonWorkIn = 0;
         double totalOut = 0;
@@ -79,7 +79,9 @@ public class NewBudgetReport implements ReportI {
         List<Ledger> debt = filter(debta);
 
         for (Ledger l : debt) {
-            totalOut += l.getAmount();
+            if (l.getStype().getId() != 8) {
+                totalOut += l.getAmount();
+            }
         }
         totalOut = Utils.convertDouble(totalOut);
 
@@ -87,7 +89,9 @@ public class NewBudgetReport implements ReportI {
             if (l.getLabel().getId() == 12448)
                 workIn += l.getAmount();
             else {
-                nonWorkIn += l.getAmount();
+                if (l.getStype().getId() != 8) {
+                    nonWorkIn += l.getAmount();
+                }
             }
         }
 
@@ -101,11 +105,11 @@ public class NewBudgetReport implements ReportI {
 
         double tin = Utils.convertDouble(workIn + nonWorkIn);
         double bt = Utils.convertDouble(totalb);
-        w.write("Actual In: " + tin + "\n");
+        w.write("\nActual In: " + tin + "\n");
         double adjustment = Utils.convertDouble(tin - bt);
         w.write("Adjustment: " + adjustment + "\n");
         w.write("  Work: " + workIn + "\n");
-        w.write("  OtherIn: " + nonWorkIn + "\n");
+        w.write("  OtherIn: " + Utils.convertDouble(nonWorkIn) + "\n");
 
         w.write("\n");
         w.write("Total Out: " + totalOut + "\n");
@@ -118,20 +122,21 @@ public class NewBudgetReport implements ReportI {
         if (!debt.isEmpty()) {
             w.write("\n");
             annual = doAnnual(w, debt);
-            w.write("\n");
         }
 
         if (!debt.isEmpty()) {
             w.write("\n");
             bills = doBills(w, debt);
-            w.write("\n");
         }
 
         if (!debt.isEmpty()) {
-            w.write("Misc unbudgeted:");
+            w.write("Misc unbudgeted:\n");
             other = pOut(w,debt);
+            w.write("Total: " + Utils.convertDouble(other) + "\n");
         }
-
+        double o = Utils.convertDouble(bills + annual + other);
+        double t = Utils.convertDouble(o + bto);
+        w.write("O: " + o + " bto: " + bto + " T: " + t + "\n");
     }
 
     private double doBills(FileWriter w, List<Ledger> debt) throws Exception {
@@ -173,8 +178,10 @@ public class NewBudgetReport implements ReportI {
     private double pOut(FileWriter w, List<Ledger> debt) throws Exception {
         double ret = 0;
         for (Ledger l : debt) {
-            w.write(l.getLtype().getId() + " " + l.getTransdate().toString() + " " + l.getLabel().getName() + " " + l.getAmount() + "\n");
-            ret += l.getAmount();
+            if (l.getStype().getId() != 8) {
+                w.write(l.getLtype().getId() + " " + l.getTransdate().toString() + " " + l.getLabel().getName() + " " + l.getAmount() + "\n");
+                ret += l.getAmount();
+            }
         }
         return Utils.convertDouble(ret);
     }
@@ -545,6 +552,7 @@ public class NewBudgetReport implements ReportI {
         return Utils.convertDouble(total);
     }
     private double dog(List<Ledger> data, double budget)  {
+
         double total = 0;
 
         for (Ledger l : data) {

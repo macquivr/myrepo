@@ -1,19 +1,20 @@
-package com.example.demo.utils.dvi;
+package com.example.demo.chart.dvi;
 
-import com.example.demo.domain.Csbt;
+import com.example.demo.domain.Mlt;
+import com.example.demo.utils.dvi.Dvi;
 
 import java.time.LocalDate;
 
-public class Csbtdvi implements Dvi {
-    private final Csbt data;
+public class Mltdvi implements Dvi {
+    private final Mlt data;
 
     public Dvi factory(Object obj)
     {
-        return new Csbtdvi(obj);
+        return new Mltdvi(obj);
     }
 
-    public Csbtdvi(Object l) {
-        this.data = (Csbt) l;
+    public Mltdvi(Object l) {
+        this.data = (Mlt) l;
     }
 
     public Object getObj() {

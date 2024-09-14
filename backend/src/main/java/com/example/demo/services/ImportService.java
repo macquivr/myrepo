@@ -95,6 +95,12 @@ public class ImportService {
     @Autowired
     private UtilitiesRepository utilRepository;
 
+    @Autowired
+    private MltRepository mltRepository;
+
+    @Autowired
+    private CsbtRepository csbtRepository;
+
     /* main etnry poin t*/
     public ImportDTO importStatus(String session) {
         ImportDTO ret;
@@ -189,6 +195,8 @@ public class ImportService {
                 budgetvaluesRepository,
                 ocRepository);
 
+        this.repos.setMltRepository(this.mltRepository);
+        this.repos.setCsbtRepository(this.csbtRepository);
         CsbTypeRepository test = repos.getCsbTypeRepository();
         if (test == null) {
             logger.info("EEK!");

@@ -1,17 +1,26 @@
 package com.example.demo.importer;
 
+import com.example.demo.actions.BudgetSetAction;
+import com.example.demo.actions.MlBalanceAction;
 import com.example.demo.dto.ImportDTO;
 import com.example.demo.reports.postimport.balanceReport;
 import com.example.demo.reports.postimport.ocReport;
 import com.example.demo.reports.postimport.outReport;
+import com.example.demo.repository.CsbtRepository;
+import com.example.demo.repository.LedgerRepository;
+import com.example.demo.repository.MltRepository;
 import com.example.demo.repository.StatementsRepository;
 import com.example.demo.state.importer.ImportState;
+import com.example.demo.utils.Utils;
 import com.example.demo.utils.runner.OcMaintenance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.utils.mydate.DUtil;
 import com.example.demo.importer.iobj.*;
 import com.example.demo.domain.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
@@ -172,12 +181,145 @@ public class doImport extends importBase {
 			sr.save(stmts);
 			ret = importData(true, err);
 			if (ret) {
-				doOc();
-				doBalance();
-				doOut();
+				doBudget();
+				//doOc();
+				//doBalance();
+				//doOut();
+				doMlBalance();
+				doCsbBal();
+				doMltBal();
 			}
 		}
 		return ret;
+	}
+
+	private double calculateCsbIn(LocalDate start, LocalDate stop) {
+		LedgerRepository lrepo = repos.getLedgerRepository();
+		List<Ledger> data = lrepo.findAllByTransdateBetweenOrderByTransdateAsc(start, stop);
+		double ret = 0;
+
+		for (Ledger l : data) {
+			if ((l.getLtype().getId() == 3) ||
+					(l.getLtype().getId() == 5) ||
+					(l.getLtype().getId() == 6) ||
+					(l.getLtype().getId() == 12) ||
+					(l.getLtype().getId() == 14)) {
+				if (l.getAmount() > 0) {
+					ret += l.getAmount();
+				}
+			}
+		}
+		return Utils.convertDouble(ret);
+	}
+
+	private double calculateCsbOut(LocalDate start, LocalDate stop) {
+		LedgerRepository lrepo = repos.getLedgerRepository();
+		List<Ledger> data = lrepo.findAllByTransdateBetweenOrderByTransdateAsc(start, stop);
+		double ret = 0;
+
+		for (Ledger l : data) {
+			if ((l.getLtype().getId() == 3) ||
+					(l.getLtype().getId() == 5) ||
+					(l.getLtype().getId() == 6) ||
+					(l.getLtype().getId() == 12) ||
+					(l.getLtype().getId() == 14)) {
+				if (l.getAmount() < 0) {
+					ret += l.getAmount();
+				}
+			}
+		}
+		return Utils.convertDouble(ret);
+	}
+
+	private void doCsbBal() {
+		CsbtRepository crepo = repos.getCsbtRepository();
+		LocalDate start = this.stmts.getStmtdate().minusMonths(1);
+		LocalDate stop = this.stmts.getStmtdate();
+
+		List<Csbt> data = crepo.findAllByDtBetweenOrderByDtAsc(start,stop);
+		Csbt prev = data.get(0);
+
+		start = this.stmts.getStmtdate();
+		stop = this.stmts.getStmtdate().plusMonths(1);
+
+		Csbt newObj = new Csbt();
+		double ina = calculateCsbIn(start,stop);
+		double outa = calculateCsbOut(start,stop);
+
+		newObj.setDt(this.stmts.getStmtdate());
+		newObj.setIna(ina);
+		newObj.setOuta(outa);
+
+		double balance = ina + outa + prev.getBalance();
+		newObj.setBalance(Utils.convertDouble(balance));
+
+		crepo.save(newObj);
+	}
+
+	private double calculateMlIn(LocalDate start, LocalDate stop) {
+		LedgerRepository lrepo = repos.getLedgerRepository();
+		List<Ledger> data = lrepo.findAllByTransdateBetweenOrderByTransdateAsc(start, stop);
+		double ret = 0;
+
+		for (Ledger l : data) {
+			if ((l.getLtype().getId() == 11) && (l.getAmount() > 0)) {
+				ret += l.getAmount();
+			}
+		}
+		return Utils.convertDouble(ret);
+	}
+
+	private double calculateMlOut(LocalDate start, LocalDate stop) {
+		LedgerRepository lrepo = repos.getLedgerRepository();
+		List<Ledger> data = lrepo.findAllByTransdateBetweenOrderByTransdateAsc(start, stop);
+		double ret = 0;
+
+		for (Ledger l : data) {
+			if ((l.getLtype().getId() == 11) && (l.getAmount() < 0)) {
+				ret += l.getAmount();
+			}
+		}
+		return Utils.convertDouble(ret);
+	}
+
+	private void doMltBal() {
+		MltRepository mrepo = repos.getMltRepository();
+		LocalDate start = this.stmts.getStmtdate().minusMonths(1);
+		LocalDate stop = this.stmts.getStmtdate();
+
+		List<Mlt> data = mrepo.findAllByDtBetweenOrderByDtAsc(start,stop);
+		Mlt prev = data.get(0);
+
+		start = this.stmts.getStmtdate();
+		stop = this.stmts.getStmtdate().plusMonths(1);
+
+		Mlt newObj = new Mlt();
+		double ina = calculateMlIn(start,stop);
+		double outa = calculateMlOut(start,stop);
+
+		newObj.setDt(this.stmts.getStmtdate());
+		newObj.setIna(ina);
+		newObj.setOuta(outa);
+
+		double balance = ina + outa + prev.getBalance();
+		newObj.setBalance(Utils.convertDouble(balance));
+
+		mrepo.save(newObj);
+	}
+
+	private void doMlBalance() {
+		MlBalanceAction obj = new MlBalanceAction(this.repos);
+
+		try {
+			obj.go(null);
+		} catch (Exception ex) {
+			// ignore
+		}
+	}
+
+	private void doBudget() {
+		BudgetSetAction bs = new BudgetSetAction(repos);
+		bs.doBudgets(this.stmts);
 	}
 
 	private void doOc() {

@@ -171,6 +171,7 @@ public class ReportService {
         amap.put("PPTLM",new PmapAction(repos));
         amap.put("UPDATELABEL",new UpdateLastUsed(repos));
         amap.put("BUDGETSET", new BudgetSetAction(repos));
+        amap.put("MLBALANCES", new MlBalanceAction(repos));
     }
 
     private void registerReports()

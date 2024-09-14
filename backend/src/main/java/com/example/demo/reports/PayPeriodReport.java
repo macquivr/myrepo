@@ -233,6 +233,7 @@ public class PayPeriodReport implements ReportI {
     }
 
     private double pFreq(FileWriter w, List<Wdatamap> data, boolean ina, boolean credit) throws Exception {
+
         double total = 0;
         if (ina) {
             w.write("In\n");
@@ -273,6 +274,7 @@ public class PayPeriodReport implements ReportI {
         Collections.sort(p);
         for (CatSortWithLabels obj : p) {
             total += obj.getAmount();
+
             w.write(obj.getLabel() + ": " + obj.getAmount() + "\n");
             if (!obj.isOther()) {
                 List<Ledger> ld = obj.getData();

@@ -1,10 +1,16 @@
 package com.example.demo.domain;
 
+import com.example.demo.importer.doImport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 public class Ledger {
+    private static final Logger log = LoggerFactory.getLogger(Ledger.class);
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;

@@ -23,6 +23,12 @@ public class ChartController {
         return service.getCsbt(sessionId);
     }
 
+    @GetMapping(value = "/chart/mlt/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getMlt(@PathVariable String sessionId) {
+        return service.getMlt(sessionId);
+    }
+
     @GetMapping(value = "/chart/msline/{sessionId}", produces = "application/json")
     public @ResponseBody
     DatasourceMsDTO getMsline(@PathVariable String sessionId) {

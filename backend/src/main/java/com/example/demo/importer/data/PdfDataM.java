@@ -474,7 +474,6 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		int lidx = 0;
 		boolean on = false;
 		for (String s : lines) {
-			log.info("ZZZ l: "  + transl + " m: " + transm + " " + s);
 			if (lidx < transl) {
 				lidx++;
 				continue;
@@ -486,13 +485,11 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				lidx++;
 				continue;
 			}
-			log.info("ZZZX: " + s);
 			on = true;
 			if (s.startsWith("NET TOTAL")) 
 				return;
 			String str = trim(s);
 			if (str != null) {
-				log.info("ZZZY CHECK " + str);
 				addNData(str, true, true);
 			}
 		}

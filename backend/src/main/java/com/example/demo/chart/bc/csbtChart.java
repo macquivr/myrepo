@@ -1,8 +1,9 @@
-package com.example.demo.chart;
+package com.example.demo.chart.bc;
 
+import com.example.demo.chart.baseChart;
 import com.example.demo.domain.Csbt;
 import com.example.demo.repository.CsbtRepository;
-import com.example.demo.utils.idata.CsbtIData;
+import com.example.demo.chart.idata.CsbtIData;
 
 import java.util.List;
 

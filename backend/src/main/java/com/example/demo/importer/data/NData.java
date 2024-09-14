@@ -1,5 +1,6 @@
 package com.example.demo.importer.data;
 
+import org.slf4j.Logger;
 import com.example.demo.utils.Utils;
 import com.example.demo.domain.*;
 
@@ -59,5 +60,14 @@ public class NData {
 		System.out.println("DEBIT: " + debit);
 		if (type != null)
 			System.out.println("TYPE: " + type.getId());
+	}
+
+	public void P(Logger l) {
+		l.info("XDATE: " + date);
+		l.info("XLABEL: " + label);
+		l.info("XCREDIT: " + credit);
+		l.info("XDEBIT: " + debit);
+		if (type != null)
+			l.info("XTYPE: " + type.getId());
 	}
 }

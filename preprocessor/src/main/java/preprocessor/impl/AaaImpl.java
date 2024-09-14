@@ -18,7 +18,7 @@ public class AaaImpl extends Base {
         return doInCsv();
     }
 
-    public void doTransform() {
+    public void doTransform2() {
         String first = ilines.get(0);
         ilines.remove(first);
 
@@ -65,7 +65,7 @@ public class AaaImpl extends Base {
         System.out.println("M: " + m + " D: " + d + " MSTR: " + mstr + " DSTR: " + dstr + " RET: " + ret);
         return ret;
     }
-    public void doTransform2() {
+    public void doTransform() {
         String first = ilines.get(0);
         ilines.remove(first);
         List<String> nlines = new ArrayList<String>();

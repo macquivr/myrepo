@@ -2,6 +2,8 @@ package com.example.demo.services;
 
 import com.example.demo.bean.*;
 import com.example.demo.chart.*;
+import com.example.demo.chart.bc.MltChart;
+import com.example.demo.chart.bc.csbtChart;
 import com.example.demo.chart.dataobj.*;
 import com.example.demo.chart.net.*;
 import com.example.demo.chart.bcredit.*;
@@ -44,6 +46,9 @@ public class ChartService {
 
     @Autowired
     private CsbtRepository csbtRepository;
+
+    @Autowired
+    private MltRepository mltRepository;
 
     public DatasourceMsDTO getMsline(String sessionId) {
         //chartData<Utilities> electric = new electricChart(sessionId, urepository);
@@ -346,6 +351,10 @@ public class ChartService {
     public DatasourceDTO getCsbt(String sessionId) {
         chartData<Csbt> obj = new csbtChart(sessionId, csbtRepository);
         return doChart(sessionId, "Csbt", obj,null );
+    }
+    public DatasourceDTO getMlt(String sessionId) {
+        chartData<Mlt> obj = new MltChart(sessionId, mltRepository);
+        return doChart(sessionId, "Mlt", obj,null );
     }
 
     public DatasourceDTO doChart(String sessionId, String label, chartData chartI, List<TrendLine> r) {

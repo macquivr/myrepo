@@ -74,6 +74,8 @@ public abstract class IBase extends importBase implements Iimport {
 				Checks e = cr.findByLtypeAndCheckNum(l.getLtype(), c.getCheckNum());
 				if (e == null) {
 					cr.save(c);
+				} else {
+					l.setChecks(e);
 				}
 			}
 			lr.save(l);

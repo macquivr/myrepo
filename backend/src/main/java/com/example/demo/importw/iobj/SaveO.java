@@ -80,8 +80,12 @@ public class SaveO extends importBase {
 
 	    	Label label = n.getLbl();
 	    	double amt = 0;
-			if (n.getCredit() > 0)  {
-				amt = n.getCredit();
+			if (n.getCredit() != 0) {
+				if (n.getCredit() > 0)  {
+					amt = n.getCredit();
+				} else {
+					amt = (n.getCredit() * -1);
+				}
 			} else {
 				if (n.getDebit() > 0) {
 					amt = (n.getDebit() * -1);

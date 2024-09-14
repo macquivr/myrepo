@@ -50,7 +50,6 @@ public class outReport extends basePost {
         w.write("\n");
 
         close();
-        System.out.println("Here...");
         return true;
     }
 

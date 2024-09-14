@@ -46,6 +46,7 @@ import { gscatColumns } from './tables/GscatTable';
 import { lmapColumns } from './tables/LmapTable';
 import { cmapColumns } from './tables/CmapTable';
 import { csbtColumns } from './tables/CsbtTable';
+import { mltColumns } from './tables/MltTable';
 
 function Tv(props) {
   return (
@@ -141,6 +142,9 @@ function Tv(props) {
         <TreeItem nodeId="93" label="Csbts">
           <FData session={props} columns={csbtColumns} title="Csbt" urlt="csbttable" jsonp="csbt"/>
         </TreeItem>
+        <TreeItem nodeId="98" label="Mlts">
+          <FData session={props} columns={mltColumns} title="Mlt" urlt="mlttable" jsonp="mlt"/>
+        </TreeItem>
       </TreeItem>
       <TreeItem nodeId="3" label="Data">
         <TreeItem nodeId="4" label="Main">
@@ -184,7 +188,7 @@ function Tv(props) {
           <TreeItem nodeId="72" label="Budget Values">
             <FData usession={props} columns={budgetdatavaluesColumns} title="Values" urlt="bvalues" jsonp="bvn"/>
           </TreeItem>
-          <TreeItem nodeId="84" label="Budgets Values">
+          <TreeItem nodeId="97" label="Budgets Values">
             <FData usession={props} columns={budgetdatavaluesColumns} title="SValues" urlt="bvs" jsonp="bvn"/>
           </TreeItem>
           <TreeItem nodeId="73" label="Budget Net">
@@ -197,8 +201,8 @@ function Tv(props) {
 
 
       </TreeItem>
-      <TreeItem nodeId="74" label="Graphs">
-        <TreeItem nodeId="84" label="Msline">
+      <TreeItem nodeId="95" label="Graphs">
+        <TreeItem nodeId="96" label="Msline">
           <GraphMsbase usession={props} urlt="msline"/>
         </TreeItem>
         <TreeItem nodeId="41" label="SType">
@@ -229,6 +233,9 @@ function Tv(props) {
         </TreeItem>
         <TreeItem nodeId="94" label="CSB Balance">
           <Graphbase usession={props} urlt="csbt"/>
+        </TreeItem>
+        <TreeItem nodeId="99" label="ML Balance">
+          <Graphbase usession={props} urlt="mlt"/>
         </TreeItem>
         <TreeItem nodeId="34" label="electric">
            <Graphbase usession={props} urlt="electric"/>

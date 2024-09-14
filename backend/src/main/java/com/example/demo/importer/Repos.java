@@ -34,6 +34,8 @@ public class Repos {
     private IntableRepository intableRepository;
     private OuttableRepository outtableRepository;
     private PptlmRepository pptlmRepository;
+    private MltRepository mltRepository;
+    private CsbtRepository csbtRepository;
 
     public Repos(PayeeRepository p,
                  LabelRepository l,
@@ -115,6 +117,8 @@ public class Repos {
     public IntableRepository getIntable() { return this.intableRepository; }
     public OuttableRepository getOuttable() { return this.outtableRepository; }
     public PptlmRepository getPptlmRepository() { return this.pptlmRepository; }
+    public MltRepository getMltRepository() { return this.mltRepository; }
+    public CsbtRepository getCsbtRepository() { return this.csbtRepository; }
 
     public void setPayPeriod(PayperiodRepository p) { this.payperiodRepository = p; }
     public void setWdatamap(WdatamapRepository w) { this.wdatamapRepository = w; }
@@ -135,4 +139,6 @@ public class Repos {
         this.outtableRepository = r;
     }
     public void setPptlm(PptlmRepository r) { this.pptlmRepository = r; }
+    public void setMltRepository(MltRepository r) { this.mltRepository = r; }
+    public void setCsbtRepository(CsbtRepository r) { this.csbtRepository = r; }
 }

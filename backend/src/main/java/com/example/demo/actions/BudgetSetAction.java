@@ -42,6 +42,15 @@ public class BudgetSetAction extends BaseAction implements ActionI {
         }
         return doBudgets(stmts.get(0),ds);
     }
+    public boolean doBudgets(Statements stmt) {
+        LocalDate d = stmt.getStmtdate();
+        LocalDate stop = d.plusMonths(1);
+        StartStop ds = new StartStop();
+        ds.setStart(d);
+        ds.setStop(stop);
+
+        return doBudgets(stmt,ds);
+    }
 
     public boolean doBudgets(Statements stmt, StartStop ds) {
         doStype(stmt,ds, "Pos", "POS");
