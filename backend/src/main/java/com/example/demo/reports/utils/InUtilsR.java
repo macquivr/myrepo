@@ -31,9 +31,6 @@ public class InUtilsR {
 
             Integer I = inmap.get(l.getLabel().getId());
             if (I != null) {
-                if (l.getAmount() == 300) {
-                    System.out.println("Label: " + l.getLabel().getId() + " " + I);
-                }
                 if (grepo == null) {
                     System.out.println("NO GREPO!");
                 } else {

@@ -43,19 +43,14 @@ public class PmapAction extends BaseAction implements ActionI {
             p = pps.get(1);
         }
 
-        try {
-            this.w = new FileWriter("Report.csv");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
 
         if (verify(p)) {
             performAction(p);
+        } else {
+            System.out.println("DOOM");
+            return false;
         }
 
-        w.flush();
-        w.close();
         return true;
     }
 
@@ -63,6 +58,7 @@ public class PmapAction extends BaseAction implements ActionI {
         List<TLedger> tdata = repos.getTLedgerRepository().findAllByTdateBetweenOrderByTdateAsc(p.getStart(), p.getStop());
         List<Ledger> ldata = repos.getLedgerRepository().findAllByTransdateBetweenOrderByTransdateAsc(p.getStart(), p.getStop());
 
+        boolean f = false;
         for (TLedger t : tdata) {
             LocalDate dt = t.getTdate();
             double amount = t.getAmount();
@@ -79,9 +75,12 @@ public class PmapAction extends BaseAction implements ActionI {
                 }
             }
             if (!found) {
-                w.write("Ledger not found Tid: " + t.getId() + " " + dt.toString() + " " + amount + " " + lt.getId() + " " + lbl.getId() + "\n");
-                return false;
+                System.out.println("Ledger not found Tid: " + t.getId() + " " + dt.toString() + " " + amount + " " + lt.getId() + " " + lbl.getId() + "\n");
+                f = true;
             }
+        }
+        if (f) {
+            return false;
         }
         return performActionC(p,ldata,tdata);
     }
@@ -90,6 +89,7 @@ public class PmapAction extends BaseAction implements ActionI {
         List<TLedger> tdata = repos.getTLedgerRepository().findAllByTdateBetweenOrderByTdateAsc(p.getStart(), p.getStop());
         List<Ledger> ldata = repos.getLedgerRepository().findAllByTransdateBetweenOrderByTransdateAsc(p.getStart(), p.getStop());
         PptlmRepository r = repos.getPptlmRepository();
+
         for (TLedger t : tdata) {
             Pptlm obj = new Pptlm();
             obj.setTlid(t.getId());
@@ -112,6 +112,7 @@ public class PmapAction extends BaseAction implements ActionI {
     }
 
     public boolean performActionC(Payperiod p, List<Ledger> ldata, List<TLedger> tdata) throws Exception {
+        boolean ok = true;
         for (Ledger t : ldata) {
             if ((t.getLtype().getId() == 4) ||
                     (t.getLtype().getId() == 5) ||
@@ -134,11 +135,13 @@ public class PmapAction extends BaseAction implements ActionI {
                 }
             }
             if (!found) {
-                w.write("TLedger not found Tid: " + t.getId() + " " + dt.toString() + " " + amount + " " + lt.getId() + " " + lbl.getId() + "\n");
-                return false;
+                if (t.getLtype().getId() < 14) {
+                    System.out.println("TLedger not found Tid: " + t.getId() + " " + dt.toString() + " " + amount + " " + lt.getId() + " " + lbl.getId() + "\n");
+                    ok = false;
+                }
             }
         }
-        return true;
+        return ok;
     }
 }
 

@@ -66,8 +66,9 @@ public class ReportController {
     }
 
     private void reports(List<RValue> r) {
-        add("NEWBUDGET", "NewBudget", r);
         add("DEFAULT", "DEFAULT", r);
+        add("NEWBUDGET", "NewBudget", r);
+        add("NEWBALANCE", "NewBalance", r);
         add("MAIN",  "MainOnly" , r);
         add("RETIRE",  "Retire" , r);
         add("CREDITCAT",  "CreditCat" , r);
@@ -81,5 +82,6 @@ public class ReportController {
         add("GREPORT",  "Greport" , r);
         add("PAYPERIOD",  "Payperiod" , r);
         add("SUMMARY",  "Summary",r);
+        add("CATEGORY",  "Category",r);
      }
 }

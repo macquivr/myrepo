@@ -72,7 +72,6 @@ public abstract class IBasew extends importBase implements Iimport {
 	{
 		TLedgerRepository lr = repos.getTLedgerRepository();
 		List<TLedger> ls = imdata.getLedger();
-		System.out.println("** SIZE: " + ls.size());
 		for (TLedger l : ls) {
 			Checks c = l.getChecks();
 			if (c != null) {

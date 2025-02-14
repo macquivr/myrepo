@@ -152,7 +152,6 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 				value = DUtil.getDefaultYear();
 			dstr = makeDate(str, value);
 
-			log.info("DSTR: " + dstr);
 			addNData(dstr, rest);
 		}
 		if (interest != 0) {

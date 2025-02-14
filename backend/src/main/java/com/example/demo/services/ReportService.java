@@ -4,6 +4,7 @@ import com.example.demo.actions.*;
 import com.example.demo.controllers.ReportController;
 import com.example.demo.importer.Repos;
 import com.example.demo.reports.*;
+import com.example.demo.reports.utils.NewBalanceReport;
 import com.example.demo.repository.*;
 import com.example.demo.state.Sessions;
 import com.example.demo.domain.*;
@@ -126,6 +127,12 @@ public class ReportService {
     @Autowired
     private PptlmRepository pptlmRepository;
 
+    @Autowired
+    private MltRepository mltRepository;
+
+    @Autowired
+    private CsbtRepository csbtRepository;
+
     private void init()
     {
         repos = new Repos(payeeRepository,
@@ -161,6 +168,8 @@ public class ReportService {
         this.repos.setIntable(this.intableRepository);
         this.repos.setOuttable(this.outtableRepository);
         this.repos.setPptlm(this.pptlmRepository);
+        this.repos.setMltRepository(this.mltRepository);
+        this.repos.setCsbtRepository(this.csbtRepository);
 
         registerReports();
         registerActions();
@@ -177,6 +186,7 @@ public class ReportService {
     private void registerReports()
     {
         map.put("NEWBUDGET", new NewBudgetReport(repos));
+        map.put("NEWBALANCE",new NewBalanceReport(repos));
         map.put("DEFAULT",new DefaultReport(repos));
         map.put("MAIN",new MainReport(repos));
         map.put("RETIRE",new RetireReport(repos));
@@ -191,6 +201,7 @@ public class ReportService {
         map.put("GREPORT",new GReport(repos));
         map.put("PAYPERIOD",new PayPeriodReport(repos));
         map.put("SUMMARY",new SummaryReport(repos));
+        map.put("CATEGORY",new CatReport(repos));
     }
 
     public StatusDTO genReport(String sessionId) {

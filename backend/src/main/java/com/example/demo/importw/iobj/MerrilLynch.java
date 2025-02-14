@@ -12,7 +12,6 @@ import java.util.UUID;
 import java.util.List;
 
 public class MerrilLynch extends IBasew {
-	private Payperiod pp = null;
 
 	public MerrilLynch(UUID uuid, Repos r, ImportDTO dto)
 	{	

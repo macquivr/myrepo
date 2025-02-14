@@ -4,6 +4,7 @@ import com.example.demo.domain.*;
 import com.example.demo.bean.StartStop;
 import com.example.demo.dto.SessionDTO;
 import com.example.demo.importer.Repos;
+import com.example.demo.repository.GscatRepository;
 import com.example.demo.repository.InmapRepository;
 import com.example.demo.repository.IntableRepository;
 import com.example.demo.repository.PayperiodRepository;
@@ -11,6 +12,7 @@ import com.example.demo.state.Consolidate;
 import com.example.demo.reports.utils.InUtilsR;
 import com.example.demo.utils.Utils;
 
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +73,11 @@ public class InAction extends BaseAction implements ActionI{
                     ret.add(l);
                 }
             }
-
+            if ((l.getLabel().getId() == 13149) ||
+                    (l.getLabel().getId() == 10288) ||
+                    (l.getLabel().getId() == 10428)) {
+                ret.add(l);
+            }
         }
         return ret;
     }
@@ -80,14 +86,14 @@ public class InAction extends BaseAction implements ActionI{
         StartStop dates = new StartStop();
         dates.setStart(p.getStart());
         dates.setStop(p.getStop());
-        System.out.println("PP: " + p.getId());
+
         InUtilsR obj = new InUtilsR(repos.getGscat());
 
         List<TLedger> data = getData(dates);
         double total;
         try {
             HashMap<String, Catsort> m = obj.doIn(inmap, data);
-            System.out.println("SIZE: " + m.size());
+
             total = p(m);
             Intable iobj;
             if (this.isNew) {
@@ -118,10 +124,27 @@ public class InAction extends BaseAction implements ActionI{
         return (value != null) ? value.getAmount() : 0;
     }
 
-    private void setIn(Intable obj, HashMap<String,Catsort> data, double total) {
+    private void doSet(Intable dobj, HashMap<String,Catsort> data) {
+        GscatRepository gcatR = repos.getGscat();
+        List<Gscat> inc = gcatR.findAllByCtype(0);
+        Method[] methods = dobj.getClass().getMethods();
 
-        obj.setTotal(Utils.convertDouble(total));
-
+        for (Gscat obj : inc) {
+            String name = obj.getName();
+            double d = getData(data,name);
+            String mname = "set".concat(name);
+            for (int i = 0;i<methods.length;i++) {
+                if (methods[i].getName().equals(mname)) {
+                    try {
+                        methods[i].invoke(dobj, d);
+                    } catch (Exception ex) {
+                        System.out.println("*** " + mname + " *** " + d);
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+        /*
         obj.setWork(getData(data,"Work"));
         obj.setMlsale(getData(data,"MLSale"));
         obj.setMldividend(getData(data,"MLDividend"));
@@ -130,6 +153,14 @@ public class InAction extends BaseAction implements ActionI{
         obj.setMiscin(getData(data,"Misc"));
         obj.setInterest(getData(data,"Interest"));
         obj.setRefund(getData(data,"Refund"));
+        */
+    }
+
+    private void setIn(Intable obj, HashMap<String,Catsort> data, double total) {
+
+        obj.setTotal(Utils.convertDouble(total));
+
+        doSet(obj,data);
 
         try {
             IntableRepository r = repos.getIntable();
@@ -142,7 +173,9 @@ public class InAction extends BaseAction implements ActionI{
     private double p(HashMap<String, Catsort> map)  {
         double total = 0;
         for (Catsort c : map.values()) {
-            total += c.getAmount();
+            if (!c.getLabel().equals("Creditfree")) {
+                total += c.getAmount();
+            }
         }
         total = Utils.convertDouble(total);
         List<Catsort> lc = new ArrayList<>(map.values());

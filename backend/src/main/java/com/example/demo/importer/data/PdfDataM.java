@@ -506,14 +506,12 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 		log.info("MLINES: " + lines.size());
 		boolean on = false;
 		for (String s : lines) {
-			log.info("ZZZ " + lidx + " DLINE: " + s);
+
 			if (s.startsWith("YOUR CMA TRANSACTIONS") && (transl == -1)) {
 				transl = lidx;
-				log.info("ZZZ transl: " + transl);
 			}
 			if (s.contains("INVESTMENT ACCOUNT") && (transl != -1) && (transm == -1)) {
 				this.transm = lidx;
-				log.info("ZZZ transm: " + transm);
 			}
 			if ((s.startsWith("YOUR MERRILL LYNCH REPORT") || 
 			    (s.startsWith("WEALTH MANAGEMENT REPORT")))) {
@@ -522,7 +520,6 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataM.class);
 				didx = str.indexOf(',');
 				str = str.substring(didx+2);
                 year = Integer.parseInt(str);
-				log.info("MLYEAR: " + year);
 			}
 			if (on) {
 				try {

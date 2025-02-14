@@ -30,7 +30,106 @@ public class NewBudgetReport implements ReportI {
         cdata = new MRBeanl();
     }
 
+    private String doQuarter(FileWriter w, SessionDTO session) {
+        HashMap<String, MRBeanl> map = new HashMap<String, MRBeanl>();
+        bdata = new MRBeanl();
+        cdata = new MRBeanl();
+
+        List<Statements> stmts = repos.getStatementsRepository().findAllByStmtdateBetween(session.getStart(), session.getStop());
+        if (stmts.size() != 3) {
+            return "Bad stmts.";
+        }
+
+        for (Statements s : stmts) {
+            List<Budgets> bobjs = repos.getBudgetsRepository().findAllByStmts(s);
+            for (Budgets bo : bobjs) {
+                if (!bo.getBid().getName().equals("Total")) {
+                    MRBean b = new MRBean(bo.getBid().getName(), bo.getValue(), bo.getBid().getValue(), bo.getNet());
+                    MRBeanl obj = map.get(bo.getBid().getName());
+                    if (obj == null) {
+                        MRBeanl l = new MRBeanl();
+                        l.add(b);
+                        map.put(bo.getBid().getName(),l);
+                    } else {
+                        obj.add(b);
+                    }
+                }
+            }
+        }
+        Set<String> keys = map.keySet();
+        for (String key : keys) {
+            MRBean f = null;
+            MRBeanl obj = map.get(key);
+            List<MRBean> dl = obj.getData();
+            for (MRBean d : dl) {
+                if (f == null) {
+                    f = d;
+                } else {
+                    f.setBudget(Utils.convertDouble(f.getBudget() + d.getBudget()));
+                    f.setAmount(Utils.convertDouble(f.getAmount() + d.getAmount()));
+                    f.setNet(Utils.convertDouble(f.getNet() + d.getNet()));
+                }
+            }
+            bdata.add(f);
+        }
+        bdata.Print(w);
+        return null;
+    }
+
+    private String doYear(FileWriter w, SessionDTO session) {
+        HashMap<String, MRBeanl> map = new HashMap<String, MRBeanl>();
+        bdata = new MRBeanl();
+        cdata = new MRBeanl();
+
+        List<Statements> stmts = repos.getStatementsRepository().findAllByStmtdateBetween(session.getStart(), session.getStop());
+        if (stmts.size() != 12) {
+            return "Bad stmts.";
+        }
+
+        for (Statements s : stmts) {
+            List<Budgets> bobjs = repos.getBudgetsRepository().findAllByStmts(s);
+            for (Budgets bo : bobjs) {
+                if (!bo.getBid().getName().equals("Total")) {
+                    MRBean b = new MRBean(bo.getBid().getName(), bo.getValue(), bo.getBid().getValue(), bo.getNet());
+                    MRBeanl obj = map.get(bo.getBid().getName());
+                    if (obj == null) {
+                        MRBeanl l = new MRBeanl();
+                        l.add(b);
+                        map.put(bo.getBid().getName(),l);
+                    } else {
+                        obj.add(b);
+                    }
+                }
+            }
+        }
+        Set<String> keys = map.keySet();
+        for (String key : keys) {
+            MRBean f = null;
+            MRBeanl obj = map.get(key);
+            List<MRBean> dl = obj.getData();
+            for (MRBean d : dl) {
+                if (f == null) {
+                    f = d;
+                } else {
+                    f.setBudget(Utils.convertDouble(f.getBudget() + d.getBudget()));
+                    f.setAmount(Utils.convertDouble(f.getAmount() + d.getAmount()));
+                    f.setNet(Utils.convertDouble(f.getNet() + d.getNet()));
+                }
+            }
+            bdata.add(f);
+        }
+        bdata.Print(w);
+        return null;
+    }
+
     public String go(FileWriter w, SessionDTO session) throws Exception {
+        Consolidate c = session.getConsolidate();
+        if (c == Consolidate.QUARTERLY) {
+            return doQuarter(w,session);
+        }
+        if (c == Consolidate.YEARLY) {
+            return doYear(w,session);
+        }
         bdata = new MRBeanl();
         cdata = new MRBeanl();
 
@@ -38,6 +137,8 @@ public class NewBudgetReport implements ReportI {
         if (stmts.size() != 1) {
             return "Bad stmts.";
         }
+        StartStop ds = new StartStop(session.getStart(), session.getStop());
+        w.write("Start: " + ds.getStart().toString() + " Stop:  " + ds.getStop().toString() + "\n");
         Statements s = stmts.get(0);
         List<Budgets> bobjs = repos.getBudgetsRepository().findAllByStmts(s);
         for (Budgets bo : bobjs) {
@@ -48,7 +149,7 @@ public class NewBudgetReport implements ReportI {
         }
         double bto = bdata.Print(w);
 
-        StartStop ds = new StartStop(session.getStart(), session.getStop());
+
         rest(w, s, ds, bdata.getTotalB(), bto);
         return null;
     }
@@ -108,7 +209,7 @@ public class NewBudgetReport implements ReportI {
         w.write("\nActual In: " + tin + "\n");
         double adjustment = Utils.convertDouble(tin - bt);
         w.write("Adjustment: " + adjustment + "\n");
-        w.write("  Work: " + workIn + "\n");
+        w.write("  Work: " + Utils.convertDouble(workIn) + "\n");
         w.write("  OtherIn: " + Utils.convertDouble(nonWorkIn) + "\n");
 
         w.write("\n");
@@ -131,12 +232,100 @@ public class NewBudgetReport implements ReportI {
 
         if (!debt.isEmpty()) {
             w.write("Misc unbudgeted:\n");
-            other = pOut(w,debt);
+            other = catUn(w,debt);
+            other += pOut(w,debt);
             w.write("Total: " + Utils.convertDouble(other) + "\n");
         }
         double o = Utils.convertDouble(bills + annual + other);
         double t = Utils.convertDouble(o + bto);
         w.write("O: " + o + " bto: " + bto + " T: " + t + "\n");
+    }
+
+    private double checkHouse(Ledger data, List<Ledger> death) {
+        if ((data.getChecks() != null) && data.getChecks().getPayee().getId() == 150) {
+            death.add(data);
+            return data.getAmount();
+        }
+        if ((data.getChecks() != null) && data.getChecks().getPayee().getId() == 68) {
+            death.add(data);
+            return data.getAmount();
+        }
+        if ((data.getChecks() != null) && data.getChecks().getPayee().getId() == 121) {
+            System.out.println("** FOUND **");
+            death.add(data);
+            return data.getAmount();
+        }
+        if ((data.getLabel().getId() == 13229) || (data.getLabel().getId() == 13234)){
+            death.add(data);
+            return data.getAmount();
+        }
+        return 0;
+    }
+
+    private double checkMed(Ledger data, List<Ledger> death) {
+        if ((data.getChecks() != null) && data.getChecks().getPayee().getId() == 99) {
+            death.add(data);
+            return data.getAmount();
+        }
+        return 0;
+    }
+
+    private double checkFee(Ledger data, List<Ledger> death) {
+        if (data.getLabel().getCategory().getId() == 14) {
+            if ((data.getLtype().getId() == 3) || (data.getLtype().getId() == 12)){
+                death.add(data);
+                return data.getAmount();
+            }
+        }
+        return 0;
+    }
+
+    private double checkSears(Ledger data, List<Ledger> death) {
+        if ((data.getChecks() != null) && data.getChecks().getPayee().getId() == 116) {
+            death.add(data);
+            return data.getAmount();
+        }
+        return 0;
+    }
+
+    private double catUn(FileWriter w, List<Ledger> debt) throws Exception {
+        List<Ledger> death = new ArrayList<Ledger>();
+        double house = 0;
+        double med = 0;
+        double fee = 0;
+        double sears = 0;
+        double other = 0;
+        for (Ledger a : debt) {
+            house += checkHouse(a,death);
+            med += checkMed(a,death);
+            fee += checkFee(a,death);
+            sears += checkSears(a,death);
+        }
+
+        System.out.println("H: " + house + " Med: " + med + " Fee: " + fee + " Sears: " + sears);
+        other = Utils.convertDouble(house + med + fee + sears);
+
+        if (house != 0) {
+            w.write("    House: " + Utils.convertDouble(house) + "\n");
+        }
+
+        if (med != 0) {
+            w.write("    Medical: " + Utils.convertDouble(med) + "\n");
+        }
+
+        if (fee != 0) {
+            w.write("    Fee: " + Utils.convertDouble(fee) + "\n");
+        }
+
+        if (sears != 0) {
+            w.write("    Sears: " + Utils.convertDouble(sears) + "\n");
+        }
+
+        if (!death.isEmpty()) {
+            debt.removeAll(death);
+            w.write("  Categorized unbudgeted: " + Utils.convertDouble(other) + "\n");
+        }
+        return other;
     }
 
     private double doBills(FileWriter w, List<Ledger> debt) throws Exception {

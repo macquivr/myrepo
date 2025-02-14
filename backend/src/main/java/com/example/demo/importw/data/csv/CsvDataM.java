@@ -99,6 +99,7 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataM.class);
 		} else {
 			ret.setDebit(Double.parseDouble(amount));
 		}
+		System.out.println("MLN: " + ret.toString());
 		return ret;
 	}
 	

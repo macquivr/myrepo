@@ -53,6 +53,10 @@ public class NData {
 	public Stype getStype() { return stype; }
 	public String getNDstr() { return ndstr; }
 
+	@Override
+	public String toString() {
+		return "ND: " + date.toString() + " " + label + " " + credit + " " + debit;
+	}
 	public void P() {
 		System.out.println("DATE: " + date);
 		System.out.println("LABEL: " + label);

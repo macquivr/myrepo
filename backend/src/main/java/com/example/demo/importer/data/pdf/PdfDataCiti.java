@@ -92,12 +92,6 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 		boolean autopay = false;
 		String mdstr = null;
 
-		Iterator<String> piter = lines.iterator();
-		while (piter.hasNext()) {
-			String s = piter.next();
-			log.info("CITIL: " + s);
-		}
-
 		Iterator<String> iter = lines.iterator();
 		while (iter.hasNext()) {
 			String s = iter.next();
@@ -145,7 +139,6 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 			String dstr = makeDstr(str);
 
 			setUtils(rest);
-			log.info("DSTR: " + dstr + " REST: " + rest);
 			addNData(dstr, rest);
 		}
 		

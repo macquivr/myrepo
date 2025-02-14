@@ -99,8 +99,12 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataAmz.class);
 			String mstr = str.substring(0,didx);
 			String value = map.get(mstr);
 			String dstr = str + "/" + value;
-			
-			addNData(dstr, rest);
+
+			if (rest.indexOf(' ') > 0) {
+				addNData(dstr, rest);
+			} else {
+				log.info("Skipped " + s);
+			}
 		}
 	}
 }

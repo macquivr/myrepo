@@ -71,6 +71,9 @@ public class AnnualUI extends Base<AnnualRowDTO> {
                  case 124:
                      data.setTaxprep(Utils.convertDouble(data.getTaxprep() + l.getAmount()));
                      break;
+                 case 154:
+                     data.setTaxprep(Utils.convertDouble(data.getTaxprep() + l.getAmount()));
+                     break;
              }
         } else {
             int id = lbl.getId();

@@ -26,7 +26,6 @@ public abstract class PLines {
 		StringTokenizer st = new StringTokenizer(txt,"\n");
 		while (st.hasMoreTokens()) {
 			String l = st.nextToken();
-			log.info("LINE " + label + ": " + l);
 			lines.add(l);
 		}
 	}

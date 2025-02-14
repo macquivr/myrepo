@@ -240,7 +240,7 @@ public class PayPeriodReport implements ReportI {
         } else {
             w.write("Out\n");
         }
-
+        double tmp = 0;
         HashMap<Kvp, CatSortWithLabels> map = new HashMap<Kvp, CatSortWithLabels>();
         for (Wdatamap obj : data) {
             if ((obj.getOther() != null) && ((obj.getOther().getId() == 32) || (obj.getOther().getId() == 31)))
@@ -251,9 +251,16 @@ public class PayPeriodReport implements ReportI {
                 continue;
 
             double amt = obj.getTid().getAmount();
+
             if ((ina && (amt > 0)) ||
                     (!ina && (amt < 0))) {
 
+                if (!ina && !credit) {
+                    if (obj.getFreq().getId() == 12) {
+                        tmp += amt;
+                        System.out.println(obj.getTid().getId() + " " + amt + " " + tmp);
+                    }
+                }
                 CatSortWithLabels d = map.get(obj.getFreq());
                 if (d == null) {
                     d = new CatSortWithLabels(obj.getTid().getLabel(),amt,obj.getFreq().getId() == 12);
@@ -273,8 +280,11 @@ public class PayPeriodReport implements ReportI {
         }
         Collections.sort(p);
         for (CatSortWithLabels obj : p) {
-            total += obj.getAmount();
 
+            total += obj.getAmount();
+            if (!ina && !credit) {
+                System.out.println(obj.getLabel() + " AMT: " + obj.getAmount() + " " + total);
+            }
             w.write(obj.getLabel() + ": " + obj.getAmount() + "\n");
             if (!obj.isOther()) {
                 List<Ledger> ld = obj.getData();
@@ -286,6 +296,7 @@ public class PayPeriodReport implements ReportI {
             }
         }
         total =  Utils.convertDouble(total);
+        System.out.println("TOTAL: " + total);
         w.write("Total: " + total);
         w.write("\n\n");
 
