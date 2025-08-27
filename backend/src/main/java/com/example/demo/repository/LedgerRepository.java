@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 public interface LedgerRepository extends JpaRepository<Ledger, Integer> {
 
+    List<Ledger> findAllByLtype(Ltype ltype);
     List<Ledger> findAllByStatement(Statement s);
     List<Ledger> findAllByStatementAndTransdateBetweenOrderByTransdateAsc(Statement s, LocalDate start, LocalDate stop);
     List<Ledger> findAllByLabelOrderByTransdateAsc(Label label);

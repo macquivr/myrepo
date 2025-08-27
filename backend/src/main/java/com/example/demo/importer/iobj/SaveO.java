@@ -92,7 +92,11 @@ public class SaveO extends importBase {
 
 		Double outa = istmt.getOuta();
 		if (outa == null) {
-			errs.add("outa not set");
+			errs.add("outa not set  " +
+					stmt.getLtype().getName() + " " +
+					istmt.getSbalance() + " " +
+					istmt.getFbalance() + " " +
+					istmt.getIna());
 			return false;
 		}
 

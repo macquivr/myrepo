@@ -63,6 +63,7 @@ public class ReportController {
         add("UPDATELABEL", "UpdateLastUsed", r);
         add("BUDGETSET", "BudgetSet", r);
         add("MLBALANCES", "MlBalances", r);
+        add("CUSTOM", "Custom", r);
     }
 
     private void reports(List<RValue> r) {

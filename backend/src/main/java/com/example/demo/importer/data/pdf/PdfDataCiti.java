@@ -2,6 +2,8 @@ package com.example.demo.importer.data.pdf;
 
 import com.example.demo.utils.mydate.DUtil;
 import java.util.Iterator;
+import java.util.Set;
+
 import com.example.demo.importer.IBase;
 import com.example.demo.utils.Utils;
 import com.example.demo.domain.Statement;
@@ -33,15 +35,16 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 		Statement stmt = idata.getStmt();
 		double payments = -1;
 		double credits = -1;
-		boolean y = false;
 		
 		for (String s : lines) {
-			if (y) {
-				yearMap(s);
-				y = false;
+
+			if (s.contains("Billing Period:")) {
+				int idx = s.indexOf(":");
+				String r = s.substring(idx+1);
+				log.info("MAPPING: " + r);
+				yearMap(r);
 			}
-			if (s.startsWith("JOHN A TODD")) 
-				y = true;
+
 		
 			if (s.startsWith("Payments") && (payments == -1)) {
 				int idx = s.indexOf('$');
@@ -71,7 +74,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 				stmt.setFbalance(Double.parseDouble(str));
 			}
 	
-			if (s.startsWith("Purchases +")) {
+			if (s.startsWith("Purchases")) {
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = s.substring(idx+1);
@@ -95,7 +98,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 		Iterator<String> iter = lines.iterator();
 		while (iter.hasNext()) {
 			String s = iter.next();
-			if (s.equals("date Description Amount"))
+			if (s.contains("date Description Amount"))
 				break;
 		}
 		if (!iter.hasNext()) {
@@ -103,17 +106,23 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 		}
 		while (iter.hasNext()) {
 			String s = iter.next();
+			if (s.contains("$")) {
+				log.info("CITI DOLLAR: " + s);
+			} else {
+				log.info("CITI: " + s);
+			}
+			if (!autopay && s.contains("AUTOPAY")) {
+			    log.info("AP: " + s);
 
-			if (autopay) {
-				if (s.equals("AUTO-PMT"))
-					continue;
+				int idx = s.indexOf(" ");
+				String dr = s.substring(0,idx);
+				String rest = s.substring(idx);
 
-				String dstr = makeDstr(mdstr);
-				String rest = "AUTO-PMT " + s;
+				String dstr = makeDstr(dr);
 
 				log.info("PSTR: " + dstr + " REST: " + rest);
 				addNData(dstr, rest);
-				autopay = false;
+				autopay = true;
 				continue;
 			}
 			if (s.startsWith("Days in billing cycle"))
@@ -127,12 +136,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 
 			if (!DUtil.isValidMMDD(str))
 				continue;
-	
-			if (rest.contains("AUTOPAY")) {
-				mdstr = str;
-				autopay = true;
-				continue;
-			}
+
 			idx = rest.indexOf(' ');
 			rest = rest.substring(idx+1);
 			
@@ -147,6 +151,13 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 	private String makeDstr(String str) {
 		int didx = str.indexOf('/');
 		String mstr = str.substring(0,didx);
+		log.info("MSTR: " + mstr + " SIZE: " + map.size());
+
+		Set<String> keys = map.keySet();
+		for (String key : keys) {
+			String value = map.get(key);
+			log.info("KEY: " + key + " Value: " + value);
+		}
 		String value = map.get(mstr);
 
 		return  str + "/" + value;
@@ -182,8 +193,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCiti.class);
 	    
 		String one = line.substring(0,idx);
 		String two = line.substring(idx+1);
-		addMap(one);
-		addMap(two);
+		log.info("ONE: " + one);
+		log.info("TWO: " + two);
+		addMap(one.trim());
+		addMap(two.trim());
 	}
 
 }

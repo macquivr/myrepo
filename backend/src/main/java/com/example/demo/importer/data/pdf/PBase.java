@@ -82,6 +82,7 @@ public abstract class PBase extends PLines {
 		
 		idx = rest.indexOf('/');
 		String s2 = "20" + rest.substring(idx+1);
+		log.info("DMAP:  " + s1 + " ==> " + s2);
 		map.put(s1,s2);
 	}
 	

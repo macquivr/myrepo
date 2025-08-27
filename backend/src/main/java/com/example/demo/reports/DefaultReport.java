@@ -21,6 +21,18 @@ public class DefaultReport implements ReportI {
 
         this.repos = r;
     }
+
+    private void adjustAnnual(List<Ledger> adata, List<Ledger> data) {
+        for (Ledger l : data) {
+            Checks c = l.getChecks();
+            if ((c != null) && (c.getPayee().getCheckType().getName().equals("Annual"))) {
+                adata.add(l);
+            }
+
+        }
+
+    }
+
     public String go(FileWriter w, SessionDTO session) throws Exception
     {
         CategoryRepository cr = repos.getCategoryRepository();
@@ -33,6 +45,8 @@ public class DefaultReport implements ReportI {
 
         List<Ledger> data  = ld.filterByDate(session,null,null);
         ld.filterBundle(data);
+        adjustAnnual(adata,data);
+
         StartStop dates = ld.getDates();
 
         DataUtils du = new DataUtils(repos);
@@ -50,7 +64,7 @@ public class DefaultReport implements ReportI {
         printStype("Bills",w,data);
         printUtils(w,dates);
         printStype("Credit",w,data);
-        printStype("Annual",w,adata);
+        //printStype("Annual",w,adata);
         printStype("Misc",w,data);
         printSpent(w, session);
         printCategories(w,session);
@@ -284,13 +298,32 @@ public class DefaultReport implements ReportI {
         w.write("\n");
         w.write("Stype " + stype + "\n");
         HashMap<String, Double> map = new HashMap<>();
+        boolean ok = false;
 
         for (Ledger l : bundle) {
+            ok = false;
             Stype s = l.getStype();
             if (s.getName().equals(stype)) {
+                ok = true;
+            } else {
+                if (l.getChecks() != null) {
+                    Checks c = l.getChecks();
+                    Checktype ct = c.getPayee().getCheckType();
+                    if (ct.getName().equals(stype)) {
+                        ok = true;
+                    }
+                }
+            }
+            if (ok) {
                 String lstr;
-                if (l.getChecks() != null)
+                if (l.getChecks() != null) {
                     lstr = l.getChecks().getPayee().getName();
+                    Checks c = l.getChecks();
+                    Checktype ct = c.getPayee().getCheckType();
+                    if (!ct.getName().equals(stype)) {
+                        continue;
+                    }
+                }
                 else
                     lstr = l.getLabel().getNames().getName();
                 Double d = map.get(lstr);

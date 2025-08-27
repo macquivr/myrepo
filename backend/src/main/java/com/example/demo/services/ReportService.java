@@ -181,6 +181,7 @@ public class ReportService {
         amap.put("UPDATELABEL",new UpdateLastUsed(repos));
         amap.put("BUDGETSET", new BudgetSetAction(repos));
         amap.put("MLBALANCES", new MlBalanceAction(repos));
+        amap.put("CUSTOM", new CustomAction(repos));
     }
 
     private void registerReports()

@@ -29,6 +29,52 @@ public class NewBudgetReport implements ReportI {
         bdata = new MRBeanl();
         cdata = new MRBeanl();
     }
+    private String doHalf(FileWriter w, SessionDTO session) {
+        HashMap<String, MRBeanl> map = new HashMap<String, MRBeanl>();
+        bdata = new MRBeanl();
+        cdata = new MRBeanl();
+
+        List<Statements> stmts = repos.getStatementsRepository().findAllByStmtdateBetween(session.getStart(), session.getStop());
+        if (stmts.size() != 6) {
+            return "Bad stmts.";
+        }
+
+        for (Statements s : stmts) {
+            List<Budgets> bobjs = repos.getBudgetsRepository().findAllByStmts(s);
+            for (Budgets bo : bobjs) {
+                if (!bo.getBid().getName().equals("Total")) {
+                    MRBean b = new MRBean(bo.getBid().getName(), bo.getValue(), bo.getBid().getValue(), bo.getNet());
+                    MRBeanl obj = map.get(bo.getBid().getName());
+                    if (obj == null) {
+                        MRBeanl l = new MRBeanl();
+                        l.add(b);
+                        map.put(bo.getBid().getName(),l);
+                    } else {
+                        obj.add(b);
+                    }
+                }
+            }
+        }
+        Set<String> keys = map.keySet();
+        for (String key : keys) {
+            MRBean f = null;
+            MRBeanl obj = map.get(key);
+            List<MRBean> dl = obj.getData();
+            for (MRBean d : dl) {
+                if (f == null) {
+                    f = d;
+                } else {
+                    f.setBudget(Utils.convertDouble(f.getBudget() + d.getBudget()));
+                    f.setAmount(Utils.convertDouble(f.getAmount() + d.getAmount()));
+                    f.setNet(Utils.convertDouble(f.getNet() + d.getNet()));
+                }
+            }
+            bdata.add(f);
+        }
+        bdata.Print(w);
+        return null;
+    }
+
 
     private String doQuarter(FileWriter w, SessionDTO session) {
         HashMap<String, MRBeanl> map = new HashMap<String, MRBeanl>();
@@ -124,6 +170,9 @@ public class NewBudgetReport implements ReportI {
 
     public String go(FileWriter w, SessionDTO session) throws Exception {
         Consolidate c = session.getConsolidate();
+        if (c == Consolidate.HALF) {
+            return doHalf(w,session);
+        }
         if (c == Consolidate.QUARTERLY) {
             return doQuarter(w,session);
         }
@@ -135,7 +184,7 @@ public class NewBudgetReport implements ReportI {
 
         List<Statements> stmts = repos.getStatementsRepository().findAllByStmtdateBetween(session.getStart(), session.getStop());
         if (stmts.size() != 1) {
-            return "Bad stmts.";
+            return "Bad stmts " + stmts.size();
         }
         StartStop ds = new StartStop(session.getStart(), session.getStop());
         w.write("Start: " + ds.getStart().toString() + " Stop:  " + ds.getStop().toString() + "\n");
@@ -238,7 +287,16 @@ public class NewBudgetReport implements ReportI {
         }
         double o = Utils.convertDouble(bills + annual + other);
         double t = Utils.convertDouble(o + bto);
-        w.write("O: " + o + " bto: " + bto + " T: " + t + "\n");
+
+        double bdiff = Utils.convertDouble(tin + o - bt);
+        double bover = Utils.convertDouble( (bt + bto) * (-1));
+        double bexcess = Utils.convertDouble(bdiff - bover);
+        w.write("NonBudgetOut: " + o + "\n");
+        w.write("BudgetOut: " + bto + "\n");
+        w.write("Total Out: " + t + "\n");
+        w.write("Over: " + bover + "\n");
+        w.write("Diff: " + bdiff + "\n");
+        w.write("Excess: " + bexcess + "\n");
     }
 
     private double checkHouse(Ledger data, List<Ledger> death) {

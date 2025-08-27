@@ -26,7 +26,10 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 		Statement stmt = idata.getStmt();
 		double payments = -1;
 		double credits = -1;
-		
+		double out1 = 0;
+		double out2 = 0;
+		double out;
+
 		for (String s : lines) {
 			if (s.startsWith("Statement Closing Date")) {
 				int idx = findValue(s);
@@ -64,7 +67,16 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = makeValue(s,idx);
-					stmt.setOuta(Double.parseDouble(str));
+					out1 = Double.parseDouble(str);
+					//stmt.setOuta(Double.parseDouble(str));
+				}
+			}
+			if (s.startsWith("New Balance Transfers")) {
+				int idx = s.indexOf('$');
+				if (idx != -1) {
+					String str = makeValue(s,idx);
+					out2 = Double.parseDouble(str);
+					//stmt.setOuta(Double.parseDouble(str));
 				}
 			}
 			if ((s.startsWith("Fees Charged +")) || (s.startsWith("Interest Charged"))) {
@@ -81,6 +93,8 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 			}
 			
 		}
+		out = Utils.convertDouble(out1 + out2);
+		stmt.setOuta(out);
 		stmt.setIna(Utils.dvAdd(payments, credits));
 	}
 
@@ -142,6 +156,7 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataUsaa.class);
 				if (astr != null)
 					rest = rest.concat(" " + astr);
 			}
+			log.info("STUFF: " + dstr + " " + rest);
 			addNData(dstr, rest);
 		}
 	}

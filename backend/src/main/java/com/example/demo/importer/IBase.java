@@ -238,6 +238,9 @@ public abstract class IBase extends importBase implements Iimport {
 		List<Ledger> data = imdata.getLedger();
 		double in = 0;
 		for (Ledger l : data) {
+			if (l.getLtype().getId() == 13) {
+				System.out.println("Label: " + l.getLabel().getName() + " " + l.getAmount());
+			}
 			if (l.getAmount() > 0) 
 				in = Utils.dvAdd(in, l.getAmount());
 		}

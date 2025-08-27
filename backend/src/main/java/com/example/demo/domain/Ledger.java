@@ -56,7 +56,7 @@ public class Ledger {
     public boolean match(Ledger l) {
         if (!l.getAmount().equals(getAmount()))
             return false;
-        if (l.getTransdate().toString().equals(getTransdate().toString()))
+        if (!l.getTransdate().toString().equals(getTransdate().toString()))
             return false;
         if (l.getLtype().getId() != getLtype().getId())
             return false;
