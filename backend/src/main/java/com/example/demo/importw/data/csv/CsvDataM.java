@@ -115,7 +115,7 @@ private static final Logger log = LoggerFactory.getLogger(CsvDataM.class);
 			
 			net = Utils.dvAdd(net, n.getCredit());
 			net = Utils.dvSub(net, n.getDebit());
-			log.info("MLAMT: " + n.getDate() + " " + n.getCredit() + " " + n.getDebit() + " " + tin + " " + tout + " " + net);
+			log.info("MLAMTC: " + n.getDate() + " " + n.getCredit() + " " + n.getDebit() + " " + tin + " " + tout + " " + net);
 		}
 		return net;
 	}

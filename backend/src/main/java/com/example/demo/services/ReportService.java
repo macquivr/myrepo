@@ -189,6 +189,8 @@ public class ReportService {
         map.put("NEWBUDGET", new NewBudgetReport(repos));
         map.put("NEWBALANCE",new NewBalanceReport(repos));
         map.put("DEFAULT",new DefaultReport(repos));
+        map.put("SIMPLE",new SimpleReport(repos));
+        map.put("GMISC", new MiscGReport(repos));
         map.put("MAIN",new MainReport(repos));
         map.put("RETIRE",new RetireReport(repos));
         map.put("CREDITCAT",new CreditReport(repos));

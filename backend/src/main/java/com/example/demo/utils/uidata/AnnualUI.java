@@ -92,6 +92,7 @@ public class AnnualUI extends Base<AnnualRowDTO> {
                     data.setOilservice(Utils.convertDouble(data.getOilservice() + l.getAmount()));
                     break;
                 case 12550:
+                case 13491:
                     data.setFed(Utils.convertDouble(data.getFed() + l.getAmount()));
                     break;
                 case 10200:

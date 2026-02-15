@@ -10,6 +10,7 @@ import java.util.List;
 public interface StatementRepository extends JpaRepository<Statement, Integer> {
     Statement findAllByIdAndLtype(int id, Ltype type);
     Statement findAllByStatementsAndLtype(Statements stmt, Ltype type);
+    List<Statement> findAllByStatements(Statements stmt);
 
     List<Statement> findAllByLtypeOrderByStatements(Ltype type);
 }

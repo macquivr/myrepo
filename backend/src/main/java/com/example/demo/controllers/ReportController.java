@@ -68,7 +68,9 @@ public class ReportController {
 
     private void reports(List<RValue> r) {
         add("DEFAULT", "DEFAULT", r);
+        add("SIMPLE", "Simple", r);
         add("NEWBUDGET", "NewBudget", r);
+        add("GMISC", "Gmisc",r);
         add("NEWBALANCE", "NewBalance", r);
         add("MAIN",  "MainOnly" , r);
         add("RETIRE",  "Retire" , r);

@@ -44,7 +44,7 @@ public class PdfData extends PLines {
 		map.put("8528","Annual");
 		map.put("0756","Mainsave");
 		map.put("8117","Emmasave");
-		map.put("Todd","Emmasave");
+		map.put("Todd","Emma");
 	}
 	public String getLabel() { return "CSB"; }
 	private void populate()

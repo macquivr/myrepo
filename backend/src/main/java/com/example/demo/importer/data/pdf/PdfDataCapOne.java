@@ -86,18 +86,20 @@ private static final Logger log = LoggerFactory.getLogger(PdfDataCapOne.class);
 		double amt = 0;
 		for (String s : lines) {
 			if (on) {
+                log.info("INXXX: " + s);
 				int idx = s.indexOf('$');
 				if (idx != -1) {
 					String str = s.substring(idx+1).replace(",","");
 					double dv = Double.parseDouble(str);
 					amt = Utils.dvAdd(amt,dv);
+                    log.info("INXXX2: " + amt);
 				}
 			}
 			if (s.contains(" Payments, Credits and Adjustments")) {
 				on = true;
 			}
 			if (on && s.contains("Transaction")) {
-				break;
+				on = false;
 			}
 		}
 		stmt.setIna(amt);

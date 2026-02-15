@@ -4,8 +4,10 @@ import com.example.demo.bean.*;
 import com.example.demo.bean.tables.InOutTable;
 import com.example.demo.domain.*;
 import com.example.demo.dto.SessionDTO;
-import com.example.demo.repository.*;
 import com.example.demo.importer.Repos;
+import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.StypeRepository;
+import com.example.demo.repository.UtilitiesRepository;
 import com.example.demo.utils.DataUtils;
 import com.example.demo.utils.LData;
 import com.example.demo.utils.Utils;
@@ -14,10 +16,10 @@ import java.io.FileWriter;
 import java.time.LocalDate;
 import java.util.*;
 
-public class DefaultReport implements ReportI {
+public class SimpleReport implements ReportI {
     private final Repos repos;
 
-    public DefaultReport(Repos r) {
+    public SimpleReport(Repos r) {
 
         this.repos = r;
     }
@@ -35,6 +37,22 @@ public class DefaultReport implements ReportI {
 
     }
 
+    private void dumpTransfer(List<Ledger> data) {
+        List<Ledger> death = new ArrayList<Ledger>();
+
+        for (Ledger l : data) {
+            if (l.getStype().getId() == 8) {
+                death.add(l);
+            } else {
+                Checks c = l.getChecks();
+                if ((c != null) && (c.getPayee().getCheckType().getName().equals("Transfer"))) {
+                    death.add(l);
+                }
+            }
+        }
+        data.removeAll(death);
+    }
+
     public String go(FileWriter w, SessionDTO session) throws Exception
     {
         CategoryRepository cr = repos.getCategoryRepository();
@@ -47,6 +65,7 @@ public class DefaultReport implements ReportI {
 
         List<Ledger> data  = ld.filterByDate(session,null,null);
         ld.filterBundle(data);
+        dumpTransfer(data);
         adjustAnnual(adata,data);
 
         StartStop dates = ld.getDates();
@@ -54,24 +73,85 @@ public class DefaultReport implements ReportI {
         DataUtils du = new DataUtils(repos);
         HashMap<Lenum, Data> dmap = du.populateDmap(session,dates);
 
+        double total = 0;
         printPeriod(w,dates);
-        printGlobalStat(w,data,transferc);
-        printBalances(w,dmap);
-        printStat(w, dmap, transferc);
-        printStypes(w, data);
 
-        double t = printStype("Annual",w,adata);
-        w.write("Total: " + t + "\n\n");
+        double inTotal = doIn(w,data);
 
-        printStype("Bills",w,data);
-        printUtils(w,dates);
-        printStype("Credit",w,data);
-        //printStype("Annual",w,adata);
-        printStype("Misc",w,data);
-        printSpent(w, session);
-        printCategories(w,session);
 
+        double pos = printStype(null,"POS",  w, data,false);
+        line(w,"POS", pos);
+        total += pos;
+
+        double atm = printStype(null,"ATM",  w, data,false);
+        line(w,"ATM", atm);
+        total += atm;
+
+        w.write("\nMortgageAndLifeInsurance:\n");
+        List<Integer> lbls = new ArrayList<Integer>();
+        lbls.add(12712);
+        lbls.add(11451);
+        double mi = printLabel(lbls,  w, data, false);
+        line(w,"  Total:", mi);
+        total += mi;
+
+
+        double lm = printLastMonth(w,data);
+        line(w,"  Total", lm);
+        total += lm;
+
+        double annuala = printStype("Annual", "Annual",w,data,true);
+        line(w,"  Total", annuala);
+
+        total += annuala;
+        w.write("\n");
+
+        w.write("Everything Else:\n");
+        double ee = printLabel(null,  w, data, true);
+        line(w,"  Total", ee);
+
+        total = Utils.convertDouble(total + ee);
+
+        w.write("\nTotal: " + total);
+        w.write("\nIn Total: " + inTotal);
+        double net = Utils.convertDouble(inTotal + total);
+        w.write("\nNet: " + net);
         return null;
+    }
+
+    private double doIn(FileWriter w, List<Ledger> data) throws Exception {
+        double ret = 0;
+        double inv = 0;
+        double other = 0;
+        List<Ledger> death = new ArrayList<Ledger>();
+
+        for (Ledger l : data) {
+            if (l.getAmount() > 0) {
+                ret += l.getAmount();
+                death.add(l);
+                if (l.getLabel().getId() == 12448) {
+                    inv += l.getAmount();
+                } else {
+                    other += l.getAmount();
+                }
+            }
+        }
+        w.write("In\n");
+        line(w,"  Work: ", Utils.convertDouble(inv));
+        line(w,"  Other: ",Utils.convertDouble(other));
+        data.removeAll(death);
+        w.write("\n");
+        return Utils.convertDouble(ret);
+    }
+
+    private double printLastMonth(FileWriter w, List<Ledger> data) throws Exception {
+        double ret = printStype("LastMonth", "Credit",w,data,true);
+        List<Integer> lbls = new ArrayList<Integer>();
+        lbls.add(13137);
+        lbls.add(10344);
+        ret += printLabel(lbls,  w, data, false);
+
+        return ret;
     }
 
     private void printPeriod(FileWriter w,StartStop dates) throws Exception {
@@ -294,13 +374,49 @@ public class DefaultReport implements ReportI {
             w.write(c.getLabel() + " " + c.getAmount() + "\n");
     }
 
-    private double printStype(String stype, FileWriter w, List<Ledger> bundle) throws Exception
+    private double printLabel(List<Integer> lbls, FileWriter w, List<Ledger> bundle, boolean all) throws Exception
     {
         double ret = 0;
-        w.write("\n");
-        w.write("Stype " + stype + "\n");
+
+        HashMap<String, Double> map = new HashMap<>();
+        List<Ledger> death = new ArrayList<Ledger>();
+
+        for (Ledger l : bundle) {
+            Label lb = l.getLabel();
+            if (all || (!all && lbls.contains(lb.getId()))) {
+                death.add(l);
+                String lstr = lb.getNames().getName();
+
+                Double d = map.get(lstr);
+                if (d == null) {
+                    map.put(lstr, l.getAmount());
+                } else {
+                    double dv = Utils.convertDouble(d + l.getAmount());
+                    map.put(lstr, dv);
+                }
+
+            }
+        }
+        Set<String> keys = map.keySet();
+        for (String key : keys) {
+            Double d = map.get(key);
+            ret += d;
+            w.write("  " + key + " " + d + "\n");
+        }
+        bundle.removeAll(death);
+        return Utils.convertDouble(ret);
+    }
+
+    private double printStype(String label, String stype, FileWriter w, List<Ledger> bundle, boolean pr) throws Exception
+    {
+        double ret = 0;
+        if (pr) {
+            w.write("\n");
+            w.write(label + "\n");
+        }
         HashMap<String, Double> map = new HashMap<>();
         boolean ok = false;
+        List<Ledger> death = new ArrayList<Ledger>();
 
         for (Ledger l : bundle) {
             ok = false;
@@ -317,6 +433,7 @@ public class DefaultReport implements ReportI {
                 }
             }
             if (ok) {
+                death.add(l);
                 String lstr;
                 if (l.getChecks() != null) {
                     lstr = l.getChecks().getPayee().getName();
@@ -336,14 +453,18 @@ public class DefaultReport implements ReportI {
                     double dv = Utils.convertDouble(d + l.getAmount());
                     map.put(lstr, dv);
                 }
+
             }
         }
         Set<String> keys = map.keySet();
         for (String key : keys) {
             Double d = map.get(key);
             ret += d;
-            w.write(key + " " + d + "\n");
+            if (pr) {
+                w.write("  " + key + " " + d + "\n");
+            }
         }
+        bundle.removeAll(death);
         return Utils.convertDouble(ret);
     }
 

@@ -132,6 +132,22 @@ public class ChartController {
         return service.getBamazon(sessionId);
     }
 
+    @GetMapping(value = "/chart/bpos/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getBpos(@PathVariable String sessionId) {
+        return service.getBpos(sessionId);
+    }
+    @GetMapping(value = "/chart/batm/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getBatm(@PathVariable String sessionId) {
+        return service.getBatm(sessionId);
+    }
+    @GetMapping(value = "/chart/bdog/{sessionId}", produces = "application/json")
+    public @ResponseBody
+    DatasourceDTO getBdog(@PathVariable String sessionId) {
+        return service.getBdog(sessionId);
+    }
+
     @GetMapping(value = "/chart/bcredit/{sessionId}", produces = "application/json")
     public @ResponseBody
     DatasourceDTO getBall(@PathVariable String sessionId) {

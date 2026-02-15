@@ -4,6 +4,9 @@ import com.example.demo.bean.*;
 import com.example.demo.chart.*;
 import com.example.demo.chart.bc.MltChart;
 import com.example.demo.chart.bc.csbtChart;
+import com.example.demo.chart.budget.batmChart;
+import com.example.demo.chart.budget.bdogChart;
+import com.example.demo.chart.budget.bposChart;
 import com.example.demo.chart.dataobj.*;
 import com.example.demo.chart.net.*;
 import com.example.demo.chart.bcredit.*;
@@ -245,7 +248,7 @@ public class ChartService {
     }
     public DatasourceDTO getButilities(String sessionId) {
         chartData<Ledger> u = new butilitiesChart(sessionId, repository);
-        String trend = adjustTrendLine(sessionId,500);
+        String trend = adjustTrendLine(sessionId,545);
         List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Utilities", u,rl);
     }
@@ -282,6 +285,27 @@ public class ChartService {
         String trend = adjustTrendLine(sessionId,400);
         List<TrendLine> rl = getTrendLine(trend);
         return doChart(sessionId, "Amazon", u,rl );
+    }
+
+    public DatasourceDTO getBpos(String sessionId) {
+        chartData<Ledger> u = new bposChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,1000);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "POS", u,rl );
+    }
+
+    public DatasourceDTO getBatm(String sessionId) {
+        chartData<Ledger> u = new batmChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,300);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "ATM", u,rl );
+    }
+
+    public DatasourceDTO getBdog(String sessionId) {
+        chartData<Ledger> u = new bdogChart(sessionId, repository);
+        String trend = adjustTrendLine(sessionId,160);
+        List<TrendLine> rl = getTrendLine(trend);
+        return doChart(sessionId, "Dog", u,rl );
     }
 
     public DatasourceDTO getBall(String sessionId) {
@@ -476,11 +500,10 @@ public class ChartService {
             return ret;
         }
 
-        makeMsChart mobj = new makeMsChart(filter, repository,ret);
+        makeMsLtypeChart mobj = new makeMsLtypeChart(filter, repository,ret);
 
         mobj.setCname("Out All");
-        mobj.setYname("Percent");
-        mobj.setSuffix("%");
+        mobj.setYname("Amount");
         mobj.go();
 
         return ret;
